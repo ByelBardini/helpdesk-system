@@ -1,9 +1,6 @@
 import jwt from "jsonwebtoken";
 import db from "./../config/db.js";
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const CHAVE = process.env.SECERET_KEY_LOGIN;
 
@@ -32,7 +29,6 @@ export const login = (req, res) => {
             console.log("Erro ao comparar senhas: ", err);
           }
           if (match) {
-            // Token de usuário
             const dadosUsuario = {
               usuario_empresa_id: results[0].usuario_empresa_id,
               usuario_setor_id: results[0].usuario_setor_id,
