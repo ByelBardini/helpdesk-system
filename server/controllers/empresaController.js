@@ -15,7 +15,7 @@ export const criaEmpresa = (req, res) => {
             console.log("Erro ao criar empresa: ", err);
             return res.status(500).json({ error: "Erro ao criar empresa." });
         }
-        res.status(201).json({ message: "Empresa criada com sucesso!", empresa_id: results.insertId });
+        res.status(201).json({ message: "Empresa criada com sucesso!" });
     });
 }
 
