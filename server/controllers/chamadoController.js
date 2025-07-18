@@ -270,7 +270,7 @@ export const finalizaChamado = (req, res) => {
 
 // POST
 
-export const abreChamado = (req, res) => {
+export const postChamado = (req, res) => {
   const {
     chamado_usuario_id,
     chamado_setor_id,
