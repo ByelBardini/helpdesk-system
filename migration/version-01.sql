@@ -58,3 +58,13 @@ ADD CONSTRAINT `setor_empresa_id`
 
 ALTER TABLE `chamados_ti`.`usuarios` 
 CHANGE COLUMN `usuario_caminho_foto` `usuario_caminho_foto` VARCHAR(255) NULL ;
+
+CREATE TABLE `chamados_ti`.`faq` (
+  `pergunta_id` INT NOT NULL,
+  `pergunta_categoria` VARCHAR(50) NOT NULL,
+  `pergunta_titulo` VARCHAR(255) NOT NULL,
+  `pergunta_resposta` TEXT NOT NULL,
+  PRIMARY KEY (`pergunta_id`));
+
+ALTER TABLE `chamados_ti`.`faq` 
+CHANGE COLUMN `pergunta_id` `pergunta_id` INT NOT NULL AUTO_INCREMENT ;
