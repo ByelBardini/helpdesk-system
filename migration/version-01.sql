@@ -68,3 +68,13 @@ CREATE TABLE `chamados_ti`.`faq` (
 
 ALTER TABLE `chamados_ti`.`faq` 
 CHANGE COLUMN `pergunta_id` `pergunta_id` INT NOT NULL AUTO_INCREMENT ;
+
+CREATE TABLE `chamados_ti`.`avisos` (
+  `aviso_id` INT NOT NULL AUTO_INCREMENT,
+  `aviso_data` DATE NOT NULL,
+  `aviso_titulo` VARCHAR(255) NOT NULL,
+  `aviso_descricao` TEXT NOT NULL,
+  PRIMARY KEY (`aviso_id`));
+
+ALTER TABLE `chamados_ti`.`avisos` 
+ADD COLUMN `aviso_importancia` ENUM('baixa', 'media', 'alta') NOT NULL AFTER `aviso_descricao`;
