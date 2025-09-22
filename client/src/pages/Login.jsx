@@ -13,7 +13,7 @@ export default function Login() {
     titulo: "",
     mensagem: "",
   });
-  const [carregando, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
@@ -118,7 +118,7 @@ export default function Login() {
           }
         />
       )}
-      {carregando && <Loading />}
+      {loading && <Loading />}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
