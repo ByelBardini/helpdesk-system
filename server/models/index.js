@@ -1,6 +1,7 @@
 import Usuario from "./usuarios.js";
 import Empresa from "./empresas.js";
 import Setor from "./setores.js";
+import Pergunta from "./faq.js";
 
 // Foreign keys de setor e empresa
 Empresa.hasMany(Setor, {
@@ -40,4 +41,4 @@ Usuario.belongsTo(Empresa, {
   as: "empresa",
 });
 
-export { Usuario, Empresa, Setor };
+export { Usuario, Empresa, Setor, Pergunta };

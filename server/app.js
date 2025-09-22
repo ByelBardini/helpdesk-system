@@ -3,6 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import faqRoutes from "./routes/faqRoutes.js";
 import { ApiError } from "./middlewares/ApiError.js";
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(
 
 app.use("/", authRoutes);
 app.use("/usuario", usuarioRoutes);
+app.use("/faq", faqRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
