@@ -55,7 +55,7 @@ export default function Notificacao({
             <div className="mt-5 flex justify-end">
               <button
                 onClick={onClick}
-                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition"
+                className="cursor-pointer px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition"
               >
                 OK
               </button>
