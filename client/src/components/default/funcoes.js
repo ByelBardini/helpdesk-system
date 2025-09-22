@@ -25,3 +25,11 @@ export function tratarErro(setNotificacao, err, navigate) {
     mensagem: err.message,
   });
 }
+
+export function dividirEmPartes(array, tamanho) {
+  const resultado = [];
+  for (let i = 0; i < array.length; i += tamanho) {
+    resultado.push(array.slice(i, i + tamanho));
+  }
+  return resultado;
+}
