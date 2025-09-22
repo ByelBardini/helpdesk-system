@@ -33,7 +33,10 @@ export default function Home() {
               <span>Chamados</span>
             </button>
 
-            <button className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition">
+            <button
+              onClick={() => navigate("/faq", { replace: true })}
+              className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition"
+            >
               <HelpCircle className="h-5 w-5" />
               <span>FAQ</span>
             </button>
