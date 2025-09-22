@@ -55,3 +55,6 @@ ADD CONSTRAINT `setor_empresa_id`
   FOREIGN KEY (`setor_empresa_id`)
   REFERENCES `chamados_ti`.`empresas` (`empresa_id`)
   ON DELETE CASCADE;
+
+ALTER TABLE `chamados_ti`.`usuarios` 
+CHANGE COLUMN `usuario_caminho_foto` `usuario_caminho_foto` VARCHAR(255) NULL ;

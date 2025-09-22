@@ -21,7 +21,7 @@ Usuario.init(
     },
     usuario_caminho_foto: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
     },
     usuario_nome: {
       type: DataTypes.STRING(255),
@@ -36,7 +36,7 @@ Usuario.init(
       allowNull: false,
     },
     usuario_role: {
-      type: DataTypes.ENUM("adm","gerente","supervisor","liderado"),
+      type: DataTypes.ENUM("adm", "gerente", "supervisor", "liderado"),
       allowNull: false,
     },
     usuario_ativo: {

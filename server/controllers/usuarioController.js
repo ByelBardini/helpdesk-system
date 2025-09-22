@@ -34,6 +34,8 @@ export async function cadastrarUsuario(req, res) {
       usuario_ativo: 1,
       usuario_troca_senha: 1,
     });
+
+    return res.status(201).json({ message: "Usuário registrado com sucesso!" });
   } catch (err) {
     console.error("Erro ao cadastrar usuário:", err);
     if (err instanceof ApiError) throw err;
