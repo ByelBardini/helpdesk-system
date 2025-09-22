@@ -1,35 +1,39 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 
-class Pergunta extends Model {}
+class Aviso extends Model {}
 
-Pergunta.init(
+Aviso.init(
   {
-    pergunta_id: {
+    aviso_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
     },
-    pergunta_categoria: {
-      type: DataTypes.STRING(50),
+    aviso_data: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
-    pergunta_titulo: {
+    aviso_titulo: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    pergunta_resposta: {
-      type: DataTypes.TEXT,
+    aviso_descricao: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    aviso_importancia: {
+      type: DataTypes.ENUM("baixa", "media", "alta"),
       allowNull: false,
     },
   },
   {
     sequelize,
-    modelName: "Pergunta",
-    tableName: "faq",
+    modelName: "Aviso",
+    tableName: "avisos",
     timestamps: false,
   }
 );
 
-export default Pergunta;
+export default Aviso;
