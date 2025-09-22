@@ -7,6 +7,8 @@ export async function login(usuario_senha, usuario_login) {
 
     console.log(data);
 
+    console.log(data);
+
     localStorage.setItem("token", token);
     localStorage.setItem("usuario_id", resposta.usuario_id);
     localStorage.setItem("setor_id", resposta.setor.setor_id);
