@@ -69,7 +69,10 @@ export default function Home() {
           className="h-20 w-20 object-contain"
         />
 
-        <button className="cursor-pointer flex flex-col items-center justify-center w-full flex-1 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 rounded-2xl p-6 transition">
+        <button
+          onClick={() => navigate("/novo-chamado", { replace: true })}
+          className="cursor-pointer flex flex-col items-center justify-center w-full flex-1 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 rounded-2xl p-6 transition"
+        >
           <CalendarPlus className="h-8 w-8 mb-2" />
           <span className="text-sm font-medium">Novo Chamado</span>
         </button>
