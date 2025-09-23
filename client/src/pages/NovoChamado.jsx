@@ -1,10 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import AnexosNovoChamado from "../components/anexos/AnexosNovoChamado.jsx";
+import Notificacao from "../components/default/Notificacao.jsx";
+import Loading from "../components/default/Loading.jsx";
 import { ArrowLeft } from "lucide-react";
 import { formatToNumber } from "brazilian-values";
 import { useEffect, useState } from "react";
 import { getAreas } from "../services/api/areaServices.js";
+import { tratarErro } from "../components/default/funcoes.js";
+import { useNavigate } from "react-router-dom";
 
 export default function NovoChamado() {
+  const navigate = useNavigate();
   const [areas, setAreas] = useState([]);
 
   const [tipo, setTipo] = useState("");
@@ -13,14 +19,26 @@ export default function NovoChamado() {
   const [descricao, setDescricao] = useState("");
   const [anexos, setAnexos] = useState([]);
 
+  const [notificacao, setNotificacao] = useState({
+    show: false,
+    tipo: "sucesso",
+    titulo: "",
+    mensagem: "",
+  });
+  const [loading, setLoading] = useState(false);
+
   async function buscarAreas() {
     try {
+      setLoading(true);
       const areas = await getAreas();
+      setLoading(false);
 
       console.log(areas);
 
       setAreas(areas);
     } catch (err) {
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
       console.error(err);
     }
   }
@@ -31,9 +49,28 @@ export default function NovoChamado() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 lg:p-10 relative">
+      {notificacao.show && (
+        <Notificacao
+          titulo={notificacao.titulo}
+          mensagem={notificacao.mensagem}
+          tipo={notificacao.tipo}
+          onClick={() =>
+            setNotificacao({
+              show: false,
+              tipo: "sucesso",
+              titulo: "",
+              mensagem: "",
+            })
+          }
+        />
+      )}
+      {loading && <Loading />}
       <header className="max-w-4xl mx-auto flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <button className="cursor-pointer flex items-center gap-2 rounded-xl bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-4 py-2 transition">
+          <button
+            onClick={() => navigate("/home", { replace: true })}
+            className="cursor-pointer flex items-center gap-2 rounded-xl bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-4 py-2 transition"
+          >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Voltar</span>
           </button>
@@ -129,9 +166,6 @@ export default function NovoChamado() {
         <AnexosNovoChamado anexos={anexos} setAnexos={setAnexos} />
 
         <div className="flex justify-end gap-4 pt-4">
-          <button className="cursor-pointer px-6 py-2 rounded-lg bg-red-600 hover:bg-red-500 font-medium transition">
-            Cancelar
-          </button>
           <button className="cursor-pointer px-6 py-2 rounded-lg bg-green-600 hover:bg-green-500 font-medium transition">
             Confirmar
           </button>
