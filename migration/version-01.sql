@@ -78,3 +78,9 @@ CREATE TABLE `chamados_ti`.`avisos` (
 
 ALTER TABLE `chamados_ti`.`avisos` 
 ADD COLUMN `aviso_importancia` ENUM('baixa', 'media', 'alta') NOT NULL AFTER `aviso_descricao`;
+
+CREATE TABLE `chamados_ti`.`areas` (
+  `area_id` INT NOT NULL AUTO_INCREMENT,
+  `area_nome` VARCHAR(100) NOT NULL,
+  `area_tipo` ENUM('erro', 'solicitacao', 'melhoria') NOT NULL,
+  PRIMARY KEY (`area_id`));
