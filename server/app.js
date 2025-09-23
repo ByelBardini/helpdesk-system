@@ -5,6 +5,7 @@ import usuarioRoutes from "./routes/usuarioRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import avisoRoutes from "./routes/avisosRoutes.js";
+import areaRoutes from "./routes/areaRoutes.js";
 import { ApiError } from "./middlewares/ApiError.js";
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/", authRoutes);
 app.use("/usuario", usuarioRoutes);
 app.use("/faq", faqRoutes);
 app.use("/aviso", avisoRoutes);
+app.use("/area", areaRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
