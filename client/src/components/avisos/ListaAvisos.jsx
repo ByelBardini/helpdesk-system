@@ -1,5 +1,5 @@
 import { Bell } from "lucide-react";
-import { formatToDate } from "brazilian-values";
+import { formatToDate, formatToCapitalized } from "brazilian-values";
 
 export default function ListaAvisos({ avisos }) {
   function corImportancia(importancia) {
@@ -52,7 +52,7 @@ export default function ListaAvisos({ avisos }) {
                     aviso.aviso_importancia
                   )}`}
                 >
-                  {aviso.aviso_importancia}
+                  {formatToCapitalized(aviso.aviso_importancia)}
                 </span>
               </div>
               <p className="text-xs text-white/60 mb-2">
