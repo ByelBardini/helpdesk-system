@@ -1,4 +1,5 @@
-import { ArrowLeft, PlusCircle } from "lucide-react";
+import AnexosNovoChamado from "../components/anexos/AnexosNovoChamado.jsx";
+import { ArrowLeft } from "lucide-react";
 import { formatToNumber } from "brazilian-values";
 import { useEffect, useState } from "react";
 import { getAreas } from "../services/api/areaServices.js";
@@ -10,6 +11,7 @@ export default function NovoChamado() {
   const [area, setArea] = useState("");
   const [motivo, setMotivo] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [anexos, setAnexos] = useState([]);
 
   async function buscarAreas() {
     try {
@@ -124,23 +126,7 @@ export default function NovoChamado() {
           ></textarea>
         </div>
 
-        <div className="space-y-3">
-          <label className="text-sm font-medium text-white/70">Anexos</label>
-          <div className="flex items-center gap-3">
-            <input
-              type="file"
-              className="bg-[#1c1f4a] rounded-lg px-2 py-2 text-sm flex-1 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-[#6a5acd]/40 file:text-white/80 file:cursor-pointer"
-            />
-            <input
-              type="text"
-              placeholder="Nome do anexo"
-              className="bg-[#1c1f4a] rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-[#6bb7ff]/40 flex-1"
-            />
-            <button className="cursor-pointer flex items-center gap-2 px-3 py-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 rounded-lg transition">
-              <PlusCircle className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+        <AnexosNovoChamado anexos={anexos} setAnexos={setAnexos} />
 
         <div className="flex justify-end gap-4 pt-4">
           <button className="cursor-pointer px-6 py-2 rounded-lg bg-red-600 hover:bg-red-500 font-medium transition">
