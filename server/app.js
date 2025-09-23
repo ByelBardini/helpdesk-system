@@ -1,12 +1,18 @@
 import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
+import cron from "node-cron";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import avisoRoutes from "./routes/avisosRoutes.js";
 import areaRoutes from "./routes/areaRoutes.js";
 import { ApiError } from "./middlewares/ApiError.js";
+import { limpaArquivosAntigos } from "./middlewares/limpaAnexosAntigos.js";
+
+cron.schedule("0 3 * * *", () => {
+  limpaArquivosAntigos({}, {}, () => {});
+});
 
 dotenv.config();
 
