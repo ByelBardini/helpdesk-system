@@ -19,7 +19,7 @@ const ALLOWED_TYPES = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "image/jpeg",
   "image/png",
-  "text/plain"
+  "text/plain",
 ];
 
 const storage = multer.diskStorage({
@@ -42,7 +42,11 @@ const upload = multer({
     if (ALLOWED_TYPES.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(ApiError.badRequest("Tipo de arquivo não permitido", { file: file.originalname }));
+      cb(
+        ApiError.badRequest("Tipo de arquivo não permitido", {
+          file: file.originalname,
+        })
+      );
     }
   },
 });
@@ -75,14 +79,11 @@ export const anexosUpload = [
   (req, res, next) => {
     const files = (req.files || []).filter((f) => f.fieldname === "arquivos");
 
-    let tipos = ensureArray(req.body["tipo[]"] ?? req.body["tipo"]);
     let nomes = ensureArray(req.body["nome[]"] ?? req.body["nome"]);
 
-    if ((tipos.length || nomes.length) &&
-        (files.length !== tipos.length || files.length !== nomes.length)) {
+    if (nomes.length && files.length !== nomes.length) {
       return next(
-        ApiError.badRequest("Quantidade de tipos/nomes não bate com arquivos.", {
-          tipos: tipos.length,
+        ApiError.badRequest("Quantidade de nomes não bate com arquivos.", {
           nomes: nomes.length,
           arquivos: files.length,
         })
@@ -90,7 +91,6 @@ export const anexosUpload = [
     }
 
     req.anexos = files.map((f, i) => ({
-      tipo: tipos[i] ?? null,
       nome: nomes[i] ?? f.originalname,
       caminho: `/${path.relative(ROOT, f.path).replace(/\\+/g, "/")}`,
       original: f.originalname,

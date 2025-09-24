@@ -115,4 +115,4 @@ Anexo.belongsTo(Chamado, {
   as: "chamado",
 });
 
-export { Usuario, Empresa, Setor, Pergunta, Aviso, Area };
+export { Usuario, Empresa, Setor, Pergunta, Aviso, Area, Anexo, Chamado };
