@@ -13,8 +13,8 @@ export async function login(usuario_senha, usuario_login) {
     localStorage.setItem("usuario_id", resposta.usuario_id);
     localStorage.setItem("setor_id", resposta.setor.setor_id);
     localStorage.setItem("setor_nome", resposta.setor.setor_nome);
-    localStorage.setItem("empresa_id", resposta.empresa_empresa_id);
-    localStorage.setItem("empresa_nome", resposta.empresa_empresa_nome);
+    localStorage.setItem("empresa_id", resposta.empresa.empresa_id);
+    localStorage.setItem("empresa_nome", resposta.empresa.empresa_nome);
     localStorage.setItem("usuario_login", resposta.usuario_login);
     localStorage.setItem("usuario_role", resposta.usuario_role);
     localStorage.setItem("usuario_nome", resposta.usuario_nome);
