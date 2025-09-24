@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import AnexosNovoChamado from "../components/anexos/AnexosNovoChamado.jsx";
 import Notificacao from "../components/default/Notificacao.jsx";
+import Confirmacao from "../components/default/Confirmacao.jsx";
 import Loading from "../components/default/Loading.jsx";
 import { ArrowLeft } from "lucide-react";
 import { formatToNumber } from "brazilian-values";
 import { useEffect, useState } from "react";
 import { getAreas } from "../services/api/areaServices.js";
+import { postChamado } from "../services/api/chamadosServices.js";
 import { tratarErro } from "../components/default/funcoes.js";
 import { useNavigate } from "react-router-dom";
 
@@ -18,12 +20,19 @@ export default function NovoChamado() {
   const [motivo, setMotivo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [anexos, setAnexos] = useState([]);
+  const [valido, setValido] = useState(false);
 
   const [notificacao, setNotificacao] = useState({
     show: false,
     tipo: "sucesso",
     titulo: "",
     mensagem: "",
+  });
+  const [confirmacao, setConfirmacao] = useState({
+    show: false,
+    titulo: "",
+    texto: "",
+    onSim: null,
   });
   const [loading, setLoading] = useState(false);
 
@@ -43,12 +52,95 @@ export default function NovoChamado() {
     }
   }
 
+  async function enviarChamado() {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
+    if (
+      tipo == "" ||
+      area == "" ||
+      motivo.trim() == "" ||
+      descricao.trim() == ""
+    ) {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Preencha todos os dados",
+        mensagem: "Todas as informações do chamado são obrigatórias",
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      const fd = new FormData();
+
+      fd.append("chamado_empresa_id", localStorage.getItem("empresa_id"));
+      fd.append("chamado_setor_id", localStorage.getItem("setor_id"));
+      fd.append("chamado_usuario_id", localStorage.getItem("usuario_id"));
+      fd.append("chamado_area_id", area);
+      fd.append("chamado_tipo", tipo);
+      fd.append("chamado_motivo", motivo);
+      fd.append("chamado_descricao", descricao);
+
+      (anexos || []).forEach((a) => {
+        fd.append("nome[]", a.nome ?? (a.file?.name || "arquivo"));
+        if (a.file) fd.append("arquivos", a.file);
+      });
+
+      await postChamado(fd);
+      setLoading(false);
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Chamado enviado",
+        mensagem: `O chamado foi enviado com sucesso, atualizações sobre ele estarão disponíveis na sessão "Chamados" do menu inicial`,
+      });
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+        navigate("/home", { replace: true });
+      }, 700);
+    } catch (err) {
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
+      console.error(err);
+    }
+  }
+
   useEffect(() => {
     buscarAreas();
   }, []);
 
+  useEffect(() => {
+    setValido(
+      tipo != "" && area != "" && motivo.trim() != "" && descricao.trim() != ""
+    );
+  }, [tipo, area, motivo, descricao]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 lg:p-10 relative">
+      {confirmacao.show && (
+        <Confirmacao
+          texto={confirmacao.texto}
+          titulo={confirmacao.titulo}
+          onSim={confirmacao.onSim}
+          onNao={() =>
+            setConfirmacao({
+              show: false,
+              titulo: "",
+              texto: "",
+              onSim: null,
+            })
+          }
+        />
+      )}
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}
@@ -166,7 +258,23 @@ export default function NovoChamado() {
         <AnexosNovoChamado anexos={anexos} setAnexos={setAnexos} />
 
         <div className="flex justify-end gap-4 pt-4">
-          <button className="cursor-pointer px-6 py-2 rounded-lg bg-green-600 hover:bg-green-500 font-medium transition">
+          <button
+            disabled={!valido}
+            className={`px-6 py-2 rounded-lg font-medium transition 
+                        ${
+                          valido
+                            ? "cursor-pointer bg-green-600 hover:bg-green-500 text-white"
+                            : "cursor-not-allowed bg-gray-500 text-gray-300 opacity-70"
+                        }`}
+            onClick={() =>
+              setConfirmacao({
+                show: true,
+                titulo: "Deseja enviar o chamado?",
+                texto: "Verifique todos os dados antes de confirmar.",
+                onSim: () => enviarChamado(),
+              })
+            }
+          >
             Confirmar
           </button>
         </div>
