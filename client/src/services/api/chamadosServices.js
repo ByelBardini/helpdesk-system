@@ -1,12 +1,12 @@
 import { api } from "../api.js";
 
-export async function getChamadosUsuario(id) {
+export async function getChamados(role, id) {
   try {
-    const response = await api.get(`/chamado/usuario/${id}`);
+    const response = await api.get(`/chamado/usuario/${role}/${id}`);
 
     return response.data;
   } catch (err) {
-    console.error("Erro em getChamadosUsuario:", err);
+    console.error("Erro em getChamados:", err);
     throw err;
   }
 }

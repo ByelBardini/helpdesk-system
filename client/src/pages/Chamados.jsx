@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import VisualizaChamado from "../components/chamados/VisualizaChamado.jsx";
 import ListaChamados from "../components/chamados/ListaChamados.jsx";
 import { formatToCapitalized } from "brazilian-values";
 import { ArrowLeft, Users, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getChamadosUsuario } from "../services/api/chamadosServices.js";
+import { getChamados } from "../services/api/chamadosServices.js";
 import { useNavigate } from "react-router-dom";
 
 export default function Chamados() {
@@ -12,16 +13,44 @@ export default function Chamados() {
   const [modo, setModo] = useState("meus");
   const [selecionado, setSelecionado] = useState(null);
 
+  const [meus, setMeus] = useState([]);
+  const [liderados, setLiderados] = useState([]);
+
   const [chamados, setChamados] = useState([]);
 
   async function buscarChamados() {
     try {
-      const id = localStorage.getItem("usuario_id");
-      const chamados = await getChamadosUsuario(id);
+      const role = localStorage.getItem("usuario_role");
+      let id;
+      if (role == "liderado") {
+        id = localStorage.getItem("usuario_id");
+      } else if (role == "supervisor") {
+        id = localStorage.getItem("setor_id");
+      } else {
+        id = localStorage.getItem("empresa_id");
+      }
+      const chamados = await getChamados(role, id);
 
-      console.log(chamados);
+      if (role != "liderado") {
+        console.log(chamados);
+        const meus = chamados.filter(
+          (chamado) =>
+            chamado.chamado_usuario_id == localStorage.getItem("usuario_id")
+        );
+        setMeus(meus);
+        setChamados(meus);
 
-      setChamados(chamados);
+        setLiderados(
+          chamados.filter(
+            (chamado) =>
+              chamado.chamado_usuario_id != localStorage.getItem("usuario_id")
+          )
+        );
+      } else {
+        console.log(chamados);
+
+        setChamados(chamados);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -47,6 +76,14 @@ export default function Chamados() {
     buscarChamados();
   }, []);
 
+  useEffect(() => {
+    if (modo === "meus") {
+      setChamados(meus);
+    } else {
+      setChamados(liderados);
+    }
+  }, [modo]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 lg:p-10 relative">
       <header className="max-w-7xl mx-auto flex items-center justify-between mb-6">
@@ -65,7 +102,7 @@ export default function Chamados() {
           <div className="flex gap-2">
             <button
               onClick={() => setModo("meus")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition ${
                 modo === "meus"
                   ? "bg-[#6bb7ff]/30 text-[#6bb7ff]"
                   : "bg-[#2a2d5a] hover:bg-[#343765] text-white/70"
@@ -76,7 +113,7 @@ export default function Chamados() {
             </button>
             <button
               onClick={() => setModo("liderados")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition ${
                 modo === "liderados"
                   ? "bg-[#6bb7ff]/30 text-[#6bb7ff]"
                   : "bg-[#2a2d5a] hover:bg-[#343765] text-white/70"
@@ -91,6 +128,7 @@ export default function Chamados() {
 
       <div className="max-w-7xl mx-auto flex h-[80vh] rounded-2xl overflow-hidden shadow-lg bg-[#2a2d5a]/60 backdrop-blur-sm">
         <ListaChamados
+          modo={modo}
           chamados={chamados}
           setSelecionado={setSelecionado}
           statusBadge={statusBadge}

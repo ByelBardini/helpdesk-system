@@ -2,6 +2,7 @@ import { formatToDate } from "brazilian-values";
 import { Inbox } from "lucide-react";
 
 export default function ListaChamados({
+  modo,
   chamados,
   setSelecionado,
   statusBadge,
@@ -21,10 +22,24 @@ export default function ListaChamados({
             }`}
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-medium truncate">{chamado.chamado_motivo}</h3>
-              {statusBadge(chamado.chamado_status)}
+              <div className="flex flex-col flex-1">
+                <h3 className="font-medium truncate text-sm">
+                  {chamado.chamado_motivo}
+                </h3>
+
+                {modo === "liderados" && (
+                  <span className="text-xs text-white/40 truncate">
+                    {localStorage.getItem("usuario_role") === "supervisor"
+                      ? chamado.usuario.usuario_nome
+                      : `${chamado.usuario.usuario_nome} • ${chamado.usuario.setor.setor_nome}`}
+                  </span>
+                )}
+              </div>
+
+              <div className="ml-3">{statusBadge(chamado.chamado_status)}</div>
             </div>
-            <p className="text-xs text-white/50">
+
+            <p className="text-xs text-white/40 mt-1">
               {formatToDate(
                 new Date(chamado.chamado_data_abertura + "T03:00:00Z")
               )}
