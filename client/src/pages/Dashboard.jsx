@@ -87,7 +87,6 @@ export default function Dashboard() {
     ];
   }, [resumo]);
 
-  // “Balanço” em números fixos, mas com barras proporcionais ao maior total
   const mini = useMemo(() => {
     const items = [
       {
@@ -117,11 +116,8 @@ export default function Dashboard() {
   }, [resumo]);
 
   return (
-    // ❗ sem gradient e sem min-h-screen — AdminLayout já cuida do fundo
-    <div className="px-6 lg:px-10 pb-6">
-      {/* grid sem overflow/altura fixa: deixa a página rolar naturalmente */}
+    <div className="mt-4 px-6 lg:px-10 pb-6">
       <div className="max-w-7xl mx-auto grid grid-cols-12 gap-4">
-        {/* Balanço */}
         <section className="col-span-12 lg:col-span-3 rounded-2xl bg-[#2a2d5a]/60 border border-white/10 p-4 backdrop-blur-sm shadow-lg">
           <h2 className="text-sm font-semibold mb-3 text-white/90">
             Balanço dos últimos 30 dias
