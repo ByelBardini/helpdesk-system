@@ -42,7 +42,7 @@ export default function ListaRespostas({ selecionado }) {
               </span>
             </div>
 
-            <p className="text-sm text-white/70 leading-relaxed">
+            <p className="text-sm text-white/70 leading-relaxed whitespace-pre-line">
               {resposta.resposta_descricao}
             </p>
 
@@ -119,7 +119,7 @@ export default function ListaRespostas({ selecionado }) {
                             aria-label={`Baixar ${nome}`}
                           >
                             <Download className="w-4 h-4 text-white/70" />
-                          </a> 
+                          </a>
                         </li>
                       );
                     })}
