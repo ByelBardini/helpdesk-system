@@ -135,7 +135,12 @@ export default function Chamados() {
           selecionado={selecionado}
         />
 
-        <VisualizaChamado selecionado={selecionado} statusBadge={statusBadge} />
+        <VisualizaChamado
+          buscarChamados={buscarChamados}
+          setSelecionado={setSelecionado}
+          selecionado={selecionado}
+          statusBadge={statusBadge}
+        />
       </div>
     </div>
   );

@@ -1,7 +1,43 @@
 import { formatToDate, formatToCapitalized } from "brazilian-values";
-import { PlusCircle, Paperclip } from "lucide-react";
+import { postResposta } from "../../services/api/respostaServices.js";
+import { PlusCircle, Paperclip, X, Send } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export default function VisualizaChamado({ selecionado, statusBadge }) {
+export default function VisualizaChamado({
+  setSelecionado,
+  buscarChamados,
+  selecionado,
+  statusBadge,
+}) {
+  const [respondendo, setRespondendo] = useState(false);
+  const [resposta, setResposta] = useState("");
+
+  async function enviarResposta() {
+    if (resposta.trim() == "") {
+      return;
+    }
+    try {
+      const idUsuario = localStorage.getItem("usuario_id");
+      await postResposta(
+        idUsuario,
+        selecionado.chamado_id,
+        resposta,
+        "usuario"
+      );
+
+      alert("Deu good");
+      await buscarChamados();
+      setSelecionado(null);
+      setRespondendo(false);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    setResposta("");
+  }, [respondendo]);
+
   return (
     <section className="flex-1 p-6 overflow-y-auto">
       {selecionado ? (
@@ -47,24 +83,40 @@ export default function VisualizaChamado({ selecionado, statusBadge }) {
             <h3 className="font-medium mb-3">Respostas</h3>
             {selecionado.respostas.length > 0 ? (
               <div className="space-y-4">
-                {selecionado.respostas.map((resposta) => (
-                  <div
-                    key={resposta.resposta_id}
-                    className="rounded-lg bg-white/5 p-3 border border-white/10"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-white/80">
-                        {resposta.usuario?.usuario_nome}
-                      </span>
-                      <span className="text-xs text-white/50">
-                        {resposta.resposta_data_emissao}
-                      </span>
+                {selecionado.respostas.map((resposta) => {
+                  const isSuporte = resposta.resposta_tipo === "suporte";
+
+                  return (
+                    <div
+                      key={resposta.resposta_id}
+                      className={`rounded-lg p-3 border ${
+                        isSuporte
+                          ? "bg-green-500/10 border-green-500/20"
+                          : "bg-blue-500/10 border-blue-500/20"
+                      }`}
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <span
+                          className={`text-sm font-medium ${
+                            isSuporte ? "text-green-400" : "text-blue-400"
+                          }`}
+                        >
+                          {resposta.usuario?.usuario_nome}
+                        </span>
+                        <span className="text-xs text-white/50">
+                          {formatToDate(
+                            new Date(
+                              resposta.resposta_data_emissao + "T03:00:00Z"
+                            )
+                          )}
+                        </span>
+                      </div>
+                      <p className="text-sm text-white/70 leading-relaxed">
+                        {resposta.resposta_descricao}
+                      </p>
                     </div>
-                    <p className="text-sm text-white/70 leading-relaxed">
-                      {resposta.resposta_descricao}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <p className="text-sm text-white/50">Nenhuma resposta ainda.</p>
@@ -72,12 +124,41 @@ export default function VisualizaChamado({ selecionado, statusBadge }) {
           </div>
 
           {selecionado.chamado_usuario_id ==
-            localStorage.getItem("usuario_id") && (
+            localStorage.getItem("usuario_id") && !respondendo ? (
             <div className="mt-6">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium">
+              <button
+                onClick={() => setRespondendo(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium"
+              >
                 <PlusCircle className="h-4 w-4" />
                 Adicionar resposta
               </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
+              <textarea
+                value={resposta}
+                onChange={(e) => setResposta(e.target.value)}
+                placeholder="Digite sua resposta..."
+                className="w-full h-28 resize-none rounded-md bg-[#0e1033]/50 border border-white/10 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a5acd] text-white placeholder-white/40"
+              />
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setRespondendo(false)}
+                  className="cursor-pointer px-4 py-2 rounded-lg bg-red-500/40 hover:bg-red-500/60 transition text-sm font-medium flex items-center gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  Cancelar
+                </button>
+                <button
+                  onClick={enviarResposta}
+                  className="cursor-pointer px-4 py-2 rounded-lg bg-green-500/40 hover:bg-green-500/60 transition text-sm font-medium flex items-center gap-2"
+                >
+                  <Send className="h-4 w-4" />
+                  Enviar
+                </button>
+              </div>
             </div>
           )}
         </div>
