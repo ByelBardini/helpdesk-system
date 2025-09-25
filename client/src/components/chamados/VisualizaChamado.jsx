@@ -10,10 +10,10 @@ export default function VisualizaChamado({
   statusBadge,
 }) {
   const [respondendo, setRespondendo] = useState(false);
-  const [resposta, setResposta] = useState("");
+  const [descricao, setDescricao] = useState("");
 
   async function enviarResposta() {
-    if (resposta.trim() == "") {
+    if (descricao.trim() == "") {
       return;
     }
     try {
@@ -21,21 +21,21 @@ export default function VisualizaChamado({
       await postResposta(
         idUsuario,
         selecionado.chamado_id,
-        resposta,
+        descricao,
         "usuario"
       );
 
       alert("Deu good");
       await buscarChamados();
-      setSelecionado(null);
       setRespondendo(false);
+      setSelecionado(null);
     } catch (err) {
       console.error(err);
     }
   }
 
   useEffect(() => {
-    setResposta("");
+    setDescricao("");
   }, [respondendo]);
 
   return (
@@ -124,43 +124,44 @@ export default function VisualizaChamado({
           </div>
 
           {selecionado.chamado_usuario_id ==
-            localStorage.getItem("usuario_id") && !respondendo ? (
-            <div className="mt-6">
-              <button
-                onClick={() => setRespondendo(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium"
-              >
-                <PlusCircle className="h-4 w-4" />
-                Adicionar resposta
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
-              <textarea
-                value={resposta}
-                onChange={(e) => setResposta(e.target.value)}
-                placeholder="Digite sua resposta..."
-                className="w-full h-28 resize-none rounded-md bg-[#0e1033]/50 border border-white/10 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a5acd] text-white placeholder-white/40"
-              />
-
-              <div className="flex justify-end gap-3">
+            localStorage.getItem("usuario_id") &&
+            (!respondendo ? (
+              <div className="mt-6">
                 <button
-                  onClick={() => setRespondendo(false)}
-                  className="cursor-pointer px-4 py-2 rounded-lg bg-red-500/40 hover:bg-red-500/60 transition text-sm font-medium flex items-center gap-2"
+                  onClick={() => setRespondendo(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium"
                 >
-                  <X className="h-4 w-4" />
-                  Cancelar
-                </button>
-                <button
-                  onClick={enviarResposta}
-                  className="cursor-pointer px-4 py-2 rounded-lg bg-green-500/40 hover:bg-green-500/60 transition text-sm font-medium flex items-center gap-2"
-                >
-                  <Send className="h-4 w-4" />
-                  Enviar
+                  <PlusCircle className="h-4 w-4" />
+                  Adicionar resposta
                 </button>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex flex-col gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
+                <textarea
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                  placeholder="Digite sua resposta..."
+                  className="w-full h-28 resize-none rounded-md bg-[#0e1033]/50 border border-white/10 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a5acd] text-white placeholder-white/40"
+                />
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setRespondendo(false)}
+                    className="cursor-pointer px-4 py-2 rounded-lg bg-red-500/40 hover:bg-red-500/60 transition text-sm font-medium flex items-center gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={enviarResposta}
+                    className="cursor-pointer px-4 py-2 rounded-lg bg-green-500/40 hover:bg-green-500/60 transition text-sm font-medium flex items-center gap-2"
+                  >
+                    <Send className="h-4 w-4" />
+                    Enviar
+                  </button>
+                </div>
+              </div>
+            ))}
         </div>
       ) : (
         <div className="h-full flex items-center justify-center text-white/50">
