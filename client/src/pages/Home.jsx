@@ -3,7 +3,13 @@ import Logo from "../assets/logo-empresa.png";
 import ListaAvisos from "../components/avisos/ListaAvisos.jsx";
 import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
-import { LogOut, FileText, HelpCircle, CalendarPlus } from "lucide-react";
+import {
+  LogOut,
+  FileText,
+  HelpCircle,
+  CalendarPlus,
+  LayoutDashboard,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { tratarErro } from "../components/default/funcoes.js";
 import { getAvisos } from "../services/api/avisosServices.js";
@@ -96,6 +102,17 @@ export default function Home() {
               <HelpCircle className="h-5 w-5" />
               <span>FAQ</span>
             </button>
+
+            {(localStorage.getItem("usuario_role") == "adm" ||
+              localStorage.getItem("usuario_role") == "suporte") && (
+              <button
+                onClick={() => navigate("/dashboard", { replace: true })}
+                className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition"
+              >
+                <LayoutDashboard className="h-5 w-5" />
+                <span>Dashboard</span>
+              </button>
+            )}
           </div>
 
           <h1 className="text-2xl font-bold bg-gradient-to-r from-[#ffb86b] via-[#ff6b98] to-[#6bb7ff] bg-clip-text text-transparent">

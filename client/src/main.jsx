@@ -7,6 +7,7 @@ import Home from "./pages/Home.jsx";
 import Faq from "./pages/Faq.jsx";
 import NovoChamado from "./pages/NovoChamado.jsx";
 import Chamados from "./pages/Chamados.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
   {
     path: "/chamados",
     element: <Chamados />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
   },
 ]);
 
