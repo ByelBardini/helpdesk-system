@@ -13,3 +13,14 @@ export async function postResposta(idUsuario, idChamado, descricao, tipo) {
     throw err;
   }
 }
+
+export async function visualizaResposta(id) {
+  try {
+    const response = await api.put(`/resposta/visualiza/${id}`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em visualizaResposta:", err);
+    throw err;
+  }
+}

@@ -129,6 +129,7 @@ export default function Chamados() {
       <div className="max-w-7xl mx-auto flex h-[80vh] rounded-2xl overflow-hidden shadow-lg bg-[#2a2d5a]/60 backdrop-blur-sm">
         <ListaChamados
           modo={modo}
+          buscarChamados={buscarChamados}
           chamados={chamados}
           setSelecionado={setSelecionado}
           statusBadge={statusBadge}
