@@ -1,8 +1,12 @@
 import { visualizaResposta } from "../../services/api/respostaServices.js";
 import { formatToDate } from "brazilian-values";
+import { tratarErro } from "../default/funcoes.js";
 import { Inbox, Bell } from "lucide-react";
 
 export default function ListaChamados({
+  setLoading,
+  setNotificacao,
+  navigate,
   buscarChamados,
   modo,
   chamados,
@@ -11,18 +15,22 @@ export default function ListaChamados({
   selecionado,
 }) {
   async function visualiza(naoLidas) {
+    setLoading(true);
     try {
       for (const m of naoLidas) {
         await visualizaResposta(m.resposta_id);
       }
+      setLoading(false);
 
       await buscarChamados();
     } catch (err) {
+      setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
   return (
-    <aside className="w-1/3 border-r border-white/10 overflow-y-auto">
+    <aside className="w-1/4 border-r border-white/10 overflow-y-auto">
       {chamados.length > 0 &&
         chamados.map((chamado) => {
           const naoLidas = chamado.respostas.filter(

@@ -1,11 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import RespostaUsuario from "../respostas/RespostaUsuario.jsx";
 import ListaRespostas from "../respostas/ListaRespostas.jsx";
 import { formatToDate, formatToCapitalized } from "brazilian-values";
 import { postResposta } from "../../services/api/respostaServices.js";
 import { PlusCircle, Paperclip, X, Send } from "lucide-react";
 import { useEffect, useState } from "react";
+import { tratarErro } from "../default/funcoes.js";
 
 export default function VisualizaChamado({
+  setLoading,
+  setNotificacao,
+  navigate,
+  setConfirmacao,
   setSelecionado,
   buscarChamados,
   selecionado,
@@ -16,9 +22,22 @@ export default function VisualizaChamado({
   const [anexos, setAnexos] = useState([]);
 
   async function enviarResposta() {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
     if (descricao.trim() == "") {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Dados incorretos",
+        mensagem: "A resposta não pode estar em branco",
+      });
       return;
     }
+    setLoading(true);
     try {
       const idUsuario = localStorage.getItem("usuario_id");
 
@@ -33,19 +52,42 @@ export default function VisualizaChamado({
       });
 
       await postResposta(idUsuario, selecionado.chamado_id, fd);
+      setLoading(false);
 
-      alert("Deu good");
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Resposta enviada",
+        mensagem: "Sua resposta foi enviada com sucesso ao setor de TI",
+      });
       await buscarChamados();
-      setRespondendo(false);
-      setSelecionado(null);
+      setTimeout(() => {
+        setRespondendo(false);
+        setSelecionado(null);
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+      }, 700);
     } catch (err) {
+      setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
   useEffect(() => {
     setDescricao("");
   }, [respondendo]);
+
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (e.key === "Escape") setSelecionado(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <section className="flex-1 p-6 overflow-y-auto">
@@ -136,7 +178,18 @@ export default function VisualizaChamado({
                     Cancelar
                   </button>
                   <button
-                    onClick={enviarResposta}
+                    onClick={() =>
+                      setConfirmacao({
+                        show: true,
+                        titulo:
+                          "Gostaria de enviar essa resposta ao setor de TI?",
+                        texto:
+                          "Confirme os dados, respostas não podem ser alteradas",
+                        onSim: () => {
+                          enviarResposta();
+                        },
+                      })
+                    }
                     className="cursor-pointer px-4 py-2 rounded-lg bg-green-500/40 hover:bg-green-500/60 transition text-sm font-medium flex items-center gap-2"
                   >
                     <Send className="h-4 w-4" />
