@@ -8,6 +8,7 @@ import faqRoutes from "./routes/faqRoutes.js";
 import avisoRoutes from "./routes/avisosRoutes.js";
 import areaRoutes from "./routes/areaRoutes.js";
 import chamadoRoutes from "./routes/chamadosRoutes.js";
+import respostaRoutes from "./routes/respostaRoutes.js";
 import { ApiError } from "./middlewares/ApiError.js";
 import { limpaArquivosAntigos } from "./middlewares/limpaAnexosAntigos.js";
 
@@ -35,6 +36,7 @@ app.use("/faq", faqRoutes);
 app.use("/aviso", avisoRoutes);
 app.use("/area", areaRoutes);
 app.use("/chamado", chamadoRoutes);
+app.use("/resposta", respostaRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
