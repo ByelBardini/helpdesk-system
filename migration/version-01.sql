@@ -143,3 +143,31 @@ CREATE TABLE `chamados_ti`.`anexos` (
     REFERENCES `chamados_ti`.`chamados` (`chamado_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+
+CREATE TABLE `chamados_ti`.`respostas` (
+  `resposta_id` INT NOT NULL AUTO_INCREMENT,
+  `resposta_chamado_id` INT NOT NULL,
+  `resposta_tipo` ENUM('suporte', 'usuario') NOT NULL,
+  `resposta_visualizada` TINYINT NOT NULL DEFAULT 0,
+  `resposta_data_emissao` DATE NOT NULL,
+  PRIMARY KEY (`resposta_id`),
+  INDEX `resposta_chamado_id_idx` (`resposta_chamado_id` ASC) VISIBLE,
+  CONSTRAINT `resposta_chamado_id`
+    FOREIGN KEY (`resposta_chamado_id`)
+    REFERENCES `chamados_ti`.`chamados` (`chamado_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+ALTER TABLE `chamados_ti`.`respostas` 
+ADD COLUMN `resposta_descricao` TEXT NOT NULL AFTER `resposta_chamado_id`;
+
+ALTER TABLE `chamados_ti`.`respostas` 
+ADD COLUMN `resposta_usuario_id` INT NOT NULL AFTER `resposta_chamado_id`,
+ADD INDEX `resposta_usuario_id_idx` (`resposta_usuario_id` ASC) VISIBLE;
+;
+ALTER TABLE `chamados_ti`.`respostas` 
+ADD CONSTRAINT `resposta_usuario_id`
+  FOREIGN KEY (`resposta_usuario_id`)
+  REFERENCES `chamados_ti`.`usuarios` (`usuario_id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
