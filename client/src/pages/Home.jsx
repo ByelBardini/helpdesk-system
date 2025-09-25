@@ -38,7 +38,6 @@ export default function Home() {
       setLoading(true);
       const avisos = await getAvisos();
       setLoading(false);
-
       setAvisos(avisos);
     } catch (err) {
       setLoading(false);
@@ -68,16 +67,19 @@ export default function Home() {
         />
       )}
       {loading && <Loading />}
+
       <div className="flex flex-col items-center gap-6">
         <img
           src={Logo}
           alt="Logo SubmIT"
-          className="h-20 w-20 object-contain"
+          className="h-20 w-20 object-contain drop-shadow-md"
         />
 
         <button
           onClick={() => navigate("/novo-chamado", { replace: true })}
-          className="cursor-pointer flex flex-col items-center justify-center w-full flex-1 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 rounded-2xl p-6 transition"
+          className="cursor-pointer flex flex-col items-center justify-center w-full flex-1 
+                     bg-white/5 hover:bg-white/10 border border-white/10 
+                     rounded-2xl p-6 transition"
         >
           <CalendarPlus className="h-8 w-8 mb-2" />
           <span className="text-sm font-medium">Novo Chamado</span>
@@ -89,7 +91,9 @@ export default function Home() {
           <div className="flex gap-4">
             <button
               onClick={() => navigate("/chamados", { replace: true })}
-              className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition"
+              className="cursor-pointer flex items-center gap-2 
+                         bg-white/5 hover:bg-white/10 border border-white/10
+                         px-6 py-3 rounded-2xl transition"
             >
               <FileText className="h-5 w-5" />
               <span>Chamados</span>
@@ -97,7 +101,9 @@ export default function Home() {
 
             <button
               onClick={() => navigate("/faq", { replace: true })}
-              className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition"
+              className="cursor-pointer flex items-center gap-2 
+                         bg-white/5 hover:bg-white/10 border border-white/10
+                         px-6 py-3 rounded-2xl transition"
             >
               <HelpCircle className="h-5 w-5" />
               <span>FAQ</span>
@@ -109,7 +115,9 @@ export default function Home() {
                 onClick={() =>
                   navigate("/suporte/dashboard", { replace: true })
                 }
-                className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition"
+                className="cursor-pointer flex items-center gap-2 
+                           bg-white/5 hover:bg-white/10 border border-white/10
+                           px-6 py-3 rounded-2xl transition"
               >
                 <LayoutDashboard className="h-5 w-5" />
                 <span>Dashboard</span>
@@ -117,13 +125,20 @@ export default function Home() {
             )}
           </div>
 
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#ffb86b] via-[#ff6b98] to-[#6bb7ff] bg-clip-text text-transparent">
+          <h1
+            className="text-2xl font-bold 
+                         bg-gradient-to-r from-[#ffb86b] via-[#ff6b98] to-[#6bb7ff] 
+                         bg-clip-text text-transparent drop-shadow"
+          >
             {`Bem-Vindo(a) ${localStorage.getItem("usuario_nome")}`}
           </h1>
 
           <button
             onClick={logout}
-            className="cursor-pointer flex items-center gap-2 bg-red-600 hover:bg-red-500 px-5 py-2 rounded-full text-sm font-medium transition"
+            className="cursor-pointer flex items-center gap-2 
+             bg-red-900/40 hover:bg-red-900/60 
+             text-red-300 px-6 py-3 rounded-2xl 
+             transition"
           >
             <LogOut className="h-5 w-5" />
             <span>Sair</span>
