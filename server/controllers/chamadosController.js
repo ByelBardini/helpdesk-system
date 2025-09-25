@@ -1,17 +1,28 @@
 import sequelize from "../config/database.js";
-import { Chamado, Anexo, Resposta, Usuario } from "../models/index.js";
+import { Chamado, Anexo, Resposta, Usuario, Setor } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 
-export async function getChamadosUsuario(req, res) {
-  const { id } = req.params;
+export async function getChamados(req, res) {
+  const { id, role } = req.params;
   if (!id) {
-    throw ApiError.badRequest("Id do usuário é necessário");
+    throw ApiError.badRequest("Id é necessário");
+  }
+
+  let where = {};
+
+  if (role === "liderado") {
+    where = { chamado_usuario_id: id };
+  } else if (role === "supervisor") {
+    where = { chamado_setor_id: id };
+  } else {
+    where = { chamado_empresa_id: id };
   }
 
   const chamados = await Chamado.findAll({
-    where: { chamado_usuario_id: id },
+    where,
     attributes: [
       "chamado_id",
+      "chamado_usuario_id",
       "chamado_data_abertura",
       "chamado_status",
       "chamado_tipo",
@@ -43,6 +54,18 @@ export async function getChamadosUsuario(req, res) {
             model: Usuario,
             as: "usuario",
             attributes: ["usuario_nome"],
+          },
+        ],
+      },
+      {
+        model: Usuario,
+        as: "usuario",
+        attributes: ["usuario_nome", "usuario_setor_id"],
+        include: [
+          {
+            model: Setor,
+            as: "setor",
+            attributes: ["setor_nome"],
           },
         ],
       },
