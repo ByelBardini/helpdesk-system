@@ -1,10 +1,9 @@
 import { api } from "../api.js";
 
-export async function postResposta(idUsuario, idChamado, descricao, tipo) {
+export async function postResposta(idUsuario, idChamado, fd) {
   try {
-    const response = await api.post(`/resposta/${idChamado}/${idUsuario}`, {
-      descricao,
-      tipo,
+    const response = await api.post(`/resposta/${idChamado}/${idUsuario}`, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     return response.data;

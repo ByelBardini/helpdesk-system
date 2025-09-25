@@ -1,3 +1,5 @@
+import RespostaUsuario from "../respostas/RespostaUsuario.jsx";
+import ListaRespostas from "../respostas/ListaRespostas.jsx";
 import { formatToDate, formatToCapitalized } from "brazilian-values";
 import { postResposta } from "../../services/api/respostaServices.js";
 import { PlusCircle, Paperclip, X, Send } from "lucide-react";
@@ -11,6 +13,7 @@ export default function VisualizaChamado({
 }) {
   const [respondendo, setRespondendo] = useState(false);
   const [descricao, setDescricao] = useState("");
+  const [anexos, setAnexos] = useState([]);
 
   async function enviarResposta() {
     if (descricao.trim() == "") {
@@ -18,12 +21,18 @@ export default function VisualizaChamado({
     }
     try {
       const idUsuario = localStorage.getItem("usuario_id");
-      await postResposta(
-        idUsuario,
-        selecionado.chamado_id,
-        descricao,
-        "usuario"
-      );
+
+      const fd = new FormData();
+
+      fd.append("descricao", descricao);
+      fd.append("tipo", "usuario");
+
+      (anexos || []).forEach((a) => {
+        fd.append("nome[]", a.nome ?? (a.file?.name || "arquivo"));
+        if (a.file) fd.append("arquivos", a.file);
+      });
+
+      await postResposta(idUsuario, selecionado.chamado_id, fd);
 
       alert("Deu good");
       await buscarChamados();
@@ -68,11 +77,18 @@ export default function VisualizaChamado({
               </h3>
               <ul className="list-disc list-inside text-sm text-white/70">
                 {selecionado.anexos.map((anexo) => (
-                  <li
-                    key={anexo.anexo_id}
-                    className="hover:text-[#6bb7ff] cursor-pointer"
-                  >
-                    {anexo.anexo_nome}
+                  <li>
+                    <a
+                      href={`${import.meta.env.VITE_API_BASE_URL}/imagem?path=${
+                        anexo.anexo_caminho
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      key={anexo.anexo_id}
+                      className="hover:text-[#6bb7ff] cursor-pointer"
+                    >
+                      {anexo.anexo_nome}
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -82,42 +98,7 @@ export default function VisualizaChamado({
           <div className="mb-6">
             <h3 className="font-medium mb-3">Respostas</h3>
             {selecionado.respostas.length > 0 ? (
-              <div className="space-y-4">
-                {selecionado.respostas.map((resposta) => {
-                  const isSuporte = resposta.resposta_tipo === "suporte";
-
-                  return (
-                    <div
-                      key={resposta.resposta_id}
-                      className={`rounded-lg p-3 border ${
-                        isSuporte
-                          ? "bg-green-500/10 border-green-500/20"
-                          : "bg-blue-500/10 border-blue-500/20"
-                      }`}
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <span
-                          className={`text-sm font-medium ${
-                            isSuporte ? "text-green-400" : "text-blue-400"
-                          }`}
-                        >
-                          {resposta.usuario?.usuario_nome}
-                        </span>
-                        <span className="text-xs text-white/50">
-                          {formatToDate(
-                            new Date(
-                              resposta.resposta_data_emissao + "T03:00:00Z"
-                            )
-                          )}
-                        </span>
-                      </div>
-                      <p className="text-sm text-white/70 leading-relaxed">
-                        {resposta.resposta_descricao}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
+              <ListaRespostas selecionado={selecionado} />
             ) : (
               <p className="text-sm text-white/50">Nenhuma resposta ainda.</p>
             )}
@@ -129,7 +110,7 @@ export default function VisualizaChamado({
               <div className="mt-6">
                 <button
                   onClick={() => setRespondendo(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium"
+                  className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium"
                 >
                   <PlusCircle className="h-4 w-4" />
                   Adicionar resposta
@@ -143,6 +124,8 @@ export default function VisualizaChamado({
                   placeholder="Digite sua resposta..."
                   className="w-full h-28 resize-none rounded-md bg-[#0e1033]/50 border border-white/10 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a5acd] text-white placeholder-white/40"
                 />
+
+                <RespostaUsuario anexos={anexos} setAnexos={setAnexos} />
 
                 <div className="flex justify-end gap-3">
                   <button
