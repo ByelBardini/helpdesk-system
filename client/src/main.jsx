@@ -9,6 +9,9 @@ import NovoChamado from "./pages/NovoChamado.jsx";
 import Chamados from "./pages/Chamados.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import AdminLayout from "./pages/AdminLayout.jsx";
+import ChamadosSuporte from "./pages/ChamadosSuporte.jsx";
+import Relatorios from "./pages/Relatorios.jsx";
+import Usuarios from "./pages/Usuarios.jsx";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +39,30 @@ const router = createBrowserRouter([
     element: (
       <AdminLayout>
         <Dashboard />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/suporte/chamados",
+    element: (
+      <AdminLayout>
+        <ChamadosSuporte />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/suporte/relatorios",
+    element: (
+      <AdminLayout>
+        <Relatorios />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/suporte/usuarios",
+    element: (
+      <AdminLayout>
+        <Usuarios />
       </AdminLayout>
     ),
   },
