@@ -81,7 +81,10 @@ export default function Home() {
       <div className="lg:col-span-4 flex flex-col gap-6">
         <div className="flex justify-between items-center">
           <div className="flex gap-4">
-            <button className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition">
+            <button
+              onClick={() => navigate("/chamados", { replace: true })}
+              className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition"
+            >
               <FileText className="h-5 w-5" />
               <span>Chamados</span>
             </button>

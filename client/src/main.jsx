@@ -6,6 +6,7 @@ import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
 import Faq from "./pages/Faq.jsx";
 import NovoChamado from "./pages/NovoChamado.jsx";
+import Chamados from "./pages/Chamados.jsx";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/novo-chamado",
     element: <NovoChamado />,
+  },
+  {
+    path: "/chamados",
+    element: <Chamados />,
   },
 ]);
 

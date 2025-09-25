@@ -1,0 +1,104 @@
+import VisualizaChamado from "../components/chamados/VisualizaChamado.jsx";
+import ListaChamados from "../components/chamados/ListaChamados.jsx";
+import { formatToCapitalized } from "brazilian-values";
+import { ArrowLeft, Users, FileText } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getChamadosUsuario } from "../services/api/chamadosServices.js";
+import { useNavigate } from "react-router-dom";
+
+export default function Chamados() {
+  const navigate = useNavigate();
+
+  const [modo, setModo] = useState("meus");
+  const [selecionado, setSelecionado] = useState(null);
+
+  const [chamados, setChamados] = useState([]);
+
+  async function buscarChamados() {
+    try {
+      const id = localStorage.getItem("usuario_id");
+      const chamados = await getChamadosUsuario(id);
+
+      console.log(chamados);
+
+      setChamados(chamados);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function statusBadge(status) {
+    const cores = {
+      "em aberto": "bg-red-500/20 text-red-400",
+      visualizado: "bg-yellow-500/20 text-yellow-400",
+      resolvendo: "bg-blue-500/20 text-blue-400",
+      resolvido: "bg-green-500/20 text-green-400",
+    };
+    return (
+      <span
+        className={`px-2 py-0.5 rounded-full text-xs font-medium ${cores[status]}`}
+      >
+        {formatToCapitalized(status)}
+      </span>
+    );
+  }
+
+  useEffect(() => {
+    buscarChamados();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 lg:p-10 relative">
+      <header className="max-w-7xl mx-auto flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/home", { replace: true })}
+            className="cursor-pointer flex items-center gap-2 rounded-xl bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-4 py-2 transition"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="text-sm font-medium">Voltar</span>
+          </button>
+          <h1 className="text-2xl font-bold">Chamados</h1>
+        </div>
+
+        {localStorage.getItem("usuario_role") != "liderado" && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setModo("meus")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                modo === "meus"
+                  ? "bg-[#6bb7ff]/30 text-[#6bb7ff]"
+                  : "bg-[#2a2d5a] hover:bg-[#343765] text-white/70"
+              }`}
+            >
+              <FileText className="inline h-4 w-4 mr-1" />
+              Meus
+            </button>
+            <button
+              onClick={() => setModo("liderados")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                modo === "liderados"
+                  ? "bg-[#6bb7ff]/30 text-[#6bb7ff]"
+                  : "bg-[#2a2d5a] hover:bg-[#343765] text-white/70"
+              }`}
+            >
+              <Users className="inline h-4 w-4 mr-1" />
+              Liderados
+            </button>
+          </div>
+        )}
+      </header>
+
+      <div className="max-w-7xl mx-auto flex h-[80vh] rounded-2xl overflow-hidden shadow-lg bg-[#2a2d5a]/60 backdrop-blur-sm">
+        <ListaChamados
+          chamados={chamados}
+          setSelecionado={setSelecionado}
+          statusBadge={statusBadge}
+          selecionado={selecionado}
+        />
+
+        <VisualizaChamado selecionado={selecionado} statusBadge={statusBadge} />
+      </div>
+    </div>
+  );
+}
