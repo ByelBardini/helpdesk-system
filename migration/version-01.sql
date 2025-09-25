@@ -171,3 +171,20 @@ ADD CONSTRAINT `resposta_usuario_id`
   REFERENCES `chamados_ti`.`usuarios` (`usuario_id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+ALTER TABLE `chamados_ti`.`anexos` 
+DROP FOREIGN KEY `anexo_chamado_id`;
+ALTER TABLE `chamados_ti`.`anexos` 
+ADD COLUMN `anexo_resposta_id` INT NULL AFTER `anexo_chamado_id`,
+CHANGE COLUMN `anexo_chamado_id` `anexo_chamado_id` INT NULL ,
+ADD INDEX `anexo_resposta_id_idx` (`anexo_resposta_id` ASC) VISIBLE;
+;
+ALTER TABLE `chamados_ti`.`anexos` 
+ADD CONSTRAINT `anexo_chamado_id`
+  FOREIGN KEY (`anexo_chamado_id`)
+  REFERENCES `chamados_ti`.`chamados` (`chamado_id`),
+ADD CONSTRAINT `anexo_resposta_id`
+  FOREIGN KEY (`anexo_resposta_id`)
+  REFERENCES `chamados_ti`.`respostas` (`resposta_id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
