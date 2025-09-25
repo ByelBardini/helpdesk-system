@@ -22,3 +22,16 @@ export async function postResposta(req, res) {
 
   return res.status(201).json({ message: "Resposta enviada com sucesso" });
 }
+
+export async function visualizaResposta(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("ID da resposta é obrigatório");
+  }
+
+  const resposta = await Resposta.findByPk(id);
+  resposta.resposta_visualizada = 1;
+  await resposta.save();
+
+  return res.status(200).json({ message: "Mensagem visualizada" });
+}
