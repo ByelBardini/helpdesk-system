@@ -6,6 +6,7 @@ import Aviso from "./avisos.js";
 import Area from "./areas.js";
 import Anexo from "./anexos.js";
 import Chamado from "./chamados.js";
+import Resposta from "./respostas.js";
 
 // Foreign keys de setor e empresa
 Empresa.hasMany(Setor, {
@@ -115,4 +116,38 @@ Anexo.belongsTo(Chamado, {
   as: "chamado",
 });
 
-export { Usuario, Empresa, Setor, Pergunta, Aviso, Area, Anexo, Chamado };
+//Foreign keys de resposta e chamado
+Chamado.hasMany(Resposta, {
+  foreignKey: "resposta_chamado_id",
+  sourceKey: "chamado_id",
+  as: "respostas",
+});
+Resposta.belongsTo(Chamado, {
+  foreignKey: "resposta_chamado_id",
+  targetKey: "chamado_id",
+  as: "chamado",
+});
+
+//Foreign keys de resposta e usuario
+Usuario.hasMany(Resposta, {
+  foreignKey: "resposta_usuario_id",
+  sourceKey: "usuario_id",
+  as: "respostas",
+});
+Resposta.belongsTo(Usuario, {
+  foreignKey: "resposta_usuario_id",
+  targetKey: "usuario_id",
+  as: "usuario",
+});
+
+export {
+  Usuario,
+  Empresa,
+  Setor,
+  Pergunta,
+  Aviso,
+  Area,
+  Anexo,
+  Chamado,
+  Resposta,
+};
