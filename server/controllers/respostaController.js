@@ -1,4 +1,5 @@
-import { Resposta } from "../models/index.js";
+import sequelize from "../config/database.js";
+import { Resposta, Anexo } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 
 export async function postResposta(req, res) {
@@ -6,21 +7,47 @@ export async function postResposta(req, res) {
   if (!idChamado || !idUsuario) {
     throw ApiError.badRequest("ID do chamado e do usuário são obrigatórios");
   }
-  const { descricao, tipo } = req.body;
+  const b = req.body;
+
+  const descricao = b.descricao;
+  const tipo = b.tipo;
+
   if (!descricao || !tipo) {
     throw ApiError.badRequest("Necessário descrição e tipo da resposta");
   }
 
-  await Resposta.create({
-    resposta_chamado_id: idChamado,
-    resposta_usuario_id: idUsuario,
-    resposta_descricao: descricao,
-    resposta_tipo: tipo,
-    resposta_visualizada: 0,
-    resposta_data_emissao: new Date(),
-  });
+  const anexosArr = Array.isArray(req.anexos) ? req.anexos : [];
 
-  return res.status(201).json({ message: "Resposta enviada com sucesso" });
+  await sequelize.transaction(
+    await sequelize.transaction(async (t) => {
+      const resposta = await Resposta.create(
+        {
+          resposta_chamado_id: idChamado,
+          resposta_usuario_id: idUsuario,
+          resposta_descricao: descricao,
+          resposta_tipo: tipo,
+          resposta_visualizada: 0,
+          resposta_data_emissao: new Date(),
+        },
+        {
+          transaction: t,
+        }
+      );
+
+      for (const a of anexosArr) {
+        await Anexo.create(
+          {
+            anexo_resposta_id: resposta.resposta_id,
+            anexo_nome: a.nome,
+            anexo_caminho: a.caminho,
+          },
+          { transaction: t }
+        );
+      }
+
+      return res.status(201).json({ message: "Resposta enviada com sucesso" });
+    })
+  );
 }
 
 export async function visualizaResposta(req, res) {

@@ -9,6 +9,7 @@ import avisoRoutes from "./routes/avisosRoutes.js";
 import areaRoutes from "./routes/areaRoutes.js";
 import chamadoRoutes from "./routes/chamadosRoutes.js";
 import respostaRoutes from "./routes/respostaRoutes.js";
+import downloadRoutes from "./routes/downloadRoutes.js";
 import { ApiError } from "./middlewares/ApiError.js";
 import { limpaArquivosAntigos } from "./middlewares/limpaAnexosAntigos.js";
 
@@ -31,6 +32,7 @@ app.use(
 );
 
 app.use("/", authRoutes);
+app.use("/", downloadRoutes);
 app.use("/usuario", usuarioRoutes);
 app.use("/faq", faqRoutes);
 app.use("/aviso", avisoRoutes);

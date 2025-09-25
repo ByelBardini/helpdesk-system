@@ -1,4 +1,5 @@
 import express from "express";
+import { anexosUpload } from "../middlewares/anexosUpload.js";
 import {
   postResposta,
   visualizaResposta,
@@ -7,6 +8,6 @@ import {
 const router = express.Router();
 
 router.put("/visualiza/:id", visualizaResposta);
-router.post("/:idChamado/:idUsuario", postResposta);
+router.post("/:idChamado/:idUsuario", anexosUpload, postResposta);
 
 export default router;

@@ -55,6 +55,12 @@ export async function getChamados(req, res) {
             as: "usuario",
             attributes: ["usuario_nome"],
           },
+          {
+            model: Anexo,
+            as: "anexos",
+            attributes: ["anexo_nome", "anexo_caminho"],
+            separate: true,
+          },
         ],
       },
       {

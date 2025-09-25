@@ -13,7 +13,11 @@ Anexos.init(
     },
     anexo_chamado_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
+    },
+    anexo_resposta_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     anexo_nome: {
       type: DataTypes.STRING(50),

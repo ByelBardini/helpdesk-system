@@ -140,6 +140,18 @@ Resposta.belongsTo(Usuario, {
   as: "usuario",
 });
 
+//Foreign keys de resposta e anexo
+Resposta.hasMany(Anexo, {
+  foreignKey: "anexo_resposta_id",
+  sourceKey: "resposta_id",
+  as: "anexos",
+});
+Anexo.belongsTo(Resposta, {
+  foreignKey: "anexo_resposta_id",
+  targetKey: "resposta_id",
+  as: "resposta",
+});
+
 export {
   Usuario,
   Empresa,
