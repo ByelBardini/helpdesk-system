@@ -8,6 +8,7 @@ import Faq from "./pages/Faq.jsx";
 import NovoChamado from "./pages/NovoChamado.jsx";
 import Chamados from "./pages/Chamados.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import AdminLayout from "./pages/AdminLayout.jsx";
 
 const router = createBrowserRouter([
   {
@@ -31,8 +32,12 @@ const router = createBrowserRouter([
     element: <Chamados />,
   },
   {
-    path: "/dashboard",
-    element: <Dashboard />,
+    path: "/suporte/dashboard",
+    element: (
+      <AdminLayout>
+        <Dashboard />
+      </AdminLayout>
+    ),
   },
 ]);
 

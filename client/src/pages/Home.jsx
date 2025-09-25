@@ -106,7 +106,9 @@ export default function Home() {
             {(localStorage.getItem("usuario_role") == "adm" ||
               localStorage.getItem("usuario_role") == "suporte") && (
               <button
-                onClick={() => navigate("/dashboard", { replace: true })}
+                onClick={() =>
+                  navigate("/suporte/dashboard", { replace: true })
+                }
                 className="cursor-pointer flex items-center gap-2 bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 px-6 py-3 rounded-2xl transition"
               >
                 <LayoutDashboard className="h-5 w-5" />
