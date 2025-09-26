@@ -1,6 +1,11 @@
 import sequelize from "../config/database.js";
-import { Chamado, Anexo, Resposta, Usuario, Setor } from "../models/index.js";
+import { Chamado, Anexo, Resposta, Usuario, Setor, Empresa } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
+import { Op } from "sequelize";
+
+const hoje = new Date();
+const trintaDiasAtras = new Date();
+trintaDiasAtras.setDate(hoje.getDate() - 30);
 
 export async function getChamados(req, res) {
   const { id, role } = req.params;
@@ -72,6 +77,79 @@ export async function getChamados(req, res) {
             model: Setor,
             as: "setor",
             attributes: ["setor_nome"],
+          },
+        ],
+      },
+    ],
+  });
+
+  return res.status(200).json(chamados);
+}
+
+export async function getChamadosSuporte(req, res) {
+  const chamados = await Chamado.findAll({
+    where: {
+      [Op.or]: [
+        { chamado_status: "em aberto" },
+        { chamado_status: "visualizado" },
+        { chamado_status: "resolvendo" },
+        {
+          [Op.and]: [
+            { chamado_status: "resolvido" },
+            {
+              chamado_data_abertura: { [Op.between]: [trintaDiasAtras, hoje] },
+            },
+          ],
+        },
+      ],
+    },
+    order: [["chamado_data_abertura", "ASC"]],
+    include: [
+      {
+        model: Anexo,
+        as: "anexos",
+        attributes: ["anexo_id", "anexo_nome", "anexo_caminho"],
+        separate: true,
+      },
+      {
+        model: Resposta,
+        as: "respostas",
+        attributes: [
+          "resposta_id",
+          "resposta_tipo",
+          "resposta_visualizada",
+          "resposta_data_emissao",
+          "resposta_descricao",
+        ],
+        separate: true,
+        include: [
+          {
+            model: Usuario,
+            as: "usuario",
+            attributes: ["usuario_nome"],
+          },
+          {
+            model: Anexo,
+            as: "anexos",
+            attributes: ["anexo_nome", "anexo_caminho"],
+            separate: true,
+          },
+        ],
+      },
+      {
+        model: Usuario,
+        as: "usuario",
+        attributes: ["usuario_nome", "usuario_setor_id"],
+        include: [
+          {
+            model: Setor,
+            as: "setor",
+            attributes: ["setor_nome"],
+          },
+          {
+            model: Empresa,
+            as: "empresa",
+            attributes: ["empresa_nome"],
           },
         ],
       },
