@@ -1,3 +1,4 @@
+import { ApiError } from "../../../../server/middlewares/ApiError.js";
 import { api } from "../api.js";
 
 export async function getChamados(role, id) {
@@ -31,6 +32,28 @@ export async function postChamado(fd) {
     return response.data;
   } catch (err) {
     console.error("Erro em postChamado:", err);
+    throw err;
+  }
+}
+
+export async function alterarPrioridade(id, prioridade) {
+  try {
+    const response = await api.put(`/chamado/prioridade/${id}`, { prioridade });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em alterarPrioridade:", err);
+    throw err;
+  }
+}
+
+export async function alterarStatus(id, status) {
+  try {
+    const response = await api.put(`/chamado/status/${id}`, { status });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em alterarStatus:", err);
     throw err;
   }
 }
