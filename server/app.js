@@ -10,6 +10,7 @@ import areaRoutes from "./routes/areaRoutes.js";
 import chamadoRoutes from "./routes/chamadosRoutes.js";
 import respostaRoutes from "./routes/respostaRoutes.js";
 import downloadRoutes from "./routes/downloadRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 import { ApiError } from "./middlewares/ApiError.js";
 import { limpaArquivosAntigos } from "./middlewares/limpaAnexosAntigos.js";
 
@@ -39,6 +40,7 @@ app.use("/aviso", avisoRoutes);
 app.use("/area", areaRoutes);
 app.use("/chamado", chamadoRoutes);
 app.use("/resposta", respostaRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {

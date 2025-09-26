@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ResponsiveContainer,
   PieChart,
@@ -15,29 +15,114 @@ import {
   CartesianGrid,
 } from "recharts";
 import { Ticket, Eye, Loader2, CheckCircle2 } from "lucide-react";
+import { getDashboard } from "../services/api/dashboardServices.js";
 
 export default function Dashboard() {
-  const resumo = {
-    solicitacoes: { abertos: 18, concluidos: 42 },
-    erros: { abertos: 9, concluidos: 27 },
-    melhorias: { abertos: 12, concluidos: 20 },
-  };
+  async function buscaDados() {
+    const dados = await getDashboard();
 
-  const empresas = [
-    { name: "Alpha", value: 38 },
-    { name: "Beta", value: 22 },
-    { name: "Gamma", value: 17 },
-    { name: "Delta", value: 13 },
-    { name: "Epsilon", value: 10 },
-  ];
+    //Empresas
+    const empresas = dados.empresas.map((e) => ({
+      name: e["empresa.empresa_nome"],
+      value: e.total,
+    }));
+    setEmpresas(empresas);
 
-  const areas = [
-    { name: "TI", value: 44 },
-    { name: "Financeiro", value: 21 },
-    { name: "Comercial", value: 18 },
-    { name: "Operações", value: 15 },
-    { name: "RH", value: 12 },
-  ];
+    // Tipos
+    const ordem = ["erro", "melhoria", "solicitacao"];
+    const labels = {
+      erro: "Erros",
+      melhoria: "Melhorias",
+      solicitacao: "Solicitações",
+    };
+    const cores = {
+      erro: C.red,
+      melhoria: C.accent,
+      solicitacao: C.blue,
+    };
+
+    const tipos = ordem.map((tipo) => {
+      const registro = dados.tipos.find((t) => t.chamado_tipo === tipo);
+      return {
+        name: labels[tipo],
+        value: registro ? registro.total : 0, // garante 0 se não vier no backend
+        color: cores[tipo],
+      };
+    });
+    setTipos(tipos);
+
+    // Areas
+    const areas = dados.areas.map((a) => ({
+      name: a.area_nome,
+      value: a.total,
+    }));
+    setAreas(areas);
+
+    // Novos chamados, visualizados, em andamento e resolvidos
+    const kpis = [
+      {
+        title: "Novos chamados (geral)",
+        value: dados.novos?.[0]?.total || 0,
+        icon: Ticket,
+        color: "bg-[#6bb7ff]/20 text-[#6bb7ff]",
+      },
+      {
+        title: "Chamados Visualizados (geral)",
+        value: dados.visualizados?.[0]?.total || 0,
+        icon: Eye,
+        color: "bg-yellow-500/20 text-yellow-400",
+      },
+      {
+        title: "Chamados em andamento (geral)",
+        value: dados.resolvendo?.[0]?.total || 0,
+        icon: Loader2,
+        color: "bg-blue-500/20 text-blue-400",
+      },
+      {
+        title: "Chamados resolvidos (mês)",
+        value: dados.resolvidos?.[0]?.total || 0,
+        icon: CheckCircle2,
+        color: "bg-green-500/20 text-green-400",
+      },
+    ];
+    setKpis(kpis);
+
+    //Balanço dos ultimos 30 dias
+    function resumoStatus(arr = []) {
+      return {
+        concluidos: arr
+          .filter((s) => s.chamado_status === "resolvido")
+          .reduce((acc, s) => acc + s.total, 0),
+
+        abertos: arr
+          .filter((s) => s.chamado_status !== "resolvido")
+          .reduce((acc, s) => acc + s.total, 0),
+      };
+    }
+
+    const resumo = {
+      solicitacoes: resumoStatus(dados.solicitacoes),
+      erros: resumoStatus(dados.erros),
+      melhorias: resumoStatus(dados.melhorias),
+    };
+    setResumo(resumo);
+
+    console.log(dados);
+  }
+
+  useEffect(() => {
+    buscaDados();
+  }, []);
+
+  const [empresas, setEmpresas] = useState([]);
+  const [tipos, setTipos] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [kpis, setKpis] = useState([]);
+  const [resumo, setResumo] = useState({
+    solicitacoes: { abertos: 0, concluidos: 0 },
+    erros: { abertos: 0, concluidos: 0 },
+    melhorias: { abertos: 0, concluidos: 0 },
+  });
 
   const C = {
     card: "#2a2d5a",
@@ -48,47 +133,8 @@ export default function Dashboard() {
     red: "#ef4444",
   };
 
-  const kpis = [
-    {
-      title: "Novos chamados (geral)",
-      value: 120,
-      icon: Ticket,
-      color: "bg-[#6bb7ff]/20 text-[#6bb7ff]",
-    },
-    {
-      title: "Chamados Visualizados (geral)",
-      value: 85,
-      icon: Eye,
-      color: "bg-yellow-500/20 text-yellow-400",
-    },
-    {
-      title: "Chamados em andamento (geral)",
-      value: 30,
-      icon: Loader2,
-      color: "bg-blue-500/20 text-blue-400",
-    },
-    {
-      title: "Chamados resolvidos (mês)",
-      value: 89,
-      icon: CheckCircle2,
-      color: "bg-green-500/20 text-green-400",
-    },
-  ];
-
-  const proporcaoTipos = useMemo(() => {
-    const solicit =
-      resumo.solicitacoes.abertos + resumo.solicitacoes.concluidos;
-    const err = resumo.erros.abertos + resumo.erros.concluidos;
-    const melh = resumo.melhorias.abertos + resumo.melhorias.concluidos;
-    return [
-      { name: "Solicitações", value: solicit, color: C.blue },
-      { name: "Erros", value: err, color: C.red },
-      { name: "Melhorias", value: melh, color: C.accent },
-    ];
-  }, [resumo]);
-
   const mini = useMemo(() => {
-    const items = [
+    return [
       {
         titulo: "Abertos / Concluídos (Solicitações)",
         aberto: resumo.solicitacoes.abertos,
@@ -110,10 +156,29 @@ export default function Dashboard() {
         colorA: C.accent,
         colorB: C.green,
       },
-    ];
-    const maxTotal = Math.max(1, ...items.map((i) => i.aberto + i.concluido));
-    return items.map((i) => ({ ...i, maxTotal }));
+    ].map((i) => ({
+      ...i,
+      maxTotal: Math.max(1, i.aberto + i.concluido),
+    }));
   }, [resumo]);
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-[#2a2d5a] border border-white/20 rounded-lg px-3 py-2 text-xs shadow-lg">
+          <p>
+            <span className="text-[#6bb7ff] font-medium">
+              {payload[0].name}
+            </span>
+            <span className="text-white ml-1 font-semibold">
+              : {payload[0].value}
+            </span>
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="mt-4 px-6 lg:px-10 pb-6">
@@ -212,27 +277,22 @@ export default function Dashboard() {
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Tooltip
-                    contentStyle={{
-                      background: "#1f2347",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#fff",
-                    }}
-                  />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend
                     verticalAlign="bottom"
                     height={24}
                     wrapperStyle={{ color: "#cbd5e1" }}
                   />
                   <Pie
-                    data={proporcaoTipos}
+                    data={tipos}
                     dataKey="value"
                     nameKey="name"
                     innerRadius={55}
                     outerRadius={85}
                     paddingAngle={3}
+                    label={{ fill: "#fff", fontSize: 12 }}
                   >
-                    {proporcaoTipos.map((e, i) => (
+                    {tipos.map((e, i) => (
                       <Cell key={i} fill={e.color} />
                     ))}
                   </Pie>
@@ -245,13 +305,7 @@ export default function Dashboard() {
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Tooltip
-                    contentStyle={{
-                      background: "#1f2347",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#fff",
-                    }}
-                  />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend
                     verticalAlign="bottom"
                     height={24}
@@ -263,6 +317,7 @@ export default function Dashboard() {
                     nameKey="name"
                     innerRadius={50}
                     outerRadius={80}
+                    label={{ fill: "#fff", fontSize: 12 }}
                   >
                     {empresas.map((_, i) => (
                       <Cell
