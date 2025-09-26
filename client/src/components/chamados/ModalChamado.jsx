@@ -22,6 +22,13 @@ export default function ModalChamado({
     setRespostas(chamado.respostas);
   }, []);
 
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (e.key === "Escape") setAbreChamado(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+  }, []);
+
   if (!chamado) return null;
 
   const status = chamado.chamado_status;

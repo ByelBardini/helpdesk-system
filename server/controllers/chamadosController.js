@@ -9,7 +9,7 @@ import {
   Area,
 } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
-import { Op } from "sequelize";
+import { Op, literal } from "sequelize";
 
 const hoje = new Date();
 const trintaDiasAtras = new Date();
@@ -111,7 +111,21 @@ export async function getChamadosSuporte(req, res) {
         },
       ],
     },
-    order: [["chamado_data_abertura", "ASC"]],
+    order: [
+      [
+        literal(`
+          CASE 
+            WHEN chamado_prioridade = 'urgente' THEN 1
+            WHEN chamado_prioridade = 'alta' THEN 2
+            WHEN chamado_prioridade = 'media' THEN 3
+            WHEN chamado_prioridade = 'baixa' THEN 4
+            ELSE 5
+          END
+        `),
+        "ASC",
+      ],
+      ["chamado_data_abertura", "DESC"],
+    ],
     include: [
       {
         model: Area,

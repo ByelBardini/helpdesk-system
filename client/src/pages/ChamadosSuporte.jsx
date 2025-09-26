@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import CardChamado from "../components/chamados/CardChamado.jsx";
 import ModalChamado from "../components/chamados/ModalChamado.jsx";
 import Notificacao from "../components/default/Notificacao.jsx";
@@ -5,9 +6,13 @@ import Loading from "../components/default/Loading.jsx";
 import Confirmacao from "../components/default/Confirmacao.jsx";
 import { useEffect, useState } from "react";
 import { getChamadosSuporte } from "../services/api/chamadosServices";
+import { visualizaResposta } from "../services/api/respostaServices.js";
 import { formatToCapitalized } from "brazilian-values";
+import { tratarErro } from "../components/default/funcoes.js";
+import { useNavigate } from "react-router-dom";
 
 export default function ChamadosSuporte() {
+  const navigate = useNavigate();
   const colunas = [
     { titulo: "em aberto", cor: "border-red-400 text-red-300" },
     { titulo: "visualizado", cor: "border-yellow-400 text-yellow-300" },
@@ -34,12 +39,31 @@ export default function ChamadosSuporte() {
   });
 
   async function buscaChamados() {
+    setLoading(true);
     try {
       const chamados = await getChamadosSuporte();
-      console.log(chamados);
+      setLoading(false);
       setChamados(chamados);
     } catch (err) {
+      setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
+    }
+  }
+
+  async function visualiza(naoLidas) {
+    setLoading(true);
+    try {
+      for (const m of naoLidas) {
+        await visualizaResposta(m.resposta_id);
+      }
+      setLoading(false);
+
+      await buscaChamados();
+    } catch (err) {
+      setLoading(false);
+      console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
@@ -112,6 +136,7 @@ export default function ChamadosSuporte() {
 
                   return (
                     <CardChamado
+                      visualiza={visualiza}
                       chamado={chamado}
                       conclusao={conclusao}
                       abertura={abertura}

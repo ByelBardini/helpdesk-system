@@ -126,7 +126,7 @@ export default function DadosModalChamado({
           </div>
         )}
       </div>
-      <div className="mt-6">
+      <div className="mt-6 flex gap-2">
         {(chamado.chamado_status === "em aberto" ||
           chamado.chamado_status === "visualizado") && (
           <button className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition-colors">
@@ -139,6 +139,10 @@ export default function DadosModalChamado({
             Concluir Chamado
           </button>
         )}
+
+        <button className="cursor-pointer w-full bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors">
+          Salvar
+        </button>
       </div>
     </div>
   );
