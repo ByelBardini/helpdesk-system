@@ -1,6 +1,13 @@
 import { formatToCapitalized, formatToDate } from "brazilian-values";
+import { Search } from "lucide-react";
 
-export default function CardChamado({ chamado, conclusao, abertura }) {
+export default function CardChamado({
+  chamado,
+  conclusao,
+  abertura,
+  setAbreChamado,
+  setChamadoSelecionado,
+}) {
   function corPrioridade(prioridade) {
     switch (prioridade?.toLowerCase()) {
       case "baixa":
@@ -62,6 +69,10 @@ export default function CardChamado({ chamado, conclusao, abertura }) {
       className={`rounded-xl p-4 shadow cursor-default transition-colors duration-200 bg-white/10 ${corPrioridade(
         chamado.chamado_prioridade
       )} hover:brightness-120`}
+      onDoubleClick={() => {
+        setChamadoSelecionado(chamado);
+        setAbreChamado(true);
+      }}
     >
       <div className="flex justify-between items-start">
         <h3 className="font-bold text-white">{chamado.chamado_motivo}</h3>

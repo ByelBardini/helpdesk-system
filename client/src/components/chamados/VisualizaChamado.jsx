@@ -2,7 +2,10 @@
 import RespostaUsuario from "../respostas/RespostaUsuario.jsx";
 import ListaRespostas from "../respostas/ListaRespostas.jsx";
 import { formatToDate, formatToCapitalized } from "brazilian-values";
-import { postResposta } from "../../services/api/respostaServices.js";
+import {
+  postResposta,
+  getResposta,
+} from "../../services/api/respostaServices.js";
 import { PlusCircle, Paperclip, X, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { tratarErro } from "../default/funcoes.js";
@@ -13,13 +16,13 @@ export default function VisualizaChamado({
   navigate,
   setConfirmacao,
   setSelecionado,
-  buscarChamados,
   selecionado,
   statusBadge,
 }) {
   const [respondendo, setRespondendo] = useState(false);
   const [descricao, setDescricao] = useState("");
   const [anexos, setAnexos] = useState([]);
+  const [respostas, setRespostas] = useState([]);
 
   async function enviarResposta() {
     setConfirmacao({
@@ -60,10 +63,12 @@ export default function VisualizaChamado({
         titulo: "Resposta enviada",
         mensagem: "Sua resposta foi enviada com sucesso ao setor de TI",
       });
-      await buscarChamados();
+
+      const novasRespostas = await getResposta(selecionado.chamado_id);
+      setRespostas(novasRespostas);
+
       setTimeout(() => {
         setRespondendo(false);
-        setSelecionado(null);
         setNotificacao({
           show: false,
           tipo: "sucesso",
@@ -88,6 +93,12 @@ export default function VisualizaChamado({
     }
     window.addEventListener("keydown", onKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (selecionado) {
+      setRespostas(selecionado.respostas);
+    }
+  }, [selecionado]);
 
   return (
     <section className="flex-1 p-6 overflow-y-auto">
@@ -140,7 +151,7 @@ export default function VisualizaChamado({
           <div className="mb-6">
             <h3 className="font-medium mb-3">Respostas</h3>
             {selecionado.respostas.length > 0 ? (
-              <ListaRespostas selecionado={selecionado} />
+              <ListaRespostas respostas={respostas} />
             ) : (
               <p className="text-sm text-white/50">Nenhuma resposta ainda.</p>
             )}
