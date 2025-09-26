@@ -1,5 +1,16 @@
 import { api } from "../api.js";
 
+export async function getResposta(id) {
+  try {
+    const response = await api.get(`/resposta/${id}`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em getResposta:", err);
+    throw err;
+  }
+}
+
 export async function postResposta(idUsuario, idChamado, fd) {
   try {
     const response = await api.post(`/resposta/${idChamado}/${idUsuario}`, fd, {
