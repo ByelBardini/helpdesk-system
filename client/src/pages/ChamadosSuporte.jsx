@@ -1,4 +1,8 @@
 import CardChamado from "../components/chamados/CardChamado.jsx";
+import ModalChamado from "../components/chamados/ModalChamado.jsx";
+import Notificacao from "../components/default/Notificacao.jsx";
+import Loading from "../components/default/Loading.jsx";
+import Confirmacao from "../components/default/Confirmacao.jsx";
 import { useEffect, useState } from "react";
 import { getChamadosSuporte } from "../services/api/chamadosServices";
 import { formatToCapitalized } from "brazilian-values";
@@ -12,6 +16,22 @@ export default function ChamadosSuporte() {
   ];
 
   const [chamados, setChamados] = useState([]);
+  const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
+  const [abreChamado, setAbreChamado] = useState(false);
+
+  const [notificacao, setNotificacao] = useState({
+    show: false,
+    tipo: "sucesso",
+    titulo: "",
+    mensagem: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [confirmacao, setConfirmacao] = useState({
+    show: false,
+    titulo: "",
+    texto: "",
+    onSim: null,
+  });
 
   async function buscaChamados() {
     try {
@@ -29,6 +49,46 @@ export default function ChamadosSuporte() {
 
   return (
     <div className="h-[calc(100vh-3rem)] bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-4">
+      {abreChamado && (
+        <ModalChamado
+          chamado={chamadoSelecionado}
+          setAbreChamado={setAbreChamado}
+          setLoading={setLoading}
+          setNotificacao={setNotificacao}
+          setConfirmacao={setConfirmacao}
+        />
+      )}
+      {notificacao.show && (
+        <Notificacao
+          titulo={notificacao.titulo}
+          mensagem={notificacao.mensagem}
+          tipo={notificacao.tipo}
+          onClick={() =>
+            setNotificacao({
+              show: false,
+              tipo: "sucesso",
+              titulo: "",
+              mensagem: "",
+            })
+          }
+        />
+      )}
+      {confirmacao.show && (
+        <Confirmacao
+          texto={confirmacao.texto}
+          titulo={confirmacao.titulo}
+          onSim={confirmacao.onSim}
+          onNao={() =>
+            setConfirmacao({
+              show: false,
+              titulo: "",
+              texto: "",
+              onSim: null,
+            })
+          }
+        />
+      )}
+      {loading && <Loading />}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-full">
         {colunas.map((coluna) => (
           <div
@@ -55,6 +115,8 @@ export default function ChamadosSuporte() {
                       chamado={chamado}
                       conclusao={conclusao}
                       abertura={abertura}
+                      setAbreChamado={setAbreChamado}
+                      setChamadoSelecionado={setChamadoSelecionado}
                     />
                   );
                 })}

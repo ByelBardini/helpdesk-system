@@ -45,7 +45,7 @@ export default function RespostaUsuario({anexos, setAnexos}) {
         />
         <button
           onClick={handleAddAnexo}
-          disabled={!anexoArquivo || !anexoNome}
+          disabled={!anexoArquivo}
           className="cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg
                    bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium
                    disabled:opacity-50 disabled:cursor-not-allowed"

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Paperclip, FileText, Download, ChevronDown } from "lucide-react";
 import { formatToDate } from "brazilian-values";
 
-export default function ListaRespostas({ selecionado }) {
+export default function ListaRespostas({ respostas }) {
   const [abertos, setAbertos] = useState(() => new Set());
 
   const toggle = (id) => {
@@ -15,7 +15,7 @@ export default function ListaRespostas({ selecionado }) {
 
   return (
     <div className="space-y-4">
-      {selecionado.respostas.map((resposta) => {
+      {respostas.map((resposta) => {
         const isSuporte = resposta.resposta_tipo === "suporte";
         const temAnexos = (resposta.anexos?.length ?? 0) > 0;
         const aberto = abertos.has(resposta.resposta_id);
