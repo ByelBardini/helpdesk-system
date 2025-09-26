@@ -5,7 +5,10 @@ import RespostasSuporte from "../respostas/RespostasSuporte.jsx";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { alterarStatus } from "../../services/api/chamadosServices.js";
+import {
+  alterarStatus,
+  alterarPrioridade,
+} from "../../services/api/chamadosServices.js";
 import { tratarErro } from "../default/funcoes.js";
 
 export default function ModalChamado({
@@ -22,18 +25,35 @@ export default function ModalChamado({
   );
   const [respostas, setRespostas] = useState([]);
 
-  async function visualizaChamado() {
-    if (chamado.chamado_status == "em aberto") {
-      setLoading(true);
-      try {
-        await alterarStatus(chamado.chamado_id, "visualizado");
-        await buscaChamados();
-        setLoading(false);
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-        tratarErro(setNotificacao, err, navigate);
-      }
+  async function alteraPrioridade(prioridade) {
+    setLoading(true);
+    try {
+      await alterarPrioridade(chamado.chamado_id, prioridade);
+      await buscaChamados();
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
+    }
+  }
+
+  async function alteraStatus(status) {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
+    setLoading(true);
+    try {
+      await alterarStatus(chamado.chamado_id, status);
+      await buscaChamados();
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
@@ -49,7 +69,10 @@ export default function ModalChamado({
   }, []);
 
   useEffect(() => {
-    visualizaChamado();
+    if (chamado.chamado_status == "em aberto") {
+      alteraStatus("visualizado");
+      alteraPrioridade("baixa");
+    }
   }, []);
 
   if (!chamado) return null;
@@ -81,6 +104,10 @@ export default function ModalChamado({
           podeEditar={podeEditar}
           setPrioridade={setPrioridade}
           prioridade={prioridade}
+          alteraStatus={alteraStatus}
+          setConfirmacao={setConfirmacao}
+          alteraPrioridade={alteraPrioridade}
+          setAbreChamado={setAbreChamado}
         />
 
         <RespostasSuporte

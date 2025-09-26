@@ -115,6 +115,9 @@ export default function CardChamado({
     >
       <div className="flex justify-between items-start">
         <h3 className="font-bold text-white">{chamado.chamado_motivo}</h3>
+        <p className="text-[11px] text-gray-400 mt-1 italic">
+          {chamado.area?.area_nome}
+        </p>
         <div className="flex gap-2">
           {notificacao.length > 0 && (
             <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">

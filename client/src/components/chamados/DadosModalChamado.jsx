@@ -5,6 +5,10 @@ export default function DadosModalChamado({
   prioridade,
   setPrioridade,
   podeEditar,
+  alteraStatus,
+  setConfirmacao,
+  alteraPrioridade,
+  setAbreChamado,
 }) {
   return (
     <div className="w-1/2 p-6 flex flex-col space-y-6 border-r border-white/10 overflow-y-auto">
@@ -129,18 +133,50 @@ export default function DadosModalChamado({
       <div className="mt-6 flex gap-2">
         {(chamado.chamado_status === "em aberto" ||
           chamado.chamado_status === "visualizado") && (
-          <button className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition-colors">
+          <button
+            onClick={() =>
+              setConfirmacao({
+                show: true,
+                titulo: "Deseja começar a resolver esse chamado?",
+                texto: "Essa ação não pode ser desfeita",
+                onSim: () => {
+                  alteraStatus("resolvendo");
+                  setAbreChamado(false);
+                },
+              })
+            }
+            className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition-colors"
+          >
             Iniciar Chamado
           </button>
         )}
 
         {chamado.chamado_status === "resolvendo" && (
-          <button className="cursor-pointer w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition-colors">
+          <button
+            onClick={() =>
+              setConfirmacao({
+                show: true,
+                titulo: "Tem certeza que deseja finalizar o chamado?",
+                texto: "Essa ação não pode ser desfeita",
+                onSim: () => {
+                  alteraStatus("resolvido");
+                  setAbreChamado(false);
+                },
+              })
+            }
+            className="cursor-pointer w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition-colors"
+          >
             Concluir Chamado
           </button>
         )}
 
-        <button className="cursor-pointer w-full bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors">
+        <button
+          onClick={() => {
+            alteraPrioridade(prioridade);
+            setAbreChamado(false);
+          }}
+          className="cursor-pointer w-full bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors"
+        >
           Salvar
         </button>
       </div>
