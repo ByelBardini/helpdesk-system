@@ -11,6 +11,17 @@ export async function getChamados(role, id) {
   }
 }
 
+export async function getChamadosSuporte() {
+  try {
+    const response = await api.get(`/chamado/suporte/`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em getChamados:", err);
+    throw err;
+  }
+}
+
 export async function postChamado(fd) {
   try {
     const response = await api.post("/chamado", fd, {
