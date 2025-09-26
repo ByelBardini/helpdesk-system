@@ -1,5 +1,13 @@
 import sequelize from "../config/database.js";
-import { Chamado, Anexo, Resposta, Usuario, Setor, Empresa } from "../models/index.js";
+import {
+  Chamado,
+  Anexo,
+  Resposta,
+  Usuario,
+  Setor,
+  Empresa,
+  Area,
+} from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 import { Op } from "sequelize";
 
@@ -105,6 +113,11 @@ export async function getChamadosSuporte(req, res) {
     },
     order: [["chamado_data_abertura", "ASC"]],
     include: [
+      {
+        model: Area,
+        as: "area",
+        attributes: ["area_nome"],
+      },
       {
         model: Anexo,
         as: "anexos",
