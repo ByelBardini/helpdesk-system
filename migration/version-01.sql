@@ -188,3 +188,6 @@ ADD CONSTRAINT `anexo_resposta_id`
   REFERENCES `chamados_ti`.`respostas` (`resposta_id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+ALTER TABLE `chamados_ti`.`usuarios` 
+CHANGE COLUMN `usuario_role` `usuario_role` ENUM('adm', 'gerente', 'supervisor', 'liderado', 'suporte') NOT NULL ;

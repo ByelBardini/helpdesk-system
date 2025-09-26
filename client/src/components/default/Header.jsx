@@ -58,7 +58,7 @@ export default function Header() {
           <button
             onClick={() => {
               localStorage.clear();
-              navigate("/login", { replace: true });
+              navigate("/", { replace: true });
             }}
             className={`cursor-pointer ${pillBase} bg-red-500/20 hover:bg-red-500/30 text-red-300`}
             title="Sair"
@@ -109,7 +109,7 @@ export default function Header() {
             <button
               onClick={() => {
                 setOpen(false);
-                navigate("/login", { replace: true });
+                navigate("/", { replace: true });
               }}
               className={`${pillBase} bg-red-500/20 hover:bg-red-500/30 text-red-300 justify-center`}
             >

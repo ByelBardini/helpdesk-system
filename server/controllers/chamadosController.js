@@ -124,7 +124,7 @@ export async function getChamadosSuporte(req, res) {
         `),
         "ASC",
       ],
-      ["chamado_data_abertura", "DESC"],
+      ["chamado_data_abertura", "ASC"],
     ],
     include: [
       {
@@ -179,6 +179,11 @@ export async function getChamadosSuporte(req, res) {
             attributes: ["empresa_nome"],
           },
         ],
+      },
+      {
+        model: Usuario,
+        as: "responsavel",
+        attributes: ["usuario_id", "usuario_nome"],
       },
     ],
   });
@@ -269,15 +274,38 @@ export async function alterarStatus(req, res) {
   if (!id) {
     throw ApiError.badRequest("Id do chamado é obrigatório");
   }
-  const { status } = req.body;
-  if (!status) {
+  const { status, usuario_id } = req.body;
+  if (!status || !usuario_id) {
     throw ApiError.badRequest("Novo status é obrigatório");
   }
 
   const chamado = await Chamado.findByPk(id);
 
-  chamado.chamado_status = status;
+  if (status == "resolvendo") {
+    chamado.chamado_status = status;
+    chamado.chamado_responsavel_id = usuario_id;
+  } else {
+    chamado.chamado_status = status;
+  }
 
   await chamado.save();
   return res.status(200).json({ message: "Status alterado com sucesso" });
+}
+
+export async function alterarResponsavel(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id do chamado é obrigatório");
+  }
+  const { responsavel } = req.body;
+  if (!responsavel) {
+    throw ApiError.badRequest("Novo Responsável é obrigatório");
+  }
+
+  const chamado = await Chamado.findByPk(id);
+
+  chamado.chamado_responsavel_id = responsavel;
+
+  await chamado.save();
+  return res.status(200).json({ message: "Responsável alterado com sucesso" });
 }

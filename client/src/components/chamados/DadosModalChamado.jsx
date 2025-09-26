@@ -9,6 +9,7 @@ export default function DadosModalChamado({
   setConfirmacao,
   alteraPrioridade,
   setAbreChamado,
+  alteraResponsavel,
 }) {
   return (
     <div className="w-1/2 p-6 flex flex-col space-y-6 border-r border-white/10 overflow-y-auto">
@@ -180,6 +181,27 @@ export default function DadosModalChamado({
           Salvar
         </button>
       </div>
+      {chamado.chamado_status == "resolvendo" &&
+        chamado.responsavel.usuario_id !=
+          localStorage.getItem("usuario_id") && (
+          <button
+            onClick={() =>
+              setConfirmacao({
+                show: true,
+                titulo: "Deseja mesmo assumir como responsável desse chamado?",
+                texto:
+                  "Essa ação será registada em log e seu nome aparecerá como responsável",
+                onSim: () => {
+                  alteraResponsavel();
+                  setAbreChamado(false);
+                },
+              })
+            }
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold transition-colors"
+          >
+            Assumir como responsável
+          </button>
+        )}
     </div>
   );
 }

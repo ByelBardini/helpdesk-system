@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import {
   alterarStatus,
   alterarPrioridade,
+  alterarResponsavel,
 } from "../../services/api/chamadosServices.js";
 import { tratarErro } from "../default/funcoes.js";
 
@@ -48,6 +49,25 @@ export default function ModalChamado({
     setLoading(true);
     try {
       await alterarStatus(chamado.chamado_id, status);
+      await buscaChamados();
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
+    }
+  }
+
+  async function alteraResponsavel() {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
+    setLoading(true);
+    try {
+      await alterarResponsavel(chamado.chamado_id);
       await buscaChamados();
       setLoading(false);
     } catch (err) {
@@ -108,6 +128,7 @@ export default function ModalChamado({
           setConfirmacao={setConfirmacao}
           alteraPrioridade={alteraPrioridade}
           setAbreChamado={setAbreChamado}
+          alteraResponsavel={alteraResponsavel}
         />
 
         <RespostasSuporte

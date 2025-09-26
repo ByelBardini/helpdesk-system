@@ -1,5 +1,5 @@
 import { formatToCapitalized, formatToDate } from "brazilian-values";
-import { Bell, AlertTriangle, Notebook } from "lucide-react";
+import { Bell, AlertTriangle, CircleUser } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function CardChamado({
@@ -167,6 +167,12 @@ export default function CardChamado({
         >
           {warning.icone} {warning.texto}
         </div>
+      )}
+      {chamado.responsavel && (
+        <span className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-300 border border-green-400/30">
+          <CircleUser className="w-4 h-4" />
+          {chamado.responsavel.usuario_nome}
+        </span>
       )}
     </div>
   );

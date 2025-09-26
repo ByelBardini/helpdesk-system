@@ -36,7 +36,13 @@ Usuario.init(
       allowNull: false,
     },
     usuario_role: {
-      type: DataTypes.ENUM("adm", "gerente", "supervisor", "liderado"),
+      type: DataTypes.ENUM(
+        "adm",
+        "gerente",
+        "supervisor",
+        "liderado",
+        "suporte"
+      ),
       allowNull: false,
     },
     usuario_ativo: {

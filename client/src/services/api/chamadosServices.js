@@ -49,11 +49,29 @@ export async function alterarPrioridade(id, prioridade) {
 
 export async function alterarStatus(id, status) {
   try {
-    const response = await api.put(`/chamado/status/${id}`, { status });
+    const usuario_id = localStorage.getItem("usuario_id");
+    const response = await api.put(`/chamado/status/${id}`, {
+      status,
+      usuario_id,
+    });
 
     return response.data;
   } catch (err) {
     console.error("Erro em alterarStatus:", err);
+    throw err;
+  }
+}
+
+export async function alterarResponsavel(id) {
+  try {
+    const responsavel = localStorage.getItem("usuario_id");
+    const response = await api.put(`/chamado/responsavel/${id}`, {
+      responsavel,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em alterarResponsavel:", err);
     throw err;
   }
 }
