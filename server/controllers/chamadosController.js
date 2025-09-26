@@ -245,3 +245,39 @@ export async function postChamado(req, res) {
     return res.status(201).json({ message: "Chamado criado com sucesso" });
   });
 }
+
+export async function alterarPrioridade(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id do chamado é obrigatório");
+  }
+  const { prioridade } = req.body;
+  if (!prioridade) {
+    throw ApiError.badRequest("Nova prioridade é obrigatória");
+  }
+
+  const chamado = await Chamado.findByPk(id);
+
+  chamado.chamado_prioridade = prioridade;
+
+  await chamado.save();
+  return res.status(200).json({ message: "Prioridade alterada com sucesso" });
+}
+
+export async function alterarStatus(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id do chamado é obrigatório");
+  }
+  const { status } = req.body;
+  if (!status) {
+    throw ApiError.badRequest("Novo status é obrigatório");
+  }
+
+  const chamado = await Chamado.findByPk(id);
+
+  chamado.chamado_status = status;
+
+  await chamado.save();
+  return res.status(200).json({ message: "Status alterado com sucesso" });
+}
