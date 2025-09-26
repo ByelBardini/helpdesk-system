@@ -5,6 +5,8 @@ import RespostasSuporte from "../respostas/RespostasSuporte.jsx";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { alterarStatus } from "../../services/api/chamadosServices.js";
+import { tratarErro } from "../default/funcoes.js";
 
 export default function ModalChamado({
   setAbreChamado,
@@ -12,11 +14,28 @@ export default function ModalChamado({
   setLoading,
   setNotificacao,
   setConfirmacao,
+  navigate,
+  buscaChamados,
 }) {
   const [prioridade, setPrioridade] = useState(
     chamado?.chamado_prioridade || "baixa"
   );
   const [respostas, setRespostas] = useState([]);
+
+  async function visualizaChamado() {
+    if (chamado.chamado_status == "em aberto") {
+      setLoading(true);
+      try {
+        await alterarStatus(chamado.chamado_id, "visualizado");
+        await buscaChamados();
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        setLoading(false);
+        tratarErro(setNotificacao, err, navigate);
+      }
+    }
+  }
 
   useEffect(() => {
     setRespostas(chamado.respostas);
@@ -27,6 +46,10 @@ export default function ModalChamado({
       if (e.key === "Escape") setAbreChamado(false);
     }
     window.addEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    visualizaChamado();
   }, []);
 
   if (!chamado) return null;

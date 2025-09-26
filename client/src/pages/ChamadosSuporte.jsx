@@ -80,6 +80,8 @@ export default function ChamadosSuporte() {
           setLoading={setLoading}
           setNotificacao={setNotificacao}
           setConfirmacao={setConfirmacao}
+          navigate={navigate}
+          buscaChamados={buscaChamados}
         />
       )}
       {notificacao.show && (
