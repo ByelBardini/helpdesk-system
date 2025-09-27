@@ -5,6 +5,7 @@ import {
   getDadosRelatorios,
   getTempoResolucao,
   getResponsaveis,
+  getChamadosAbertos,
 } from "../../services/api/relatorioServices.js";
 
 export default function TelaRelatorios({
@@ -27,6 +28,9 @@ export default function TelaRelatorios({
         busca = await getTempoResolucao(dataInicio, dataFim, empresa);
       } else if (selecionado === "responsaveis") {
         busca = await getResponsaveis(dataInicio, dataFim, empresa);
+      } else if (selecionado === "abertos") {
+        console.log("teste");
+        await getChamadosAbertos(dataInicio, dataFim, empresa);
       }
       if (busca) setResultado(busca);
 

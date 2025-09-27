@@ -1,5 +1,6 @@
+import ExcelJS from "exceljs";
 import { fn, literal, Op, col } from "sequelize";
-import { Chamado, Empresa, Usuario } from "../models/index.js";
+import { Chamado, Empresa, Usuario, Area } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 
 export async function getDados(req, res) {
@@ -175,4 +176,97 @@ export async function responsaveis(req, res) {
     totaisGerais,
     responsaveis: resultado,
   });
+}
+
+export async function chamadosAbertos(req, res) {
+  const { dataInicio, dataFim, empresa } = req.body;
+
+  if (!dataInicio || !dataFim || empresa === undefined) {
+    throw ApiError.badRequest("Data de início, fim e empresa são obrigatórios");
+  }
+
+  const whereClause = {
+    chamado_data_abertura: { [Op.between]: [dataInicio, dataFim] },
+  };
+
+  if (empresa !== 0) {
+    whereClause.chamado_empresa_id = empresa;
+  }
+
+  const chamados = await Chamado.findAll({
+    where: whereClause,
+    include: [
+      {
+        model: Area,
+        as: "area",
+        attributes: ["area_nome"],
+      },
+      {
+        model: Usuario,
+        as: "usuario",
+        attributes: ["usuario_nome"],
+        include: [
+          {
+            model: Empresa,
+            as: "empresa",
+            attributes: ["empresa_nome"],
+          },
+        ],
+      },
+      {
+        model: Usuario,
+        as: "responsavel",
+        attributes: ["usuario_id", "usuario_nome"],
+      },
+    ],
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Chamados");
+
+  worksheet.columns = [
+    { header: "ID", key: "id", width: 10 },
+    { header: "Empresa", key: "empresa", width: 25 },
+    { header: "Usuário", key: "usuario", width: 25 },
+    { header: "Responsável", key: "responsavel", width: 25 },
+    { header: "Área", key: "area", width: 20 },
+    { header: "Status", key: "status", width: 15 },
+    { header: "Prioridade", key: "prioridade", width: 15 },
+    { header: "Data Abertura", key: "data_abertura", width: 20 },
+    { header: "Data Conclusão", key: "data_conclusao", width: 20 },
+  ];
+
+  chamados.forEach((ch) => {
+    worksheet.addRow({
+      id: ch.chamado_id,
+      empresa: ch.usuario?.empresa?.empresa_nome || "-",
+      usuario: ch.usuario?.usuario_nome || "-",
+      responsavel: ch.responsavel?.usuario_nome || "-",
+      area: ch.area?.area_nome || "-",
+      status: ch.chamado_status,
+      prioridade: ch.chamado_prioridade || "-",
+      data_abertura: ch.chamado_data_abertura,
+      data_conclusao: ch.chamado_data_conclusao
+        ? ch.chamado_data_conclusao
+        : "-",
+    });
+  });
+
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FF1F4E78" },
+    };
+  });
+
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", 'attachment; filename="chamados.xlsx"');
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  res.send(buffer);
 }
