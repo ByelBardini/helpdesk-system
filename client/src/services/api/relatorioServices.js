@@ -21,7 +21,22 @@ export async function getTempoResolucao(dataInicio, dataFim, empresa) {
 
     return response.data;
   } catch (err) {
-    console.error("Erro em tempoResolucao:", err);
+    console.error("Erro em getTempoResolucao:", err);
+    throw err;
+  }
+}
+
+export async function getResponsaveis(dataInicio, dataFim, empresa) {
+  try {
+    const response = await api.put("/relatorio/responsaveis", {
+      dataInicio,
+      dataFim,
+      empresa,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em getResponsaveis:", err);
     throw err;
   }
 }

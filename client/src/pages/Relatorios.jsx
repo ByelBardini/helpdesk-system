@@ -2,7 +2,8 @@ import TelaRelatorios from "../components/relatorios/TelaRelatorios.jsx";
 import { useState } from "react";
 
 export default function Relatorios() {
-  const [selecionado, setSelecionado] = useState("abertos");
+  const [selecionado, setSelecionado] = useState("tempo");
+  const [resultado, setResultado] = useState([]);
 
   const menu = {
     geral: [
@@ -48,102 +49,58 @@ export default function Relatorios() {
     ],
   };
 
-  const getSelectedTitle = () => {
-    const all = [...menu.geral, ...menu.periodo, ...menu.individual];
-    return all.find((item) => item.key === selecionado)?.title || "";
-  };
+  const todasOpcoes = [...menu.geral, ...menu.periodo, ...menu.individual];
 
-  const getSelectedDesc = () => {
-    const all = [...menu.geral, ...menu.periodo, ...menu.individual];
-    return all.find((item) => item.key === selecionado)?.desc || "";
-  };
+  const getSelectedTitle = () =>
+    todasOpcoes.find((item) => item.key === selecionado)?.title || "";
+
+  const getSelectedDesc = () =>
+    todasOpcoes.find((item) => item.key === selecionado)?.desc || "";
+
+  const renderGrupoMenu = (titulo, opcoes) => (
+    <div>
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-white/60 mb-2">
+        {titulo}
+      </h3>
+      <div className="space-y-2">
+        {opcoes.map((item) => (
+          <div
+            key={item.key}
+            onClick={() => {
+              setResultado([]);
+              setSelecionado(item.key);
+            }}
+            className={`rounded-xl border p-3 transition cursor-pointer ${
+              selecionado === item.key
+                ? "bg-blue-600/20 border-blue-500"
+                : "bg-white/5 border-white/10 hover:bg-white/10"
+            }`}
+          >
+            <h2 className="text-sm font-semibold text-white">{item.title}</h2>
+            {selecionado === item.key && (
+              <p className="text-xs text-white/60 mt-1">{item.desc}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="h-full overflow-y-auto pb-12 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
       <div className="max-w-6xl mx-auto grid grid-cols-12 gap-6">
-        <aside className="col-span-12 md:col-span-3 space-y-6">
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/60 mb-2">
-              Geral
-            </h3>
-            <div className="space-y-2">
-              {menu.geral.map((item) => (
-                <div
-                  key={item.key}
-                  onClick={() => setSelecionado(item.key)}
-                  className={`rounded-xl border p-3 transition cursor-pointer ${
-                    selecionado === item.key
-                      ? "bg-blue-600/20 border-blue-500"
-                      : "bg-white/5 border-white/10 hover:bg-white/10"
-                  }`}
-                >
-                  <h2 className="text-sm font-semibold text-white">
-                    {item.title}
-                  </h2>
-                  {selecionado === item.key && (
-                    <p className="text-xs text-white/60 mt-1">{item.desc}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/60 mb-2">
-              Período
-            </h3>
-            <div className="space-y-2">
-              {menu.periodo.map((item) => (
-                <div
-                  key={item.key}
-                  onClick={() => setSelecionado(item.key)}
-                  className={`rounded-xl border p-3 transition cursor-pointer ${
-                    selecionado === item.key
-                      ? "bg-blue-600/20 border-blue-500"
-                      : "bg-white/5 border-white/10 hover:bg-white/10"
-                  }`}
-                >
-                  <h2 className="text-sm font-semibold text-white">
-                    {item.title}
-                  </h2>
-                  {selecionado === item.key && (
-                    <p className="text-xs text-white/60 mt-1">{item.desc}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-white/60 mb-2">
-              Individual
-            </h3>
-            <div className="space-y-2">
-              {menu.individual.map((item) => (
-                <div
-                  key={item.key}
-                  onClick={() => setSelecionado(item.key)}
-                  className={`rounded-xl border p-3 transition cursor-pointer ${
-                    selecionado === item.key
-                      ? "bg-blue-600/20 border-blue-500"
-                      : "bg-white/5 border-white/10 hover:bg-white/10"
-                  }`}
-                >
-                  <h2 className="text-sm font-semibold text-white">
-                    {item.title}
-                  </h2>
-                  {selecionado === item.key && (
-                    <p className="text-xs text-white/60 mt-1">{item.desc}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
+        <nav className="col-span-12 md:col-span-3 space-y-6">
+          {renderGrupoMenu("Geral", menu.geral)}
+          {renderGrupoMenu("Período", menu.periodo)}
+          {renderGrupoMenu("Individual", menu.individual)}
+        </nav>
 
         <TelaRelatorios
           getSelectedTitle={getSelectedTitle}
           getSelectedDesc={getSelectedDesc}
+          selecionado={selecionado}
+          resultado={resultado}
+          setResultado={setResultado}
         />
       </div>
     </div>
