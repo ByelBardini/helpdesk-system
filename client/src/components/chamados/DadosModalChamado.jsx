@@ -197,7 +197,7 @@ export default function DadosModalChamado({
                 },
               })
             }
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold transition-colors"
+            className="cursor-pointer px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold transition-colors"
           >
             Assumir como responsável
           </button>

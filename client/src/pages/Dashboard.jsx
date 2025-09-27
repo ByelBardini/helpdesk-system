@@ -13,6 +13,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Sector,
 } from "recharts";
 import { Ticket, Eye, Loader2, CheckCircle2 } from "lucide-react";
 import { getDashboard } from "../services/api/dashboardServices.js";
@@ -140,7 +141,7 @@ export default function Dashboard() {
         aberto: resumo.solicitacoes.abertos,
         concluido: resumo.solicitacoes.concluidos,
         colorA: C.blue,
-        colorB: C.accent,
+        colorB: C.green,
       },
       {
         titulo: "Abertos / Concluídos (Erros)",
@@ -223,7 +224,6 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* KPIs + Área */}
         <section className="col-span-12 lg:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-4">
           {kpis.map((k) => (
             <KpiCard
@@ -258,6 +258,7 @@ export default function Dashboard() {
                       border: "1px solid rgba(255,255,255,0.1)",
                       color: "#fff",
                     }}
+                    cursor={{ fill: "rgba(255,255,255,0.06)" }}
                   />
                   <Bar
                     dataKey="value"
@@ -271,7 +272,6 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Proporções */}
         <section className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4">
           <ChartCard title="Proporção Erro / Solicitação / Melhoria">
             <div className="h-56">
@@ -291,6 +291,17 @@ export default function Dashboard() {
                     outerRadius={85}
                     paddingAngle={3}
                     label={{ fill: "#fff", fontSize: 12 }}
+                    activeShape={(props) => (
+                      <g>
+                        <Sector
+                          {...props}
+                          outerRadius={props.outerRadius + 8}
+                          fill={props.fill}
+                          stroke="#fff"
+                          strokeWidth={2}
+                        />
+                      </g>
+                    )}
                   >
                     {tipos.map((e, i) => (
                       <Cell key={i} fill={e.color} />
@@ -318,6 +329,17 @@ export default function Dashboard() {
                     innerRadius={50}
                     outerRadius={80}
                     label={{ fill: "#fff", fontSize: 12 }}
+                    activeShape={(props) => (
+                      <g>
+                        <Sector
+                          {...props}
+                          outerRadius={props.outerRadius + 8}
+                          fill={props.fill}
+                          stroke="#fff"
+                          strokeWidth={2}
+                        />
+                      </g>
+                    )}
                   >
                     {empresas.map((_, i) => (
                       <Cell
