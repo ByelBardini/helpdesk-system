@@ -182,179 +182,181 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="mt-4 px-6 lg:px-10 pb-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-12 gap-4">
-        <section className="col-span-12 lg:col-span-3 rounded-2xl bg-[#2a2d5a]/60 border border-white/10 p-4 backdrop-blur-sm shadow-lg">
-          <h2 className="text-sm font-semibold mb-3 text-white/90">
-            Balanço dos últimos 30 dias
-          </h2>
-          <div className="space-y-3">
-            {mini.map((m) => (
-              <div
-                key={m.titulo}
-                className="p-3 rounded-xl bg-white/5 border border-white/10"
-              >
-                <p className="text-xs text-white/70 mb-2">{m.titulo}</p>
+    <div className="h-full overflow-y-auto pb-12">
+      <div className="mt-4 px-6 lg:px-10 pb-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-12 gap-4">
+          <section className="col-span-12 lg:col-span-3 rounded-2xl bg-[#2a2d5a]/60 border border-white/10 p-4 backdrop-blur-sm shadow-lg">
+            <h2 className="text-sm font-semibold mb-3 text-white/90">
+              Balanço dos últimos 30 dias
+            </h2>
+            <div className="space-y-3">
+              {mini.map((m) => (
+                <div
+                  key={m.titulo}
+                  className="p-3 rounded-xl bg-white/5 border border-white/10"
+                >
+                  <p className="text-xs text-white/70 mb-2">{m.titulo}</p>
 
-                <div className="h-3 w-full rounded-full overflow-hidden bg-white/10 ring-1 ring-white/10">
-                  <div
-                    className="h-full"
-                    style={{
-                      width: `${(m.aberto / m.maxTotal) * 100}%`,
-                      background: m.colorA,
-                    }}
-                  />
-                </div>
-                <div className="h-3 w-full rounded-full overflow-hidden bg-white/10 ring-1 ring-white/10 mt-2">
-                  <div
-                    className="h-full"
-                    style={{
-                      width: `${(m.concluido / m.maxTotal) * 100}%`,
-                      background: m.colorB,
-                    }}
-                  />
-                </div>
+                  <div className="h-3 w-full rounded-full overflow-hidden bg-white/10 ring-1 ring-white/10">
+                    <div
+                      className="h-full"
+                      style={{
+                        width: `${(m.aberto / m.maxTotal) * 100}%`,
+                        background: m.colorA,
+                      }}
+                    />
+                  </div>
+                  <div className="h-3 w-full rounded-full overflow-hidden bg-white/10 ring-1 ring-white/10 mt-2">
+                    <div
+                      className="h-full"
+                      style={{
+                        width: `${(m.concluido / m.maxTotal) * 100}%`,
+                        background: m.colorB,
+                      }}
+                    />
+                  </div>
 
-                <div className="flex justify-between mt-1 text-[11px] text-white/60">
-                  <span>Abertos {m.aberto}</span>
-                  <span>Concluídos {m.concluido}</span>
+                  <div className="flex justify-between mt-1 text-[11px] text-white/60">
+                    <span>Abertos {m.aberto}</span>
+                    <span>Concluídos {m.concluido}</span>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="col-span-12 lg:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {kpis.map((k) => (
+              <KpiCard
+                key={k.title}
+                title={k.title}
+                value={k.value}
+                Icon={k.icon}
+                color={k.color}
+              />
             ))}
-          </div>
-        </section>
 
-        <section className="col-span-12 lg:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {kpis.map((k) => (
-            <KpiCard
-              key={k.title}
-              title={k.title}
-              value={k.value}
-              Icon={k.icon}
-              color={k.color}
-            />
-          ))}
-
-          <div className="col-span-2 md:col-span-4 rounded-2xl bg-[#2a2d5a]/60 border border-white/10 p-4">
-            <h3 className="text-sm font-semibold mb-3 text-white/90">
-              Proporção por área
-            </h3>
-            <div className="h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={areas}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
-                  <XAxis
-                    dataKey="name"
-                    stroke="#cbd5e1"
-                    tick={{ fill: "#cbd5e1", fontSize: 12 }}
-                  />
-                  <YAxis
-                    stroke="#cbd5e1"
-                    tick={{ fill: "#cbd5e1", fontSize: 12 }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: "#1f2347",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#fff",
-                    }}
-                    cursor={{ fill: "rgba(255,255,255,0.06)" }}
-                  />
-                  <Bar
-                    dataKey="value"
-                    name="Chamados"
-                    radius={[6, 6, 0, 0]}
-                    fill={C.accent}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="col-span-2 md:col-span-4 rounded-2xl bg-[#2a2d5a]/60 border border-white/10 p-4">
+              <h3 className="text-sm font-semibold mb-3 text-white/90">
+                Proporção por área
+              </h3>
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={areas}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
+                    <XAxis
+                      dataKey="name"
+                      stroke="#cbd5e1"
+                      tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                    />
+                    <YAxis
+                      stroke="#cbd5e1"
+                      tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: "#1f2347",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "#fff",
+                      }}
+                      cursor={{ fill: "rgba(255,255,255,0.06)" }}
+                    />
+                    <Bar
+                      dataKey="value"
+                      name="Chamados"
+                      radius={[6, 6, 0, 0]}
+                      fill={C.accent}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <ChartCard title="Proporção Erro / Solicitação / Melhoria">
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={24}
-                    wrapperStyle={{ color: "#cbd5e1" }}
-                  />
-                  <Pie
-                    data={tipos}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={55}
-                    outerRadius={85}
-                    paddingAngle={3}
-                    label={{ fill: "#fff", fontSize: 12 }}
-                    activeShape={(props) => (
-                      <g>
-                        <Sector
-                          {...props}
-                          outerRadius={props.outerRadius + 8}
-                          fill={props.fill}
-                          stroke="#fff"
-                          strokeWidth={2}
+          <section className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ChartCard title="Proporção Erro / Solicitação / Melhoria">
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend
+                      verticalAlign="bottom"
+                      height={24}
+                      wrapperStyle={{ color: "#cbd5e1" }}
+                    />
+                    <Pie
+                      data={tipos}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={55}
+                      outerRadius={85}
+                      paddingAngle={3}
+                      label={{ fill: "#fff", fontSize: 12 }}
+                      activeShape={(props) => (
+                        <g>
+                          <Sector
+                            {...props}
+                            outerRadius={props.outerRadius + 8}
+                            fill={props.fill}
+                            stroke="#fff"
+                            strokeWidth={2}
+                          />
+                        </g>
+                      )}
+                    >
+                      {tipos.map((e, i) => (
+                        <Cell key={i} fill={e.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </ChartCard>
+
+            <ChartCard title="Proporção por empresa">
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend
+                      verticalAlign="bottom"
+                      height={24}
+                      wrapperStyle={{ color: "#cbd5e1" }}
+                    />
+                    <Pie
+                      data={empresas}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={50}
+                      outerRadius={80}
+                      label={{ fill: "#fff", fontSize: 12 }}
+                      activeShape={(props) => (
+                        <g>
+                          <Sector
+                            {...props}
+                            outerRadius={props.outerRadius + 8}
+                            fill={props.fill}
+                            stroke="#fff"
+                            strokeWidth={2}
+                          />
+                        </g>
+                      )}
+                    >
+                      {empresas.map((_, i) => (
+                        <Cell
+                          key={i}
+                          fill={
+                            [C.accent, C.blue, C.green, C.yellow, C.red][i % 5]
+                          }
                         />
-                      </g>
-                    )}
-                  >
-                    {tipos.map((e, i) => (
-                      <Cell key={i} fill={e.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </ChartCard>
-
-          <ChartCard title="Proporção por empresa">
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={24}
-                    wrapperStyle={{ color: "#cbd5e1" }}
-                  />
-                  <Pie
-                    data={empresas}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={50}
-                    outerRadius={80}
-                    label={{ fill: "#fff", fontSize: 12 }}
-                    activeShape={(props) => (
-                      <g>
-                        <Sector
-                          {...props}
-                          outerRadius={props.outerRadius + 8}
-                          fill={props.fill}
-                          stroke="#fff"
-                          strokeWidth={2}
-                        />
-                      </g>
-                    )}
-                  >
-                    {empresas.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={
-                          [C.accent, C.blue, C.green, C.yellow, C.red][i % 5]
-                        }
-                      />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </ChartCard>
-        </section>
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </ChartCard>
+          </section>
+        </div>
       </div>
     </div>
   );
