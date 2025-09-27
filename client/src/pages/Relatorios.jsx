@@ -24,32 +24,10 @@ export default function Relatorios() {
         title: "Chamados abertos por período",
         desc: "Quantidade de chamados abertos em um intervalo de tempo.",
       },
-      {
-        key: "comparativo",
-        title: "Chamados abertos x concluídos por período",
-        desc: "Comparação de chamados abertos e resolvidos dentro de um período.",
-      },
-      {
-        key: "erros",
-        title: "Erros x Solicitações x Melhorias",
-        desc: "Comparação de chamados abertos por tipo em um período.",
-      },
-      {
-        key: "areas",
-        title: "Áreas por período",
-        desc: "Comparação de chamados abertos por área dentro de um período.",
-      },
-    ],
-    individual: [
-      {
-        key: "area",
-        title: "Comparativo por área",
-        desc: "Comparação dos tipos de chamados em uma área específica, dentro de um período.",
-      },
     ],
   };
 
-  const todasOpcoes = [...menu.geral, ...menu.periodo, ...menu.individual];
+  const todasOpcoes = [...menu.geral, ...menu.periodo];
 
   const getSelectedTitle = () =>
     todasOpcoes.find((item) => item.key === selecionado)?.title || "";
@@ -92,7 +70,6 @@ export default function Relatorios() {
         <nav className="col-span-12 md:col-span-3 space-y-6">
           {renderGrupoMenu("Geral", menu.geral)}
           {renderGrupoMenu("Período", menu.periodo)}
-          {renderGrupoMenu("Individual", menu.individual)}
         </nav>
 
         <TelaRelatorios
