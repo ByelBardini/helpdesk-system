@@ -284,6 +284,9 @@ export async function alterarStatus(req, res) {
   if (status == "resolvendo") {
     chamado.chamado_status = status;
     chamado.chamado_responsavel_id = usuario_id;
+  } else if (status == "resolvido") {
+    chamado.chamado_status = status;
+    chamado.chamado_data_conclusao = new Date();
   } else {
     chamado.chamado_status = status;
   }
