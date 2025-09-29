@@ -1,5 +1,28 @@
 import { api } from "../api.js";
 
+export async function postUsuario(
+  usuario_nome,
+  usuario_role,
+  usuario_login,
+  usuario_setor,
+  usuario_empresa
+) {
+  try {
+    const response = await api.post(`/usuario`, {
+      usuario_nome,
+      usuario_role,
+      usuario_login,
+      usuario_setor,
+      usuario_empresa,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em postUsuario:", err);
+    throw err;
+  }
+}
+
 export async function getUsuarios() {
   try {
     const response = await api.get("/usuario");

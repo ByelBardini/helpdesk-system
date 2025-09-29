@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { getDados } from "../../services/api/usuarioServices.js";
+import { getDados, postUsuario } from "../../services/api/usuarioServices.js";
 import { tratarErro } from "../default/funcoes.js";
 import { X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -28,9 +28,53 @@ export default function CadastraUsuario({
       setEmpresas(dados.empresas);
       setSetores(dados.setores);
     } catch (err) {
-      tratarErro();
       setLoading(false);
       console.error("Erro ao buscar dados:", err);
+      tratarErro(setNotificacao, err, navigate);
+    }
+  }
+
+  async function cadastrarUsuario() {
+    if (
+      nome == "" ||
+      login == "" ||
+      role == "" ||
+      empresa == "" ||
+      setor == ""
+    ) {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Dados incompetos",
+        mensagem: "Todos os campos devem ser preenchidos",
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      await postUsuario(nome, role, login, setor, empresa);
+      await buscaUsuarios();
+
+      setLoading(false);
+
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Usuário cadastrado com sucesso",
+        mensagem: `O usuário foi cadastrado com sucesso com a senha padrão "12345"`,
+      });
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+        setCadastrando(false);
+      }, 700);
+    } catch (err) {
+      setLoading(false);
+      console.error("Erro ao cadastrar usuário:", err);
       tratarErro(setNotificacao, err, navigate);
     }
   }
@@ -73,7 +117,7 @@ export default function CadastraUsuario({
                 onChange={(e) => setNome(e.target.value)}
                 type="text"
                 placeholder="Digite o nome completo"
-                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm placeholder-white/40 outline-none focus:border-blue-400"
+                className="w-full h-10 rounded-lg border border-white/10 bg-white/10 px-3 text-sm placeholder-white/50 outline-none focus:border-blue-400"
               />
             </label>
 
@@ -83,7 +127,7 @@ export default function CadastraUsuario({
                 onChange={(e) => setLogin(e.target.value)}
                 type="text"
                 placeholder="Digite o login do usuário"
-                className="w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm placeholder-white/40 outline-none focus:border-blue-400"
+                className="w-full h-10 rounded-lg border border-white/10 bg-white/10 px-3 text-sm placeholder-white/50 outline-none focus:border-blue-400"
               />
             </label>
 
@@ -152,7 +196,10 @@ export default function CadastraUsuario({
         </div>
 
         <div className="flex justify-end gap-3 border-t border-white/10 px-6 py-4">
-          <button className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 hover:bg-green-500/30 transition">
+          <button
+            onClick={cadastrarUsuario}
+            className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 hover:bg-green-500/30 transition"
+          >
             <Save className="h-4 w-4" />
             Salvar Usuário
           </button>
