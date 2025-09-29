@@ -125,7 +125,7 @@ export default function ChamadosSuporte() {
               {formatToCapitalized(coluna.titulo)}
             </h2>
 
-            <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[calc(100vh-12rem)]">
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[calc(100vh-10rem)]">
               {chamados
                 .filter((chamado) => chamado.chamado_status === coluna.titulo)
                 .map((chamado) => {
