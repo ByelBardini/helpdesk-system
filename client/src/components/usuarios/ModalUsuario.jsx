@@ -1,9 +1,28 @@
 import { X, Ban, RefreshCw, Save } from "lucide-react";
+import { putUsuarios } from "../../services/api/usuarioServices.js";
 import { useState } from "react";
 
-export default function ModalUsuario({ setores, usuario, setEditaUsuario }) {
+export default function ModalUsuario({
+  setores,
+  usuario,
+  setEditaUsuario,
+  buscaUsuarios,
+}) {
   const [novoSetor, setNovoSetor] = useState(usuario.setor.setor_nome);
   const [novoRole, setNovoRole] = useState(usuario.usuario_role);
+
+  async function atualizarUsuario() {
+    try {
+      await putUsuarios(usuario.usuario_id, novoSetor, novoRole);
+
+      await buscaUsuarios();
+
+      alert("deu bom");
+      setEditaUsuario({ show: false, usuario: null });
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -62,6 +81,7 @@ export default function ModalUsuario({ setores, usuario, setEditaUsuario }) {
             <label className="flex flex-col gap-1">
               <span className="text-xs text-white/70">Setor</span>
               <select
+                value={novoSetor}
                 onChange={(e) => setNovoSetor(e.target.value)}
                 className="px-3 py-2 rounded-lg bg-[#1c1f4a] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-400"
               >
@@ -76,7 +96,7 @@ export default function ModalUsuario({ setores, usuario, setEditaUsuario }) {
             <label className="flex flex-col gap-1 md:col-span-2">
               <span className="text-xs text-white/70">Tipo de usuário</span>
               <select
-                value={usuario.usuario_role}
+                value={novoRole}
                 onChange={(e) => setNovoRole(e.target.value)}
                 className="px-3 py-2 rounded-lg bg-[#1c1f4a] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-400"
               >
@@ -118,7 +138,10 @@ export default function ModalUsuario({ setores, usuario, setEditaUsuario }) {
             </button>
           </div>
 
-          <button className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 hover:bg-green-500/30 transition">
+          <button
+            onClick={atualizarUsuario}
+            className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 hover:bg-green-500/30 transition"
+          >
             <Save className="h-4 w-4" />
             Salvar
           </button>

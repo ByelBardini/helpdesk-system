@@ -10,3 +10,17 @@ export async function getUsuarios() {
     throw err;
   }
 }
+
+export async function putUsuarios(id, setor, role) {
+  try {
+    const response = await api.put(`/usuario/${id}`, {
+      setor_nome: setor,
+      usuario_role: role,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em putUsuarios:", err);
+    throw err;
+  }
+}

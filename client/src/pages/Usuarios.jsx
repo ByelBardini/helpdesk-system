@@ -108,6 +108,7 @@ export default function Usuarios() {
           setores={setores}
           usuario={editaUsuario.usuario}
           setEditaUsuario={setEditaUsuario}
+          buscaUsuarios={buscaUsuarios}
         />
       )}
       <div className="w-full flex flex-col bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2 self-start">
