@@ -2,6 +2,7 @@
 import CardUsuario from "../components/usuarios/CardUsuario.jsx";
 import FiltrosUsuarios from "../components/usuarios/FiltrosUsuarios.jsx";
 import ModalUsuario from "../components/usuarios/ModalUsuario.jsx";
+import CadastraUsuario from "../components/usuarios/CadastraUsuario.jsx";
 import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
 import Confirmacao from "../components/default/Confirmacao.jsx";
@@ -36,6 +37,7 @@ export default function Usuarios() {
     show: false,
     usuario: null,
   });
+  const [cadastrando, setCadastrando] = useState(false);
 
   const [notificacao, setNotificacao] = useState({
     show: false,
@@ -139,6 +141,17 @@ export default function Usuarios() {
           setConfirmacao={setConfirmacao}
         />
       )}
+      {cadastrando && (
+        <CadastraUsuario
+          empresas={empresas}
+          setores={setores}
+          setCadastrando={setCadastrando}
+          buscaUsuarios={buscaUsuarios}
+          setNotificacao={setNotificacao}
+          setLoading={setLoading}
+          navigate={navigate}
+        />
+      )}
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}
@@ -197,7 +210,10 @@ export default function Usuarios() {
             setores={setores}
           />
 
-          <button className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 border border-green-400/30 hover:bg-green-500/30 transition text-sm">
+          <button
+            onClick={() => setCadastrando(true)}
+            className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 border border-green-400/30 hover:bg-green-500/30 transition text-sm"
+          >
             <Plus className="w-4 h-4" />
             <span>Novo Funcionário</span>
           </button>

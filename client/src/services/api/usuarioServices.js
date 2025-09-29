@@ -46,3 +46,14 @@ export async function ativaInativa(id) {
     throw err;
   }
 }
+
+export async function getDados() {
+  try {
+    const response = await api.get(`/usuario/dados`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em buscaDados:", err);
+    throw err;
+  }
+}
