@@ -29,7 +29,7 @@ export default function Login() {
     } else {
       setLoading(true);
       try {
-        await login(senha, usuario);
+        const dados = await login(senha, usuario);
 
         setNotificacao({
           show: true,
@@ -46,7 +46,11 @@ export default function Login() {
             titulo: "",
             mensagem: "",
           });
-          navigate("/home", { replace: true });
+          if (dados.usuario_role == "adm" || dados.usuario_role == "suporte") {
+            navigate("/suporte/dashboard", { replace: true });
+          } else {
+            navigate("/home", { replace: true });
+          }
         }, 1000);
       } catch (err) {
         const apiMessage = err.response?.data?.message;
