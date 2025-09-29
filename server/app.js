@@ -12,6 +12,7 @@ import respostaRoutes from "./routes/respostaRoutes.js";
 import downloadRoutes from "./routes/downloadRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import relatorioRoutes from "./routes/relatorioRoutes.js";
+import configRoutes from "./routes/configRoutes.js";
 import { ApiError } from "./middlewares/ApiError.js";
 import { limpaArquivosAntigos } from "./middlewares/limpaAnexosAntigos.js";
 
@@ -43,6 +44,7 @@ app.use("/chamado", chamadoRoutes);
 app.use("/resposta", respostaRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/relatorio", relatorioRoutes);
+app.use("/config", configRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
