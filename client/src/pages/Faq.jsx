@@ -20,6 +20,7 @@ export default function Faq() {
   const [perguntasOrdenadas, setPerguntasOrdenadas] = useState([]);
 
   const [sessao, setSessao] = useState(0);
+  const [porPagina, setPorPagina] = useState(6);
 
   const [notificacao, setNotificacao] = useState({
     show: false,
@@ -28,6 +29,19 @@ export default function Faq() {
     mensagem: "",
   });
   const [loading, setLoading] = useState(false);
+
+  function calcularPorPagina() {
+    const altura = window.innerHeight;
+    const header = 250;
+    const footer = 80;
+    const cardMedio = 60;
+    const disponivel = altura - header - footer;
+
+    const qtd = Math.max(1, Math.floor(disponivel / cardMedio));
+
+    console.log(qtd);
+    setPorPagina(qtd);
+  }
 
   function filtra() {
     const filtrado = perguntas.filter(
@@ -62,6 +76,9 @@ export default function Faq() {
 
   useEffect(() => {
     buscarPerguntas();
+    calcularPorPagina();
+    window.addEventListener("resize", calcularPorPagina);
+    return () => window.removeEventListener("resize", calcularPorPagina);
   }, []);
 
   useEffect(() => {
@@ -70,7 +87,7 @@ export default function Faq() {
   }, [pesquisa, categoriaSelecionada]);
 
   useEffect(() => {
-    const ordenadas = dividirEmPartes(perguntasFiltradas, 6);
+    const ordenadas = dividirEmPartes(perguntasFiltradas, porPagina);
     setPerguntasOrdenadas(ordenadas);
     console.log(ordenadas);
   }, [perguntasFiltradas]);
