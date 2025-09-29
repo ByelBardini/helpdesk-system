@@ -1,4 +1,4 @@
-import { Usuario } from "../models/index.js";
+import { Usuario, Empresa, Setor } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 import bcrypt from "bcrypt";
 
@@ -41,4 +41,119 @@ export async function cadastrarUsuario(req, res) {
     if (err instanceof ApiError) throw err;
     throw ApiError.internal("Erro ao cadastrar usuário");
   }
+}
+
+export async function getUsuarios(req, res) {
+  const liderados = await Usuario.findAll({
+    order: [["usuario_ativo", "DESC"]],
+    attributes: [
+      "usuario_id",
+      "usuario_nome",
+      "usuario_login",
+      "usuario_ativo",
+    ],
+    where: { usuario_role: "liderado" },
+    include: [
+      {
+        model: Empresa,
+        as: "empresa",
+        attributes: ["empresa_nome"],
+      },
+      {
+        model: Setor,
+        as: "setor",
+        attributes: ["setor_nome"],
+      },
+    ],
+  });
+  const supervisores = await Usuario.findAll({
+    order: [["usuario_ativo", "DESC"]],
+    attributes: [
+      "usuario_id",
+      "usuario_nome",
+      "usuario_login",
+      "usuario_ativo",
+    ],
+    where: { usuario_role: "supervisor" },
+    include: [
+      {
+        model: Empresa,
+        as: "empresa",
+        attributes: ["empresa_nome"],
+      },
+      {
+        model: Setor,
+        as: "setor",
+        attributes: ["setor_nome"],
+      },
+    ],
+  });
+  const gerentes = await Usuario.findAll({
+    order: [["usuario_ativo", "DESC"]],
+    attributes: [
+      "usuario_id",
+      "usuario_nome",
+      "usuario_login",
+      "usuario_ativo",
+    ],
+    where: { usuario_role: "gerente" },
+    include: [
+      {
+        model: Empresa,
+        as: "empresa",
+        attributes: ["empresa_nome"],
+      },
+      {
+        model: Setor,
+        as: "setor",
+        attributes: ["setor_nome"],
+      },
+    ],
+  });
+  const suportes = await Usuario.findAll({
+    order: [["usuario_ativo", "DESC"]],
+    attributes: [
+      "usuario_id",
+      "usuario_nome",
+      "usuario_login",
+      "usuario_ativo",
+    ],
+    where: { usuario_role: "suporte" },
+    include: [
+      {
+        model: Empresa,
+        as: "empresa",
+        attributes: ["empresa_nome"],
+      },
+      {
+        model: Setor,
+        as: "setor",
+        attributes: ["setor_nome"],
+      },
+    ],
+  });
+  const adms = await Usuario.findAll({
+    order: [["usuario_ativo", "DESC"]],
+    attributes: [
+      "usuario_id",
+      "usuario_nome",
+      "usuario_login",
+      "usuario_ativo",
+    ],
+    where: { usuario_role: "adm" },
+    include: [
+      {
+        model: Empresa,
+        as: "empresa",
+        attributes: ["empresa_nome"],
+      },
+      {
+        model: Setor,
+        as: "setor",
+        attributes: ["setor_nome"],
+      },
+    ],
+  });
+
+  res.status(200).json({ liderados, supervisores, gerentes, suportes, adms });
 }
