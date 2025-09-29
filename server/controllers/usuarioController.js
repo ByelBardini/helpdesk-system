@@ -181,3 +181,19 @@ export async function putUsuario(req, res) {
 
   return res.status(200).json({ message: "Usuário editado com sucesso" });
 }
+
+export async function resetaSenha(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id do usuário é obrigatório");
+  }
+
+  const usuario = await Usuario.findByPk(id);
+
+  const senhaHash = bcrypt.hashSync("12345", 10);
+
+  usuario.usuario_senha = senhaHash;
+  usuario.usuario_troca_senha = 1;
+
+  return res.status(200).json({ message: "Senha resetada com sucesso" });
+}
