@@ -195,5 +195,24 @@ export async function resetaSenha(req, res) {
   usuario.usuario_senha = senhaHash;
   usuario.usuario_troca_senha = 1;
 
+  await usuario.save();
+
   return res.status(200).json({ message: "Senha resetada com sucesso" });
+}
+
+export async function ativaInativa(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id do usuário é obrigatório");
+  }
+
+  const usuario = await Usuario.findByPk(id);
+
+  usuario.usuario_ativo = !usuario.usuario_ativo;
+
+  await usuario.save();
+
+  return res
+    .status(200)
+    .json({ message: "Usuário ativado/inativado com sucesso" });
 }
