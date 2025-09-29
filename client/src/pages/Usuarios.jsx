@@ -2,6 +2,9 @@
 import CardUsuario from "../components/usuarios/CardUsuario.jsx";
 import FiltrosUsuarios from "../components/usuarios/FiltrosUsuarios.jsx";
 import ModalUsuario from "../components/usuarios/ModalUsuario.jsx";
+import Notificacao from "../components/default/Notificacao.jsx";
+import Loading from "../components/default/Loading.jsx";
+import Confirmacao from "../components/default/Confirmacao.jsx";
 import {
   Users,
   UserCog,
@@ -13,10 +16,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getUsuarios } from "../services/api/usuarioServices.js";
-import { dividirEmPartes } from "../components/default/funcoes.js";
+import { dividirEmPartes, tratarErro } from "../components/default/funcoes.js";
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Usuarios() {
+  const navigate = useNavigate();
+
   const [usuarios, setUsuarios] = useState([]);
   const [categoria, setCategoria] = useState("adms");
 
@@ -29,6 +35,20 @@ export default function Usuarios() {
   const [editaUsuario, setEditaUsuario] = useState({
     show: false,
     usuario: null,
+  });
+
+  const [notificacao, setNotificacao] = useState({
+    show: false,
+    tipo: "sucesso",
+    titulo: "",
+    mensagem: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [confirmacao, setConfirmacao] = useState({
+    show: false,
+    titulo: "",
+    texto: "",
+    onSim: null,
   });
 
   const secoes = [
@@ -71,12 +91,16 @@ export default function Usuarios() {
   }
 
   async function buscaUsuarios() {
+    setLoading(true);
     try {
       const dados = await getUsuarios();
+      setLoading(false);
       setUsuarios(dados);
       setUsuariosFiltrados(dados);
     } catch (err) {
+      setLoading(false);
       console.error("Erro ao buscar usuários:", err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
@@ -109,8 +133,43 @@ export default function Usuarios() {
           usuario={editaUsuario.usuario}
           setEditaUsuario={setEditaUsuario}
           buscaUsuarios={buscaUsuarios}
+          navigate={navigate}
+          setNotificacao={setNotificacao}
+          setLoading={setLoading}
+          setConfirmacao={setConfirmacao}
         />
       )}
+      {notificacao.show && (
+        <Notificacao
+          titulo={notificacao.titulo}
+          mensagem={notificacao.mensagem}
+          tipo={notificacao.tipo}
+          onClick={() =>
+            setNotificacao({
+              show: false,
+              tipo: "sucesso",
+              titulo: "",
+              mensagem: "",
+            })
+          }
+        />
+      )}
+      {confirmacao.show && (
+        <Confirmacao
+          texto={confirmacao.texto}
+          titulo={confirmacao.titulo}
+          onSim={confirmacao.onSim}
+          onNao={() =>
+            setConfirmacao({
+              show: false,
+              titulo: "",
+              texto: "",
+              onSim: null,
+            })
+          }
+        />
+      )}
+      {loading && <Loading />}
       <div className="w-full flex flex-col bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2 self-start">
         {secoes.map((secao) => (
           <button

@@ -1,58 +1,112 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { X, Ban, RefreshCw, Save, Check } from "lucide-react";
 import {
   putUsuarios,
   resetaSenha,
   ativaInativa,
 } from "../../services/api/usuarioServices.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { tratarErro } from "../default/funcoes.js";
 
 export default function ModalUsuario({
   setores,
   usuario,
   setEditaUsuario,
   buscaUsuarios,
+  navigate,
+  setNotificacao,
+  setLoading,
+  setConfirmacao,
 }) {
   const [novoSetor, setNovoSetor] = useState(usuario.setor.setor_nome);
   const [novoRole, setNovoRole] = useState(usuario.usuario_role);
 
-  async function atualizarUsuario() {
+  async function realizaAcao(tipo) {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
+    if (
+      tipo != "resetar" &&
+      usuario.usuario_id == localStorage.getItem("usuario_id")
+    ) {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Ação inválida",
+        mensagem:
+          tipo === "editar"
+            ? "Você não pode editar seu próprio usuário."
+            : "Você não pode inativar seu próprio usuário.",
+      });
+      return;
+    }
+    setLoading(true);
     try {
-      await putUsuarios(usuario.usuario_id, novoSetor, novoRole);
-
+      switch (tipo) {
+        case "resetar": {
+          await resetaSenha(usuario.usuario_id);
+          setNotificacao({
+            show: true,
+            tipo: "sucesso",
+            titulo: "Senha resetada com sucesso",
+            mensagem: `Definida para o padrão "12345"`,
+          });
+          break;
+        }
+        case "editar": {
+          await putUsuarios(usuario.usuario_id, novoSetor, novoRole);
+          setNotificacao({
+            show: true,
+            tipo: "sucesso",
+            titulo: "Usuário editado com sucesso",
+            mensagem: `Os novos dados já estão valendo no sistema`,
+          });
+          break;
+        }
+        case "inativar": {
+          await ativaInativa(usuario.usuario_id);
+          setNotificacao({
+            show: true,
+            tipo: "sucesso",
+            titulo:
+              usuario.usuario_ativo == 0
+                ? "Usuário reativado com sucesso"
+                : "Usuário inativado com sucesso",
+            mensagem:
+              usuario.usuario_ativo == 0
+                ? "O usuário voltou a ter acesso ao sistema"
+                : "O usuário não terá mais acesso ao sistema",
+          });
+          break;
+        }
+      }
       await buscaUsuarios();
-
-      alert("deu bom");
-      setEditaUsuario({ show: false, usuario: null });
+      setLoading(false);
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+        setEditaUsuario({ show: false, usuario: null });
+      }, 700);
     } catch (err) {
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
       console.error(err);
     }
   }
 
-  async function resetarSenha() {
-    try {
-      await resetaSenha(usuario.usuario_id);
-
-      await buscaUsuarios();
-
-      alert("deu bom");
-      setEditaUsuario({ show: false, usuario: null });
-    } catch (err) {
-      console.error(err);
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (e.key === "Escape") setEditaUsuario({ show: false, usuario: false });
     }
-  }
-
-  async function ativarOuInativar() {
-    try {
-      await ativaInativa(usuario.usuario_id);
-
-      await buscaUsuarios();
-
-      alert("deu bom");
-      setEditaUsuario({ show: false, usuario: null });
-    } catch (err) {
-      console.error(err);
-    }
-  }
+    window.addEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -159,7 +213,14 @@ export default function ModalUsuario({
           <div className="flex gap-2">
             {usuario.usuario_ativo == 1 ? (
               <button
-                onClick={ativarOuInativar}
+                onClick={() =>
+                  setConfirmacao({
+                    show: true,
+                    titulo: "Deseja inativar o usuário?",
+                    texto: "Ele perderá o acesso ao aplicativo e suas funções",
+                    onSim: () => realizaAcao("inativar"),
+                  })
+                }
                 className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-red-400/30 bg-red-500/15 px-4 py-2 text-sm text-red-300 hover:bg-red-500/25 transition"
               >
                 <Ban className="h-4 w-4" />
@@ -167,7 +228,15 @@ export default function ModalUsuario({
               </button>
             ) : (
               <button
-                onClick={ativarOuInativar}
+                onClick={() =>
+                  setConfirmacao({
+                    show: true,
+                    titulo: "Deseja reativar o usuário?",
+                    texto:
+                      "Ele voltará a ter acesso ao sistema e inteagir com as funções equivalentes à sua função",
+                    onSim: () => realizaAcao("inativar"),
+                  })
+                }
                 className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-green-400/30 bg-green-500/15 px-4 py-2 text-sm text-regreend-300 hover:bg-green-500/25 transition"
               >
                 <Check className="h-4 w-4" />
@@ -176,7 +245,14 @@ export default function ModalUsuario({
             )}
 
             <button
-              onClick={resetarSenha}
+              onClick={() =>
+                setConfirmacao({
+                  show: true,
+                  titulo: "Deseja resetar a senha do usuário?",
+                  texto: "A senha será resetada novamente ao padrão",
+                  onSim: () => realizaAcao("resetar"),
+                })
+              }
               className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-yellow-400/30 bg-yellow-500/15 px-4 py-2 text-sm text-yellow-200 hover:bg-yellow-500/25 transition"
             >
               <RefreshCw className="h-4 w-4" />
@@ -185,7 +261,14 @@ export default function ModalUsuario({
           </div>
 
           <button
-            onClick={atualizarUsuario}
+            onClick={() =>
+              setConfirmacao({
+                show: true,
+                titulo: "Deseja salvar os dados do usuário?",
+                texto: "Confirme os dados antes de realizar a ação",
+                onSim: () => realizaAcao("editar"),
+              })
+            }
             className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 hover:bg-green-500/30 transition"
           >
             <Save className="h-4 w-4" />
