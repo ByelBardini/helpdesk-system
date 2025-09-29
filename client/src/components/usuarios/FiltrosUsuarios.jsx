@@ -3,15 +3,13 @@ import { useState, useMemo } from "react";
 
 export default function FiltrosUsuarios({
   usuarios,
-  setBuscaFiltro,
-  setStatusFiltro,
-  setEmpresaFiltro,
-  setSetorFiltro,
+  categoria,
+  setUsuariosFiltrados,
 }) {
-  const [buscaTmp, setBuscaTmp] = useState("");
-  const [statusTmp, setStatusTmp] = useState("todos");
-  const [empresaTmp, setEmpresaTmp] = useState("todas");
-  const [setorTmp, setSetorTmp] = useState("todos");
+  const [busca, setBusca] = useState("");
+  const [status, setStatus] = useState("");
+  const [empresa, setEmpresa] = useState("");
+  const [setor, setSetor] = useState("");
 
   const empresas = useMemo(() => {
     if (!usuarios) return [];
@@ -31,11 +29,34 @@ export default function FiltrosUsuarios({
     return [...new Set(lista)];
   }, [usuarios]);
 
-  function aplicarFiltros() {
-    setBuscaFiltro(buscaTmp);
-    setStatusFiltro(statusTmp);
-    setEmpresaFiltro(empresaTmp);
-    setSetorFiltro(setorTmp);
+  function aplicaFiltro() {
+    const filtrados = usuarios[categoria].filter((usuario) => {
+      const nomeMatch =
+        busca === "" ||
+        usuario.usuario_nome.toLowerCase().includes(busca.toLowerCase());
+
+      const statusMatch =
+        status === ""
+          ? true
+          : status === "1"
+          ? usuario.usuario_ativo == 1
+          : usuario.usuario_ativo == 0;
+
+      const empresaMatch =
+        empresa === "" ? true : usuario.empresa?.empresa_nome === empresa;
+
+      const setorMatch =
+        setor === "" ? true : usuario.setor?.setor_nome === setor;
+
+      return nomeMatch && statusMatch && empresaMatch && setorMatch;
+    });
+
+    console.log(filtrados);
+
+    setUsuariosFiltrados((prev) => ({
+      ...prev,
+      [categoria]: filtrados,
+    }));
   }
 
   return (
@@ -45,29 +66,29 @@ export default function FiltrosUsuarios({
         <input
           type="text"
           placeholder="Buscar usuário..."
-          value={buscaTmp}
-          onChange={(e) => setBuscaTmp(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && aplicarFiltros()}
+          value={busca}
+          onKeyDown={(e) => e.key === "Enter" && aplicaFiltro()}
+          onChange={(e) => setBusca(e.target.value)}
           className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#1c1f4a] border border-white/10 text-sm focus:outline-none focus:border-blue-400"
         />
       </div>
 
       <select
-        value={statusTmp}
-        onChange={(e) => setStatusTmp(e.target.value)}
+        value={status}
+        onChange={(e) => setStatus(e.target.value)}
         className="px-3 py-2 rounded-lg bg-[#1c1f4a] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-400"
       >
-        <option value="todos">Todos</option>
-        <option value="ativos">Ativos</option>
-        <option value="inativos">Inativos</option>
+        <option value="">Todos</option>
+        <option value="1">Ativos</option>
+        <option value="0">Inativos</option>
       </select>
 
       <select
-        value={empresaTmp}
-        onChange={(e) => setEmpresaTmp(e.target.value)}
+        value={empresa}
+        onChange={(e) => setEmpresa(e.target.value)}
         className="px-3 py-2 rounded-lg bg-[#1c1f4a] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-400"
       >
-        <option value="todas">Todas as empresas</option>
+        <option value="">Todas as empresas</option>
         {empresas.map((empresa) => (
           <option key={empresa} value={empresa} className="bg-[#0e1033]">
             {empresa}
@@ -76,11 +97,11 @@ export default function FiltrosUsuarios({
       </select>
 
       <select
-        value={setorTmp}
-        onChange={(e) => setSetorTmp(e.target.value)}
+        value={setor}
+        onChange={(e) => setSetor(e.target.value)}
         className="px-3 py-2 rounded-lg bg-[#1c1f4a] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-400"
       >
-        <option value="todos">Todos os setores</option>
+        <option value="">Todos os setores</option>
         {setores.map((setor) => (
           <option key={setor} value={setor} className="bg-[#0e1033]">
             {setor}
@@ -89,7 +110,7 @@ export default function FiltrosUsuarios({
       </select>
 
       <button
-        onClick={aplicarFiltros}
+        onClick={aplicaFiltro}
         className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-400/30 hover:bg-blue-500/30 transition text-sm"
       >
         <Filter className="w-4 h-4" />

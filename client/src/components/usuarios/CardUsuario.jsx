@@ -2,10 +2,7 @@ import { Pencil } from "lucide-react";
 
 export default function CardUsuario({ usuario }) {
   return (
-    <div
-      key={usuario.usuario_id}
-      className="p-4 rounded-lg bg-white/5 border border-white/10 flex justify-between items-center text-sm hover:bg-white/10 transition"
-    >
+    <div className="mt-2 mb-2 p-4 rounded-lg bg-white/5 border border-white/10 flex justify-between items-center text-sm hover:bg-white/10 transition">
       <div>
         <span className="font-medium block text-white">
           {usuario.usuario_nome}
