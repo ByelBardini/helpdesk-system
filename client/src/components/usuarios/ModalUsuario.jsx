@@ -1,7 +1,8 @@
-import { X, Ban, RefreshCw, Save } from "lucide-react";
+import { X, Ban, RefreshCw, Save, Check } from "lucide-react";
 import {
   putUsuarios,
   resetaSenha,
+  ativaInativa,
 } from "../../services/api/usuarioServices.js";
 import { useState } from "react";
 
@@ -30,6 +31,19 @@ export default function ModalUsuario({
   async function resetarSenha() {
     try {
       await resetaSenha(usuario.usuario_id);
+
+      await buscaUsuarios();
+
+      alert("deu bom");
+      setEditaUsuario({ show: false, usuario: null });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function ativarOuInativar() {
+    try {
+      await ativaInativa(usuario.usuario_id);
 
       await buscaUsuarios();
 
@@ -143,10 +157,23 @@ export default function ModalUsuario({
 
         <div className="flex flex-col gap-3 border-t border-white/10 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-2">
-            <button className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-red-400/30 bg-red-500/15 px-4 py-2 text-sm text-red-300 hover:bg-red-500/25 transition">
-              <Ban className="h-4 w-4" />
-              Inativar usuário
-            </button>
+            {usuario.usuario_ativo == 1 ? (
+              <button
+                onClick={ativarOuInativar}
+                className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-red-400/30 bg-red-500/15 px-4 py-2 text-sm text-red-300 hover:bg-red-500/25 transition"
+              >
+                <Ban className="h-4 w-4" />
+                Inativar usuário
+              </button>
+            ) : (
+              <button
+                onClick={ativarOuInativar}
+                className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-green-400/30 bg-green-500/15 px-4 py-2 text-sm text-regreend-300 hover:bg-green-500/25 transition"
+              >
+                <Check className="h-4 w-4" />
+                Ativar usuário
+              </button>
+            )}
 
             <button
               onClick={resetarSenha}

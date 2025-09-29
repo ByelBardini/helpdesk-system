@@ -35,3 +35,14 @@ export async function resetaSenha(id) {
     throw err;
   }
 }
+
+export async function ativaInativa(id) {
+  try {
+    const response = await api.put(`/usuario/inativa/${id}`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em ativaInativa:", err);
+    throw err;
+  }
+}
