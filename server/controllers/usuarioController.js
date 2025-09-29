@@ -216,3 +216,14 @@ export async function ativaInativa(req, res) {
     .status(200)
     .json({ message: "Usuário ativado/inativado com sucesso" });
 }
+
+export async function getDados(req, res) {
+  const empresas = await Empresa.findAll({
+    attributes: ["empresa_id", "empresa_nome"],
+  });
+  const setores = await Setor.findAll({
+    attributes: ["setor_id", "setor_empresa_id", "setor_nome"],
+  });
+
+  return res.status(200).json({ empresas, setores });
+}

@@ -5,11 +5,13 @@ import {
   putUsuario,
   resetaSenha,
   ativaInativa,
+  getDados,
 } from "../controllers/usuarioController.js";
 
 const router = express.Router();
 
 router.get("/", getUsuarios);
+router.get("/dados", getDados);
 router.post("/", cadastrarUsuario);
 router.put("/:id", putUsuario);
 router.put("/senha/reseta/:id", resetaSenha);
