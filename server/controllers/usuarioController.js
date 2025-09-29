@@ -51,6 +51,7 @@ export async function getUsuarios(req, res) {
       "usuario_nome",
       "usuario_login",
       "usuario_ativo",
+      "usuario_role",
     ],
     where: { usuario_role: "liderado" },
     include: [
@@ -73,6 +74,7 @@ export async function getUsuarios(req, res) {
       "usuario_nome",
       "usuario_login",
       "usuario_ativo",
+      "usuario_role",
     ],
     where: { usuario_role: "supervisor" },
     include: [
@@ -95,6 +97,7 @@ export async function getUsuarios(req, res) {
       "usuario_nome",
       "usuario_login",
       "usuario_ativo",
+      "usuario_role",
     ],
     where: { usuario_role: "gerente" },
     include: [
@@ -117,6 +120,7 @@ export async function getUsuarios(req, res) {
       "usuario_nome",
       "usuario_login",
       "usuario_ativo",
+      "usuario_role",
     ],
     where: { usuario_role: "suporte" },
     include: [
@@ -139,6 +143,7 @@ export async function getUsuarios(req, res) {
       "usuario_nome",
       "usuario_login",
       "usuario_ativo",
+      "usuario_role",
     ],
     where: { usuario_role: "adm" },
     include: [
@@ -156,4 +161,23 @@ export async function getUsuarios(req, res) {
   });
 
   res.status(200).json({ liderados, supervisores, gerentes, suportes, adms });
+}
+
+export async function putUsuario(req, res) {
+  const { id } = req.params;
+  const { setor_nome, usuario_role } = req.body;
+  if (!id || !setor_nome || !usuario_role) {
+    throw ApiError("ID do usuário, role e setor são obrigatórios");
+  }
+
+  const setor = await Setor.findOne({ where: { setor_nome } });
+
+  const usuario = await Usuario.findByPk(id);
+
+  usuario.usuario_setor_id = setor.setor_id;
+  usuario.usuario_role = usuario_role;
+
+  await usuario.save();
+
+  return res.status(200).json({ message: "Usuário editado com sucesso" });
 }

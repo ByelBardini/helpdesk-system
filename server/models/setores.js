@@ -15,7 +15,7 @@ Setor.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    empresa_nome: {
+    setor_nome: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
