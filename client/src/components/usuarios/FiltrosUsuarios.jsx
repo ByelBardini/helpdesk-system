@@ -1,33 +1,17 @@
 import { Search, Filter } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 export default function FiltrosUsuarios({
   usuarios,
   categoria,
   setUsuariosFiltrados,
+  empresas,
+  setores,
 }) {
   const [busca, setBusca] = useState("");
   const [status, setStatus] = useState("");
   const [empresa, setEmpresa] = useState("");
   const [setor, setSetor] = useState("");
-
-  const empresas = useMemo(() => {
-    if (!usuarios) return [];
-    const lista = Object.values(usuarios)
-      .flat()
-      .map((u) => u.empresa?.empresa_nome)
-      .filter(Boolean);
-    return [...new Set(lista)];
-  }, [usuarios]);
-
-  const setores = useMemo(() => {
-    if (!usuarios) return [];
-    const lista = Object.values(usuarios)
-      .flat()
-      .map((u) => u.setor?.setor_nome)
-      .filter(Boolean);
-    return [...new Set(lista)];
-  }, [usuarios]);
 
   function aplicaFiltro() {
     const filtrados = usuarios[categoria].filter((usuario) => {

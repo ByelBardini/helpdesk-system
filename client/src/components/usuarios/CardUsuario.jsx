@@ -1,6 +1,6 @@
 import { Pencil } from "lucide-react";
 
-export default function CardUsuario({ usuario }) {
+export default function CardUsuario({ usuario, setEditaUsuario }) {
   return (
     <div className="mt-2 mb-2 p-4 rounded-lg bg-white/5 border border-white/10 flex justify-between items-center text-sm hover:bg-white/10 transition">
       <div>
@@ -26,6 +26,9 @@ export default function CardUsuario({ usuario }) {
           {usuario.usuario_ativo ? "Ativo" : "Inativo"}
         </span>
         <button
+          onClick={() => {
+            setEditaUsuario({ show: true, usuario: usuario });
+          }}
           className="cursor-pointer p-2 rounded-md bg-blue-500/20 border border-blue-400/30 hover:bg-blue-500/30 transition"
           title="Editar usuário"
         >
