@@ -1,5 +1,8 @@
 import { X, Ban, RefreshCw, Save } from "lucide-react";
-import { putUsuarios } from "../../services/api/usuarioServices.js";
+import {
+  putUsuarios,
+  resetaSenha,
+} from "../../services/api/usuarioServices.js";
 import { useState } from "react";
 
 export default function ModalUsuario({
@@ -14,6 +17,19 @@ export default function ModalUsuario({
   async function atualizarUsuario() {
     try {
       await putUsuarios(usuario.usuario_id, novoSetor, novoRole);
+
+      await buscaUsuarios();
+
+      alert("deu bom");
+      setEditaUsuario({ show: false, usuario: null });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function resetarSenha() {
+    try {
+      await resetaSenha(usuario.usuario_id);
 
       await buscaUsuarios();
 
@@ -132,7 +148,10 @@ export default function ModalUsuario({
               Inativar usuário
             </button>
 
-            <button className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-yellow-400/30 bg-yellow-500/15 px-4 py-2 text-sm text-yellow-200 hover:bg-yellow-500/25 transition">
+            <button
+              onClick={resetarSenha}
+              className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-yellow-400/30 bg-yellow-500/15 px-4 py-2 text-sm text-yellow-200 hover:bg-yellow-500/25 transition"
+            >
               <RefreshCw className="h-4 w-4" />
               Resetar senha
             </button>

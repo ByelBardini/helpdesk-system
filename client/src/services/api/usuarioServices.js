@@ -24,3 +24,14 @@ export async function putUsuarios(id, setor, role) {
     throw err;
   }
 }
+
+export async function resetaSenha(id) {
+  try {
+    const response = await api.put(`/usuario/senha/reseta/${id}`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em resetaSenha:", err);
+    throw err;
+  }
+}
