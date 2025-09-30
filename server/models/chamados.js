@@ -64,6 +64,10 @@ Chamados.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    chamado_resolucao: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
   },
   {
     sequelize,

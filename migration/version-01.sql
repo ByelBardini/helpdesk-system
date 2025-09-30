@@ -210,3 +210,6 @@ ADD COLUMN `setor_ativo` TINYINT NOT NULL DEFAULT 1 AFTER `setor_nome`;
 
 ALTER TABLE `chamados_ti`.`areas` 
 ADD COLUMN `area_ativa` TINYINT NOT NULL DEFAULT 1 AFTER `area_tipo`;
+
+ALTER TABLE `chamados_ti`.`chamados` 
+ADD COLUMN `chamado_resolucao` VARCHAR(255) NULL AFTER `chamado_data_conclusao`;

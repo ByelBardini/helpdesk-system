@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import CardChamado from "../components/chamados/CardChamado.jsx";
 import ModalChamado from "../components/chamados/ModalChamado.jsx";
+import ModalResolucao from "../components/chamados/ModalResolucao.jsx";
 import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
 import Confirmacao from "../components/default/Confirmacao.jsx";
@@ -21,6 +22,7 @@ export default function ChamadosSuporte() {
   ];
 
   const [chamados, setChamados] = useState([]);
+  const [concluindo, setConcluindo] = useState({ show: false, chamado: null });
   const [chamadoSelecionado, setChamadoSelecionado] = useState(null);
   const [abreChamado, setAbreChamado] = useState(false);
 
@@ -82,6 +84,19 @@ export default function ChamadosSuporte() {
           setConfirmacao={setConfirmacao}
           navigate={navigate}
           buscaChamados={buscaChamados}
+          setConcluindo={setConcluindo}
+        />
+      )}
+      {concluindo.show && (
+        <ModalResolucao
+          setConcluindo={setConcluindo}
+          concluindo={concluindo}
+          setConfirmacao={setConfirmacao}
+          setLoading={setLoading}
+          buscaChamados={buscaChamados}
+          navigate={navigate}
+          setNotificacao={setNotificacao}
+          setAbreChamado={setAbreChamado}
         />
       )}
       {notificacao.show && (

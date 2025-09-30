@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import { formatToCapitalized, formatToDate } from "brazilian-values";
 
 export default function DadosModalChamado({
@@ -10,9 +11,30 @@ export default function DadosModalChamado({
   alteraPrioridade,
   setAbreChamado,
   alteraResponsavel,
+  setConcluindo,
 }) {
   return (
     <div className="w-1/2 p-6 flex flex-col space-y-6 border-r border-white/10 overflow-y-auto">
+      {chamado.chamado_status === "resolvido" && (
+        <div className="relative bg-green-500/10 border-l-4 border-green-500 rounded-r-lg px-5 py-4 text-sm mt-6 shadow-md">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-green-400 inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 border border-green-400/30">
+              <Check size={18} />
+            </span>
+            <p className="text-green-400 font-semibold uppercase tracking-wide text-xs">
+              Resolução
+            </p>
+          </div>
+
+          {chamado.chamado_resolucao ? (
+            <span className="text-green-100">{chamado.chamado_resolucao}</span>
+          ) : (
+            <span className="text-gray-400 italic">
+              Nenhuma resolução registrada
+            </span>
+          )}
+        </div>
+      )}
       <div>
         <p className="text-gray-400 text-xs uppercase">Solicitante</p>
         <div className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm">
@@ -155,14 +177,9 @@ export default function DadosModalChamado({
         {chamado.chamado_status === "resolvendo" && (
           <button
             onClick={() =>
-              setConfirmacao({
+              setConcluindo({
                 show: true,
-                titulo: "Tem certeza que deseja finalizar o chamado?",
-                texto: "Essa ação não pode ser desfeita",
-                onSim: () => {
-                  alteraStatus("resolvido");
-                  setAbreChamado(false);
-                },
+                chamado: chamado,
               })
             }
             className="cursor-pointer w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-semibold transition-colors"
@@ -171,15 +188,17 @@ export default function DadosModalChamado({
           </button>
         )}
 
-        <button
-          onClick={() => {
-            alteraPrioridade(prioridade);
-            setAbreChamado(false);
-          }}
-          className="cursor-pointer w-full bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors"
-        >
-          Salvar
-        </button>
+        {chamado.chamado_status != "resolvido" && (
+          <button
+            onClick={() => {
+              alteraPrioridade(prioridade);
+              setAbreChamado(false);
+            }}
+            className="cursor-pointer w-full bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors"
+          >
+            Salvar
+          </button>
+        )}
       </div>
       {chamado.chamado_status == "resolvendo" &&
         chamado.responsavel.usuario_id !=

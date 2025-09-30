@@ -47,12 +47,13 @@ export async function alterarPrioridade(id, prioridade) {
   }
 }
 
-export async function alterarStatus(id, status) {
+export async function alterarStatus(id, status, resolucao) {
   try {
     const usuario_id = localStorage.getItem("usuario_id");
     const response = await api.put(`/chamado/status/${id}`, {
       status,
       usuario_id,
+      resolucao,
     });
 
     return response.data;

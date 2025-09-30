@@ -6,7 +6,7 @@ import {
   postResposta,
   getResposta,
 } from "../../services/api/respostaServices.js";
-import { PlusCircle, Paperclip, X, Send } from "lucide-react";
+import { PlusCircle, Paperclip, X, Send, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { tratarErro } from "../default/funcoes.js";
 
@@ -117,6 +117,22 @@ export default function VisualizaChamado({
             )}
           </p>
           <div className="mb-4">{statusBadge(selecionado.chamado_status)}</div>
+          {selecionado.chamado_status == "resolvido" && (
+            <div className="relative bg-green-500/10 border-l-4 border-green-500 rounded-lg px-5 py-4 text-sm text-green-100 shadow-md mt-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-green-400 flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 border border-green-400/40">
+                  <Check size={18} />
+                </span>
+                <p className="text-green-400 font-bold uppercase tracking-wide text-xs">
+                  Resolução
+                </p>
+              </div>
+
+              <span className="block text-green-100 font-medium leading-relaxed">
+                {selecionado.chamado_resolucao || "Sem resolução registrada"}
+              </span>
+            </div>
+          )}
 
           <p className="text-white/80 leading-relaxed mb-6">
             {selecionado.chamado_descricao}

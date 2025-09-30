@@ -42,6 +42,7 @@ export async function getChamados(req, res) {
       "chamado_motivo",
       "chamado_descricao",
       "chamado_data_conclusao",
+      "chamado_resolucao",
     ],
     order: [["chamado_data_abertura", "ASC"]],
     include: [
@@ -274,7 +275,7 @@ export async function alterarStatus(req, res) {
   if (!id) {
     throw ApiError.badRequest("Id do chamado é obrigatório");
   }
-  const { status, usuario_id } = req.body;
+  const { status, usuario_id, resolucao = null } = req.body;
   if (!status || !usuario_id) {
     throw ApiError.badRequest("Novo status é obrigatório");
   }
@@ -285,8 +286,12 @@ export async function alterarStatus(req, res) {
     chamado.chamado_status = status;
     chamado.chamado_responsavel_id = usuario_id;
   } else if (status == "resolvido") {
+    if (!resolucao) {
+      throw ApiError.badRequest("Resolução do chamado é obrigatória");
+    }
     chamado.chamado_status = status;
     chamado.chamado_data_conclusao = new Date();
+    chamado.chamado_resolucao = resolucao;
   } else {
     chamado.chamado_status = status;
   }

@@ -20,6 +20,7 @@ export default function ModalChamado({
   setConfirmacao,
   navigate,
   buscaChamados,
+  setConcluindo,
 }) {
   const [prioridade, setPrioridade] = useState(
     chamado?.chamado_prioridade || "baixa"
@@ -103,7 +104,7 @@ export default function ModalChamado({
   const podeResponder = status !== "resolvido";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+    <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/70">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -129,6 +130,7 @@ export default function ModalChamado({
           alteraPrioridade={alteraPrioridade}
           setAbreChamado={setAbreChamado}
           alteraResponsavel={alteraResponsavel}
+          setConcluindo={setConcluindo}
         />
 
         <RespostasSuporte
