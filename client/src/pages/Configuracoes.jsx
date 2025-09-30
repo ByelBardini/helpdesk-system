@@ -153,6 +153,9 @@ export default function Configuracoes() {
         <ModalCadastraEmpresa
           buscarDados={buscarDados}
           setCadastro={setCadastro}
+          setNotificacao={setNotificacao}
+          setLoading={setLoading}
+          navigate={navigate}
         />
       )}
       {cadastro == "setor" && (
@@ -160,12 +163,18 @@ export default function Configuracoes() {
           buscarDados={buscarDados}
           setCadastro={setCadastro}
           empresas={dados.empresas}
+          setNotificacao={setNotificacao}
+          setLoading={setLoading}
+          navigate={navigate}
         />
       )}
       {cadastro == "area" && (
         <ModalCadastraArea
           buscarDados={buscarDados}
           setCadastro={setCadastro}
+          setNotificacao={setNotificacao}
+          setLoading={setLoading}
+          navigate={navigate}
         />
       )}
       <div className="space-y-4">

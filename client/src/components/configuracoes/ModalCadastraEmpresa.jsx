@@ -3,8 +3,15 @@ import { formatToCNPJ, isCNPJ } from "brazilian-values";
 import { postGeral } from "../../services/api/configServices.js";
 import { X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
+import { tratarErro } from "../default/funcoes.js";
 
-export default function ModalCadastraEmpresa({ setCadastro, buscarDados }) {
+export default function ModalCadastraEmpresa({
+  setCadastro,
+  buscarDados,
+  setNotificacao,
+  setLoading,
+  navigate,
+}) {
   const [cnpjValido, setCnpjValido] = useState(false);
   const [cnpj, setCnpj] = useState("");
 
@@ -17,6 +24,16 @@ export default function ModalCadastraEmpresa({ setCadastro, buscarDados }) {
   }, [cnpj]);
 
   async function cadastraEmpresa() {
+    if (nome == "" || cnpj == "") {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Dados inválidos",
+        mensagem: "Insira o nome um CNPJ válido para a empresa",
+      });
+      return;
+    }
+    setLoading(true);
     try {
       const fd = new FormData();
       fd.append("operacao", "empresa");
@@ -28,10 +45,25 @@ export default function ModalCadastraEmpresa({ setCadastro, buscarDados }) {
 
       await postGeral(fd);
       await buscarDados();
-
-      setCadastro("");
-      alert("Empresa Cadastrada");
+      setLoading(false);
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Empresa cadastrada",
+        mensagem: "Você já pode cadastrar usuários nessa empresa",
+      });
+      setTimeout(() => {
+        setCadastro("");
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+      }, 700);
     } catch (err) {
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
       console.error(err);
     }
   }
@@ -44,7 +76,7 @@ export default function ModalCadastraEmpresa({ setCadastro, buscarDados }) {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-20 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#1b1f4a]/90 text-white shadow-2xl">
@@ -68,6 +100,12 @@ export default function ModalCadastraEmpresa({ setCadastro, buscarDados }) {
             <input
               onChange={(e) => setNome(e.target.value)}
               type="text"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && nome !== "" && cnpj !== "") {
+                  e.preventDefault();
+                  cadastraEmpresa();
+                }
+              }}
               placeholder="Digite o nome"
               className="w-full h-10 rounded-lg border border-white/10 bg-white/10 px-3 text-sm placeholder-white/40 outline-none focus:border-blue-400"
             />
@@ -79,6 +117,12 @@ export default function ModalCadastraEmpresa({ setCadastro, buscarDados }) {
               type="text"
               value={cnpj}
               maxLength={18}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && nome !== "" && cnpj !== "") {
+                  e.preventDefault();
+                  cadastraEmpresa();
+                }
+              }}
               onChange={(e) => setCnpj(e.target.value)}
               placeholder="Digite o CNPJ"
               className={`w-full h-10 rounded-lg border bg-white/10 px-3 text-sm placeholder-white/40 outline-none focus:border-blue-400 ${

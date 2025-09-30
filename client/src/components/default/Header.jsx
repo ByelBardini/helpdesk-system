@@ -35,7 +35,7 @@ export default function Header() {
   const usuarioRole = localStorage.getItem("usuario_role");
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#171a3f] border-b border-white/10">
+    <header className="sticky top-0 z-10 w-full bg-[#171a3f] border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 lg:px-6 h-14 flex items-center justify-between">
         <nav className="hidden md:flex items-center gap-2">
           {nav.map(({ to, label, icon: Icon }) => (
