@@ -19,6 +19,11 @@ Areas.init(
       type: DataTypes.ENUM("erro", "solicitacao", "melhoria"),
       allowNull: false,
     },
+    area_ativa: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 1,
+    },
   },
   {
     sequelize,

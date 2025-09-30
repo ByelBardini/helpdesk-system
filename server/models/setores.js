@@ -19,6 +19,11 @@ Setor.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    setor_ativo: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 1,
+    },
   },
   {
     sequelize,

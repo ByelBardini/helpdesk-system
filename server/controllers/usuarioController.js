@@ -220,9 +220,11 @@ export async function ativaInativa(req, res) {
 export async function getDados(req, res) {
   const empresas = await Empresa.findAll({
     attributes: ["empresa_id", "empresa_nome"],
+    where: { empresa_ativa: 1 },
   });
   const setores = await Setor.findAll({
     attributes: ["setor_id", "setor_empresa_id", "setor_nome"],
+    where: { setor_ativo: 1 },
   });
 
   return res.status(200).json({ empresas, setores });

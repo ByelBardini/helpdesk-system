@@ -19,6 +19,11 @@ Empresa.init(
       type: DataTypes.STRING(50),
       allowNull: true,
     },
+    empresa_ativa: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+      defaultValue: 1,
+    },
   },
   {
     sequelize,

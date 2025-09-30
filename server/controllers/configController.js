@@ -3,10 +3,10 @@ import { Empresa, Setor, Area } from "../models/index.js";
 
 export async function getDados(req, res) {
   const empresas = await Empresa.findAll({
-    attributes: ["empresa_id", "empresa_nome"],
+    attributes: ["empresa_id", "empresa_nome", "empresa_ativa"],
   });
   const setores = await Setor.findAll({
-    attributes: ["setor_id", "setor_nome"],
+    attributes: ["setor_id", "setor_nome", "setor_ativo"],
     include: [
       {
         model: Empresa,
@@ -18,6 +18,7 @@ export async function getDados(req, res) {
   const areas = await Area.findAll({
     attributes: [
       "area_nome",
+      [Sequelize.fn("MAX", Sequelize.col("area_ativa")), "area_ativa"],
       [
         Sequelize.fn(
           "GROUP_CONCAT",

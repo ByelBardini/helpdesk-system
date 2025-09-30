@@ -32,6 +32,7 @@ Usuario.belongsTo(Setor, {
   foreignKey: "usuario_setor_id",
   targetKey: "setor_id",
   as: "setor",
+  onDelete: "SET NULL",
 });
 
 // Foreign keys de usuario e empresa

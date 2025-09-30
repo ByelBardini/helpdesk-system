@@ -2,32 +2,65 @@ import { formatToCapitalized } from "brazilian-values";
 import { Layers } from "lucide-react";
 
 export default function ListaAreas({ areas }) {
-  const areasAgrupadas = areas?.reduce((acc, area) => {
-    if (!acc[area.area_nome]) acc[area.area_nome] = new Set();
-    area.tipos.split(",").forEach((tipo) => acc[area.area_nome].add(tipo));
+  const areasAgrupadas = (areas ?? []).reduce((acc, area) => {
+    const nome = area.area_nome;
+    const ativa =
+      area.area_ativa === true ||
+      area.area_ativa === 1 ||
+      area.area_ativa === "1";
+
+    if (!acc[nome]) {
+      acc[nome] = { tipos: new Set(), ativa };
+    } else if (ativa) {
+      acc[nome].ativa = true;
+    }
+
+    const tiposArray = Array.isArray(area.tipos)
+      ? area.tipos
+      : typeof area.tipos === "string"
+      ? area.tipos.split(",")
+      : [];
+
+    tiposArray
+      .map((t) => String(t).trim())
+      .filter(Boolean)
+      .forEach((t) => acc[nome].tipos.add(t));
+
     return acc;
   }, {});
 
   return (
     <div className="px-5 py-4 border-t border-white/10">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Object.entries(areasAgrupadas || {}).map(([nome, tipos]) => (
+        {Object.entries(areasAgrupadas).map(([nome, dados]) => (
           <div
             key={nome}
             className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition flex flex-col"
           >
-            <div className="flex items-center gap-2 mb-3">
-              <Layers className="w-4 h-4 text-purple-300" />
-              <span className="font-medium text-white/90">{nome}</span>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-purple-300" />
+                <span className="font-medium text-white/90">{nome}</span>
+              </div>
+
+              <span
+                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                  dados.ativa
+                    ? "bg-green-500/20 text-green-300 border border-green-400/30"
+                    : "bg-red-500/20 text-red-300 border border-red-400/30"
+                }`}
+              >
+                {dados.ativa ? "Ativo" : "Inativo"}
+              </span>
             </div>
 
             <div className="flex flex-wrap gap-2 mt-auto">
-              {[...tipos].map((tipo) => (
+              {[...dados.tipos].map((tipo) => (
                 <span
                   key={tipo}
                   className="px-2 py-0.5 rounded-full text-xs bg-purple-500/20 text-purple-300 border border-purple-400/30"
                 >
-                  {tipo == "solicitacao"
+                  {tipo === "solicitacao"
                     ? "Solicitação"
                     : formatToCapitalized(tipo)}
                 </span>

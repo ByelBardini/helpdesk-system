@@ -191,3 +191,22 @@ ADD CONSTRAINT `anexo_resposta_id`
 
 ALTER TABLE `chamados_ti`.`usuarios` 
 CHANGE COLUMN `usuario_role` `usuario_role` ENUM('adm', 'gerente', 'supervisor', 'liderado', 'suporte') NOT NULL ;
+
+ALTER TABLE `chamados_ti`.`usuarios` 
+DROP FOREIGN KEY `usuario_setor_id`;
+ALTER TABLE `chamados_ti`.`usuarios` 
+CHANGE COLUMN `usuario_setor_id` `usuario_setor_id` INT NULL ;
+ALTER TABLE `chamados_ti`.`usuarios` 
+ADD CONSTRAINT `usuario_setor_id`
+  FOREIGN KEY (`usuario_setor_id`)
+  REFERENCES `chamados_ti`.`setores` (`setor_id`)
+  ON DELETE SET NULL;
+  
+ALTER TABLE `chamados_ti`.`empresas` 
+ADD COLUMN `empresa_ativa` TINYINT NOT NULL DEFAULT 1 AFTER `empresa_cnpj`;
+
+ALTER TABLE `chamados_ti`.`setores` 
+ADD COLUMN `setor_ativo` TINYINT NOT NULL DEFAULT 1 AFTER `setor_nome`;
+
+ALTER TABLE `chamados_ti`.`areas` 
+ADD COLUMN `area_ativa` TINYINT NOT NULL DEFAULT 1 AFTER `area_tipo`;
