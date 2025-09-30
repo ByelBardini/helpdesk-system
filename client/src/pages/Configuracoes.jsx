@@ -4,6 +4,7 @@ import ListaSetores from "../components/configuracoes/ListaSetores.jsx";
 import ListaAreas from "../components/configuracoes/ListaAreas.jsx";
 import ModalCadastraEmpresa from "../components/configuracoes/ModalCadastraEmpresa.jsx";
 import ModalCadastraSetor from "../components/configuracoes/ModalCadastraSetor.jsx";
+import ModalCadastraArea from "../components/configuracoes/ModalCadastraArea.jsx";
 import { useEffect, useState } from "react";
 import { getDados, ativaInativaGeral } from "../services/api/configServices.js";
 import { Building2, Grid, Layers, ChevronDown, ChevronUp } from "lucide-react";
@@ -62,6 +63,12 @@ export default function Configuracoes() {
           buscarDados={buscarDados}
           setCadastro={setCadastro}
           empresas={dados.empresas}
+        />
+      )}
+      {cadastro == "area" && (
+        <ModalCadastraArea
+          buscarDados={buscarDados}
+          setCadastro={setCadastro}
         />
       )}
       <div className="space-y-4">

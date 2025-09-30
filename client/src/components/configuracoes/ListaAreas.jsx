@@ -1,7 +1,7 @@
 import { formatToCapitalized } from "brazilian-values";
 import { Layers, Power } from "lucide-react";
 
-export default function ListaAreas({ areas, cor, ativaInativa }) {
+export default function ListaAreas({ areas, cor, ativaInativa, setCadastro }) {
   const areasAgrupadas = (areas ?? []).reduce((acc, area) => {
     const nome = area.area_nome;
     const ativa =
@@ -88,6 +88,7 @@ export default function ListaAreas({ areas, cor, ativaInativa }) {
       </div>
       <div className="flex p-2 justify-end">
         <button
+          onClick={() => setCadastro("area")}
           className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/90 hover:opacity-80 transition ${cor}`}
         >
           + Adicionar Área

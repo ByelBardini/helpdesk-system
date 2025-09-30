@@ -5,6 +5,7 @@ import { ApiError } from "../middlewares/ApiError.js";
 export async function getDados(req, res) {
   const empresas = await Empresa.findAll({
     attributes: ["empresa_id", "empresa_nome", "empresa_ativa"],
+    order: [["empresa_ativa", "DESC"]],
   });
   const setores = await Setor.findAll({
     attributes: ["setor_id", "setor_nome", "setor_ativo"],
@@ -15,6 +16,7 @@ export async function getDados(req, res) {
         attributes: ["empresa_nome"],
       },
     ],
+    order: [["setor_ativo", "DESC"]],
   });
   const areas = await Area.findAll({
     attributes: [
@@ -30,6 +32,7 @@ export async function getDados(req, res) {
     ],
     group: ["area_nome"],
     raw: true,
+    order: [["area_ativa", "DESC"]],
   });
 
   return res.status(200).json({ empresas, setores, areas });
@@ -98,7 +101,9 @@ export async function postGeral(req, res) {
     }
     case "area": {
       const area_nome = fd.nome;
-      const tipos = fd.tipos;
+      const tiposFd = fd.tipos;
+
+      const tipos = tiposFd.split(",");
 
       if (!Array.isArray(tipos) || tipos.length === 0) {
         throw ApiError.badRequest("Tipos de área são obrigatórios");
