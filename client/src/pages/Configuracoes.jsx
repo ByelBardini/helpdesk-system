@@ -3,7 +3,7 @@ import ListaEmpresas from "../components/configuracoes/ListaEmpresas.jsx";
 import ListaSetores from "../components/configuracoes/ListaSetores.jsx";
 import ListaAreas from "../components/configuracoes/ListaAreas.jsx";
 import { useEffect, useState } from "react";
-import { getDados } from "../services/api/configServices.js";
+import { getDados, ativaInativaGeral } from "../services/api/configServices.js";
 import { Building2, Grid, Layers, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function Configuracoes() {
@@ -26,6 +26,16 @@ export default function Configuracoes() {
       console.log(dados);
 
       setDados(dados);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function ativaInativa(id, tipo, ativo) {
+    try {
+      await ativaInativaGeral(id, tipo);
+      await buscarDados();
+      alert(`${ativo == true ? "Inativado" : "Ativado"} com sucesso`);
     } catch (err) {
       console.error(err);
     }
@@ -62,40 +72,25 @@ export default function Configuracoes() {
             </button>
 
             {open == "Empresas" && titulo == open && (
-              <>
-                <ListaEmpresas empresas={dados.empresas} />
-                <div className="flex p-2 justify-end">
-                  <button
-                    className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/90 hover:opacity-80 transition ${cor}`}
-                  >
-                    + Adicionar Empresa
-                  </button>
-                </div>
-              </>
+              <ListaEmpresas
+                empresas={dados.empresas}
+                cor={cor}
+                ativaInativa={ativaInativa}
+              />
             )}
             {open == "Setores" && titulo == open && (
-              <>
-                <ListaSetores setores={dados.setores} />
-                <div className="flex p-2 justify-end">
-                  <button
-                    className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/90 hover:opacity-80 transition ${cor}`}
-                  >
-                    + Adicionar Setor
-                  </button>
-                </div>
-              </>
+              <ListaSetores
+                setores={dados.setores}
+                cor={cor}
+                ativaInativa={ativaInativa}
+              />
             )}
             {open == "Áreas" && titulo == open && (
-              <>
-                <ListaAreas areas={dados.areas} />
-                <div className="flex p-2 justify-end">
-                  <button
-                    className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/90 hover:opacity-80 transition ${cor}`}
-                  >
-                    + Adicionar Área
-                  </button>
-                </div>
-              </>
+              <ListaAreas
+                areas={dados.areas}
+                cor={cor}
+                ativaInativa={ativaInativa}
+              />
             )}
           </div>
         ))}
