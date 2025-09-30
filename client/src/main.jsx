@@ -12,6 +12,7 @@ import AdminLayout from "./pages/AdminLayout.jsx";
 import ChamadosSuporte from "./pages/ChamadosSuporte.jsx";
 import Relatorios from "./pages/Relatorios.jsx";
 import Usuarios from "./pages/Usuarios.jsx";
+import Configuracoes from "./pages/Configuracoes.jsx";
 
 const router = createBrowserRouter([
   {
@@ -63,6 +64,14 @@ const router = createBrowserRouter([
     element: (
       <AdminLayout>
         <Usuarios />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/suporte/configuracoes",
+    element: (
+      <AdminLayout>
+        <Configuracoes />
       </AdminLayout>
     ),
   },

@@ -76,7 +76,7 @@ export async function getDados() {
 
     return response.data;
   } catch (err) {
-    console.error("Erro em buscaDados:", err);
+    console.error("Erro em getDados usuários:", err);
     throw err;
   }
 }
