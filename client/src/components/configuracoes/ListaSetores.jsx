@@ -1,6 +1,11 @@
 import { Grid, Building2, Power } from "lucide-react";
 
-export default function ListaSetores({ setores, cor, ativaInativa }) {
+export default function ListaSetores({
+  setores,
+  cor,
+  ativaInativa,
+  setCadastro,
+}) {
   const setoresPorEmpresa = setores?.reduce((acc, setor) => {
     const empresaNome = setor.empresa?.empresa_nome;
     if (!acc[empresaNome]) acc[empresaNome] = [];
@@ -67,6 +72,7 @@ export default function ListaSetores({ setores, cor, ativaInativa }) {
       </div>
       <div className="flex p-2 justify-end">
         <button
+          onClick={() => setCadastro("setor")}
           className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/90 hover:opacity-80 transition ${cor}`}
         >
           + Adicionar Setor
