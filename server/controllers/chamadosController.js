@@ -44,7 +44,21 @@ export async function getChamados(req, res) {
       "chamado_data_conclusao",
       "chamado_resolucao",
     ],
-    order: [["chamado_data_abertura", "ASC"]],
+    order: [
+      [
+        literal(`
+          CASE 
+            WHEN chamado_status = 'aberto' THEN 1
+            WHEN chamado_status = 'visualizado' THEN 2
+            WHEN chamado_status = 'resolvendo' THEN 3
+            WHEN chamado_status = 'resolvido' THEN 4
+            ELSE 5
+          END
+        `),
+        "ASC",
+      ],
+      ["chamado_data_abertura", "ASC"],
+    ],
     include: [
       {
         model: Anexo,
