@@ -72,3 +72,48 @@ export async function ativaInativaGeral(req, res) {
     .status(200)
     .json({ message: "Item ativado/inativado com sucesso" });
 }
+
+export async function postGeral(req, res) {
+  const fd = req.body;
+  if (!fd) {
+    throw ApiError.badRequest("Dados são obrigatórios");
+  }
+
+  const operacao = fd.operacao;
+
+  switch (operacao) {
+    case "empresa": {
+      const empresa_nome = fd.nome;
+      const empresa_cnpj = fd.cnpj;
+
+      await Empresa.create({ empresa_nome, empresa_cnpj });
+      break;
+    }
+    case "setor": {
+      const setor_nome = fd.nome;
+      const setor_empresa_id = fd.empresa_id;
+
+      await Setor.create({ setor_nome, setor_empresa_id });
+      break;
+    }
+    case "area": {
+      const area_nome = fd.nome;
+      const tipos = fd.tipos;
+
+      if (!Array.isArray(tipos) || tipos.length === 0) {
+        throw ApiError.badRequest("Tipos de área são obrigatórios");
+      }
+
+      await Promise.all(
+        tipos.map(async (tipo) => {
+          return Area.create({ area_nome, area_tipo: tipo });
+        })
+      );
+      break;
+    }
+    default: {
+      throw ApiError.badRequest("Tipo inválido");
+    }
+  }
+  return res.status(201).json({ message: "Item criado com sucesso" });
+}
