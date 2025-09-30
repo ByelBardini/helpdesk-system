@@ -5,6 +5,7 @@ export default function ListaEmpresas({
   cor,
   ativaInativa,
   setCadastro,
+  setConfirmacao,
 }) {
   return (
     <>
@@ -42,11 +43,23 @@ export default function ListaEmpresas({
 
                 <button
                   onClick={() =>
-                    ativaInativa(
-                      e.empresa_ativa,
-                      "empresa",
-                      e.empresa_ativa == 1
-                    )
+                    setConfirmacao({
+                      show: true,
+                      titulo: `Tem certeza que deseja ${
+                        e.empresa_ativa == 1 ? "inativar" : "ativar"
+                      } essa empresa?`,
+                      texto: `Os usuários vinculados a ela ${
+                        e.empresa_ativa == 1
+                          ? "não poderão mais"
+                          : "poderão voltar a"
+                      } acessar o sistema`,
+                      onSim: () =>
+                        ativaInativa(
+                          e.empresa_id,
+                          "empresa",
+                          e.empresa_ativa == 1
+                        ),
+                    })
                   }
                   className={`cursor-pointer p-1.5 rounded-lg border text-xs font-medium transition flex items-center gap-1
                   ${

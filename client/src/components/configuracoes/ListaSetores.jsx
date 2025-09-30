@@ -5,6 +5,7 @@ export default function ListaSetores({
   cor,
   ativaInativa,
   setCadastro,
+  setConfirmacao,
 }) {
   const setoresPorEmpresa = setores?.reduce((acc, setor) => {
     const empresaNome = setor.empresa?.empresa_nome;
@@ -51,7 +52,23 @@ export default function ListaSetores({
 
                     <button
                       onClick={() =>
-                        ativaInativa(s.setor_id, "setor", s.setor_ativo == 1)
+                        setConfirmacao({
+                          show: true,
+                          titulo: `Tem certeza que deseja ${
+                            s.setor_ativo == 1 ? "inativar" : "ativar"
+                          } esse setor?`,
+                          texto: `Os usuários vinculados a ele ${
+                            s.setor_ativo == 1
+                              ? "não poderão mais"
+                              : "poderão voltar a"
+                          } acessar o sistema`,
+                          onSim: () =>
+                            ativaInativa(
+                              s.setor_id,
+                              "setor",
+                              s.setor_ativo == 1
+                            ),
+                        })
                       }
                       className={`cursor-pointer p-1.5 rounded-lg border text-xs font-medium transition flex items-center gap-1
                       ${

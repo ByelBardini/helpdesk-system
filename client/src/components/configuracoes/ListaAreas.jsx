@@ -1,7 +1,13 @@
 import { formatToCapitalized } from "brazilian-values";
 import { Layers, Power } from "lucide-react";
 
-export default function ListaAreas({ areas, cor, ativaInativa, setCadastro }) {
+export default function ListaAreas({
+  areas,
+  cor,
+  ativaInativa,
+  setCadastro,
+  setConfirmacao,
+}) {
   const areasAgrupadas = (areas ?? []).reduce((acc, area) => {
     const nome = area.area_nome;
     const ativa =
@@ -56,7 +62,18 @@ export default function ListaAreas({ areas, cor, ativaInativa, setCadastro }) {
                   </span>
 
                   <button
-                    onClick={() => ativaInativa(nome, "area", dados.ativa)}
+                    onClick={() =>
+                      setConfirmacao({
+                        show: true,
+                        titulo: `Tem certeza que deseja ${
+                          dados.ativa ? "inativar" : "ativar"
+                        } essa área?`,
+                        texto: `Os ${
+                          dados.ativa ? "não poderão mais" : "poderão voltar a"
+                        } abrir chamados relacionados à ela`,
+                        onSim: () => ativaInativa(nome, "area", dados.ativa),
+                      })
+                    }
                     className={`cursor-pointer p-1.5 rounded-lg border text-xs font-medium transition flex items-center gap-1
                     ${
                       dados.ativa
