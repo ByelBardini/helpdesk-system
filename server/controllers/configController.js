@@ -1,5 +1,6 @@
 import Sequelize from "sequelize";
 import { Empresa, Setor, Area } from "../models/index.js";
+import { ApiError } from "../middlewares/ApiError.js";
 
 export async function getDados(req, res) {
   const empresas = await Empresa.findAll({
@@ -32,4 +33,42 @@ export async function getDados(req, res) {
   });
 
   return res.status(200).json({ empresas, setores, areas });
+}
+
+export async function ativaInativaGeral(req, res) {
+  const { id } = req.params;
+  const { tipo } = req.body;
+  if (!id || !tipo) {
+    throw ApiError.badRequest("Id e tipo são obrigatórios");
+  }
+  switch (tipo) {
+    case "empresa": {
+      const empresa = await Empresa.findByPk(id);
+      empresa.empresa_ativa = !empresa.empresa_ativa;
+      await empresa.save();
+      break;
+    }
+    case "setor": {
+      const setor = await Setor.findByPk(id);
+      setor.setor_ativo = !setor.setor_ativo;
+      await setor.save();
+      break;
+    }
+    case "area": {
+      const areas = await Area.findAll({ where: { area_nome: id } });
+      await Promise.all(
+        areas.map(async (area) => {
+          area.area_ativa = !area.area_ativa;
+          await area.save();
+        })
+      );
+      break;
+    }
+    default: {
+      throw ApiError.badRequest("Tipo inválido");
+    }
+  }
+  return res
+    .status(200)
+    .json({ message: "Item ativado/inativado com sucesso" });
 }
