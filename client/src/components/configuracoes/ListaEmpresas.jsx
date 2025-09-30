@@ -1,6 +1,11 @@
 import { Building2, Power } from "lucide-react";
 
-export default function ListaEmpresas({ empresas, cor, ativaInativa }) {
+export default function ListaEmpresas({
+  empresas,
+  cor,
+  ativaInativa,
+  setCadastro,
+}) {
   return (
     <>
       <div className="px-5 py-4 border-t border-white/10 space-y-3">
@@ -60,6 +65,7 @@ export default function ListaEmpresas({ empresas, cor, ativaInativa }) {
       </div>
       <div className="flex p-2 justify-end">
         <button
+          onClick={() => setCadastro("empresa")}
           className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/90 hover:opacity-80 transition ${cor}`}
         >
           + Adicionar Empresa

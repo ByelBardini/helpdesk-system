@@ -2,6 +2,7 @@
 import ListaEmpresas from "../components/configuracoes/ListaEmpresas.jsx";
 import ListaSetores from "../components/configuracoes/ListaSetores.jsx";
 import ListaAreas from "../components/configuracoes/ListaAreas.jsx";
+import ModalCadastraEmpresa from "../components/configuracoes/ModalCadastraEmpresa.jsx";
 import { useEffect, useState } from "react";
 import { getDados, ativaInativaGeral } from "../services/api/configServices.js";
 import { Building2, Grid, Layers, ChevronDown, ChevronUp } from "lucide-react";
@@ -9,6 +10,8 @@ import { Building2, Grid, Layers, ChevronDown, ChevronUp } from "lucide-react";
 export default function Configuracoes() {
   const [dados, setDados] = useState([]);
   const [open, setOpen] = useState(null);
+
+  const [cadastro, setCadastro] = useState("");
 
   const secoes = [
     { titulo: "Empresas", cor: "bg-blue-500", icone: Building2 },
@@ -47,6 +50,12 @@ export default function Configuracoes() {
 
   return (
     <div className="min-h-screen h-screen pb-18 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 overflow-y-auto">
+      {cadastro == "empresa" && (
+        <ModalCadastraEmpresa
+          buscarDados={buscarDados}
+          setCadastro={setCadastro}
+        />
+      )}
       <div className="space-y-4">
         {secoes.map(({ titulo, cor, icone: Icon }) => (
           <div
@@ -76,6 +85,7 @@ export default function Configuracoes() {
                 empresas={dados.empresas}
                 cor={cor}
                 ativaInativa={ativaInativa}
+                setCadastro={setCadastro}
               />
             )}
             {open == "Setores" && titulo == open && (

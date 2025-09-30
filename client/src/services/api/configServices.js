@@ -21,3 +21,16 @@ export async function ativaInativaGeral(id, tipo) {
     throw err;
   }
 }
+
+export async function postGeral(fd) {
+  try {
+    const response = await api.post("/config", fd, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em postGeral:", err);
+    throw err;
+  }
+}
