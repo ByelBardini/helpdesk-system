@@ -1,6 +1,6 @@
 import ExcelJS from "exceljs";
 import { fn, literal, Op, col } from "sequelize";
-import { Chamado, Empresa, Usuario, Area } from "../models/index.js";
+import { Chamado, Empresa, Usuario, Area, Compra } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 
 export async function getDados(req, res) {
@@ -269,4 +269,55 @@ export async function chamadosAbertos(req, res) {
 
   const buffer = await workbook.xlsx.writeBuffer();
   res.send(buffer);
+}
+
+export async function solicitacoes(req, res) {
+  const { dataInicio, dataFim, empresa } = req.body;
+
+  if (!dataInicio || !dataFim || empresa === undefined) {
+    throw ApiError.badRequest("Data de início, fim e empresa são obrigatórios");
+  }
+
+  const whereClause = {
+    compra_data: { [Op.between]: [dataInicio, dataFim] },
+  };
+
+  if (empresa !== 0) {
+    whereClause.compra_empresa_id = empresa;
+  }
+  const result = await Compra.findAll({
+    attributes: [
+      [
+        fn("SUM", literal("compra_valor * COALESCE(compra_quantidade, 1)")),
+        "totalGeral",
+      ],
+
+      [
+        fn(
+          "SUM",
+          literal(`CASE WHEN compra_tipo = 'servico' 
+                                THEN compra_valor * COALESCE(compra_quantidade, 1) 
+                                ELSE 0 END`)
+        ),
+        "totalServicos",
+      ],
+
+      [
+        fn(
+          "SUM",
+          literal(`CASE WHEN compra_tipo = 'produto' 
+                                THEN compra_valor * COALESCE(compra_quantidade, 1) 
+                                ELSE 0 END`)
+        ),
+        "totalProdutos",
+      ],
+    ],
+    where: {
+      ...whereClause,
+      compra_status: "aprovado",
+    },
+    raw: true,
+  });
+
+  return res.status(200).json(result[0]);
 }
