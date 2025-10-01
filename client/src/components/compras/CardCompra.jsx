@@ -1,5 +1,5 @@
-import { Package, CreditCard, User } from "lucide-react";
-import { formatToDate } from "brazilian-values";
+import { Package, CreditCard, User, DollarSign } from "lucide-react";
+import { formatToDate, formatToBRL } from "brazilian-values";
 import { useEffect } from "react";
 
 export default function CardCompra({
@@ -62,9 +62,69 @@ export default function CardCompra({
       </p>
 
       <p className="text-sm text-gray-300 mb-1">
-        <span className={`font-semibold ${colorClass}`}>Motivo:</span>{" "}
+        <span className={`mb-2 font-semibold ${colorClass}`}>Motivo:</span>{" "}
         {solicitacao.compra_motivo}
       </p>
+
+      {solicitacao.compra_status === "aprovado" &&
+        solicitacao.compra_recebida && (
+          <span
+            className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize
+      ${
+        solicitacao.compra_recebida === "a caminho"
+          ? "bg-yellow-400/10 text-yellow-300 border border-yellow-400/10"
+          : solicitacao.compra_recebida === "recebido"
+          ? "bg-green-400/10 text-green-300 border border-green-400/10"
+          : "bg-gray-400/10 text-gray-300 border border-gray-400/10"
+      }`}
+          >
+            {solicitacao.compra_recebida == "a caminho"
+              ? solicitacao.compra_recebida
+              : `${solicitacao.compra_recebida} - ${formatToDate(
+                  new Date(solicitacao.compra_data_recebimento + "T03:00:00Z")
+                )}`}
+          </span>
+        )}
+
+      {localStorage.getItem("usuario_role") === "adm" &&
+        solicitacao.compra_status === "aprovado" && (
+          <div
+            className="mb-2 bg-green-500/10 border border-green-400/20 text-green-200 
+        rounded-lg px-4 py-2 text-sm font-medium flex flex-col gap-1 mt-2"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <DollarSign className="text-green-300" size={15} />
+              <span className="font-semibold text-green-300">Preço</span>
+            </div>
+
+            {solicitacao.compra_tipo === "produto" ? (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Unitário:</span>
+                  <span>{formatToBRL(solicitacao.compra_valor)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Quantidade:</span>
+                  <span>{solicitacao.compra_quantidade || 1}</span>
+                </div>
+                <div className="flex justify-between font-semibold text-green-300">
+                  <span>Total:</span>
+                  <span>
+                    {formatToBRL(
+                      solicitacao.compra_valor *
+                        (solicitacao.compra_quantidade || 1)
+                    )}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="flex justify-between font-semibold text-green-300">
+                <span>Total:</span>
+                <span>{formatToBRL(solicitacao.compra_valor)}</span>
+              </div>
+            )}
+          </div>
+        )}
 
       <div className="flex justify-between items-center mt-auto">
         <span
@@ -113,7 +173,10 @@ export default function CardCompra({
 
         {solicitacao.compra_recebida == "a caminho" &&
           localStorage.getItem("usuario_role") == "adm" && (
-            <button className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-green-400/30 text-green-300 bg-green-500/10 hover:bg-green-500/20 transition">
+            <button
+              onClick={() => setStatus(solicitacao.compra_id)}
+              className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-green-400/30 text-green-300 bg-green-500/10 hover:bg-green-500/20 transition"
+            >
               Atestar Recebimento
             </button>
           )}

@@ -51,3 +51,14 @@ export async function putStatus(id, status, alt = null) {
     throw err;
   }
 }
+
+export async function putRecebimento(id) {
+  try {
+    const response = await api.put(`/compra/recebimento/${id}`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em putRecebimento:", err);
+    throw err;
+  }
+}

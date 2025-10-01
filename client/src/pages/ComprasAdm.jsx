@@ -1,12 +1,28 @@
 import { useEffect, useState } from "react";
-import { getCompras } from "../services/api/compraServices.js";
+import { getCompras, putRecebimento } from "../services/api/compraServices.js";
 import CardCompra from "../components/compras/CardCompra.jsx";
 import ModalAprovaRecusa from "../components/compras/ModalAprovaRecusa.jsx";
+import ModalMotivoRecusa from "../components/compras/ModalMotivoRecusa.jsx";
 
 export default function ComprasAdm() {
   const [compras, setCompras] = useState([]);
 
   const [status, setStatus] = useState({ show: false, tipo: "", id: null });
+  const [motivoRecusa, setMotivoRecusa] = useState({
+    show: false,
+    motivo: null,
+  });
+
+  async function marcaRecebido(id) {
+    try {
+      await putRecebimento(id);
+      await buscaCompras();
+
+      alert("Deu bom");
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   async function buscaCompras() {
     try {
@@ -39,6 +55,12 @@ export default function ComprasAdm() {
           buscaCompras={buscaCompras}
         />
       )}
+      {motivoRecusa.show && (
+        <ModalMotivoRecusa
+          setMotivoRecusa={setMotivoRecusa}
+          motivoRecusa={motivoRecusa}
+        />
+      )}
       <div className="pb-23 grid grid-cols-1 md:grid-cols-3 gap-6 h-screen">
         <div className="flex flex-col bg-white/5 border border-white/10 rounded-xl p-4 overflow-auto">
           <h2 className="text-lg font-semibold text-yellow-300 mb-4">
@@ -68,7 +90,11 @@ export default function ComprasAdm() {
           <div className="flex-1 space-y-4 overflow-y-auto pr-2">
             {aprovadas.length > 0 ? (
               aprovadas.map((c) => (
-                <CardCompra key={c.compra_id} solicitacao={c} />
+                <CardCompra
+                  key={c.compra_id}
+                  solicitacao={c}
+                  setStatus={marcaRecebido}
+                />
               ))
             ) : (
               <p className="text-gray-400 text-sm italic">
@@ -83,7 +109,11 @@ export default function ComprasAdm() {
           <div className="flex-1 space-y-4 overflow-y-auto pr-2">
             {recusadas.length > 0 ? (
               recusadas.map((c) => (
-                <CardCompra key={c.compra_id} solicitacao={c} />
+                <CardCompra
+                  key={c.compra_id}
+                  solicitacao={c}
+                  setMotivoRecusa={setMotivoRecusa}
+                />
               ))
             ) : (
               <p className="text-gray-400 text-sm italic">

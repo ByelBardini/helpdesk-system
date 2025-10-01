@@ -251,4 +251,7 @@ ADD COLUMN `compra_tipo` ENUM("produto", "servico") NOT NULL AFTER `compra_item`
 CHANGE COLUMN `compra_quantidade` `compra_quantidade` INT NULL ;
 
 ALTER TABLE `chamados_ti`.`compras` 
-ADD COLUMN `compra_recebida` ENUM("a caminho", "recebida") NULL AFTER `compra_valor`;
+ADD COLUMN `compra_recebida` ENUM("a caminho", "recebido") NULL AFTER `compra_valor`;
+
+ALTER TABLE `chamados_ti`.`compras` 
+ADD COLUMN `compra_data_recebimento` DATE NULL AFTER `compra_recebida`;
