@@ -3,7 +3,7 @@ import { X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { postCompras } from "../../services/api/compraServices.js";
 
-export default function ModalSolicitaCompra({ setSolicita }) {
+export default function ModalSolicitaCompra({ setSolicita, buscaCompras }) {
   const [item, setItem] = useState("");
   const [qtd, setQtd] = useState(0);
   const [motivo, setMotivo] = useState("");
@@ -26,6 +26,7 @@ export default function ModalSolicitaCompra({ setSolicita }) {
         motivo,
         tipo
       );
+      await buscaCompras();
 
       alert("deu certo");
       setSolicita("");

@@ -5,6 +5,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCompras } from "../services/api/compraServices.js";
 
+function formatarMesAno(dataString) {
+  const [ano, mes] = dataString.split("-"); 
+  const date = new Date(ano, mes - 1);
+
+  return date.toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+  });
+}
 export default function Compras() {
   const [solicita, setSolicita] = useState(false);
 
@@ -26,9 +35,21 @@ export default function Compras() {
     buscaCompras();
   }, []);
 
+  const agrupadas = solicitacoes.reduce((acc, s) => {
+    const chave = formatarMesAno(s.compra_data);
+    if (!acc[chave]) acc[chave] = [];
+    acc[chave].push(s);
+    return acc;
+  }, {});
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
-      {solicita && <ModalSolicitaCompra setSolicita={setSolicita} />}
+      {solicita && (
+        <ModalSolicitaCompra
+          setSolicita={setSolicita}
+          buscaCompras={buscaCompras}
+        />
+      )}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <button
@@ -56,16 +77,29 @@ export default function Compras() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {solicitacoes.map((solicitacao) => (
-          <CardCompra solicitacao={solicitacao} />
-        ))}
-
-        {solicitacoes.length === 0 && (
-          <div className="col-span-full text-center text-gray-400 italic">
+      <div className="w-full">
+        {Object.keys(agrupadas).length === 0 && (
+          <div className="text-center text-gray-400 italic">
             Nenhuma solicitação encontrada
           </div>
         )}
+
+        {Object.entries(agrupadas).map(([mesAno, lista]) => (
+          <div key={mesAno} className="mb-10 w-full">
+            <h2 className="text-lg font-semibold text-white/80 border-b border-white/10 pb-2 mb-4">
+              {mesAno.charAt(0).toUpperCase() + mesAno.slice(1)}
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+              {lista.map((solicitacao) => (
+                <CardCompra
+                  key={solicitacao.compra_id}
+                  solicitacao={solicitacao}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

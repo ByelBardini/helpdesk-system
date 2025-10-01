@@ -78,7 +78,28 @@ export async function getCompras(req, res) {
   }
   if (usuario.usuario_role == "gerente") {
     const compras = await Compra.findAll({
-      where: { compra_empresa_id: usuario.usuario_empresa_id },
+      where: {
+        [Op.and]: [
+          { compra_empresa_id: usuario.usuario_empresa_id },
+          {
+            [Op.or]: [
+              { compra_status: "em analise" },
+              {
+                [Op.and]: [
+                  { compra_status: "aprovado" },
+                  { compra_data: { [Op.between]: [trintaDiasAtras, hoje] } },
+                ],
+              },
+              {
+                [Op.and]: [
+                  { compra_status: "recusado" },
+                  { compra_data: { [Op.between]: [trintaDiasAtras, hoje] } },
+                ],
+              },
+            ],
+          },
+        ],
+      },
       attributes: [
         "compra_id",
         "compra_item",
@@ -155,7 +176,7 @@ export async function getCompras(req, res) {
         `),
           "ASC",
         ],
-        ["compra_data", "ASC"],
+        ["compra_data", "DESC"],
       ],
     });
 
