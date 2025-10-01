@@ -2,12 +2,17 @@
 import { X, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { putStatus } from "../../services/api/compraServices.js";
+import { tratarErro } from "../default/funcoes.js";
 
 export default function ModalAprovaRecusa({
   acao = "aprovado",
   setStatus,
   id,
   buscaCompras,
+  setLoading,
+  setNotificacao,
+  setConfirmacao,
+  navigate,
 }) {
   const [valor, setValor] = useState(0);
   const [motivo, setMotivo] = useState("");
@@ -16,6 +21,23 @@ export default function ModalAprovaRecusa({
   const isAprovado = acao === "aprovado";
 
   async function enviaDados() {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
+    if (!isOk) {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Dados inválidos",
+        mensagem:
+          "Todos os dados são necessários para alterar a situação da solicitação",
+      });
+      return;
+    }
+    setLoading(true);
     try {
       if (acao == "aprovado") {
         await putStatus(id, acao, valor / 100);
@@ -23,10 +45,27 @@ export default function ModalAprovaRecusa({
         await putStatus(id, acao, motivo);
       }
       buscaCompras();
-      alert("deu certo");
-      setStatus({ show: false, status: "", id: null });
+      setLoading(false);
+
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Situação alterada com sucesso",
+        mensagem: "A situação da solicitação foi alterada com sucesso",
+      });
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+        setStatus({ show: false, status: "", id: null });
+      }, 700);
     } catch (err) {
       console.error(err);
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
@@ -66,7 +105,7 @@ export default function ModalAprovaRecusa({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-20 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#1b1f4a]/90 text-white shadow-2xl">
@@ -138,7 +177,15 @@ export default function ModalAprovaRecusa({
           </button>
           <button
             disabled={!isOk}
-            onClick={enviaDados}
+            onClick={() =>
+              setConfirmacao({
+                show: true,
+                titulo:
+                  "Tem certeza que deseja alterar o estado da solicitação?",
+                texto: "Essa ação não pode ser desfeita",
+                onSim: () => enviaDados(),
+              })
+            }
             className={`cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border 
                        px-5 py-2 text-sm font-medium transition 
                        ${

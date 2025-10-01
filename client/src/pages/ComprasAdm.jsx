@@ -1,10 +1,17 @@
-import { useEffect, useState } from "react";
-import { getCompras, putRecebimento } from "../services/api/compraServices.js";
+/* eslint-disable react-hooks/exhaustive-deps */
 import CardCompra from "../components/compras/CardCompra.jsx";
 import ModalAprovaRecusa from "../components/compras/ModalAprovaRecusa.jsx";
 import ModalMotivoRecusa from "../components/compras/ModalMotivoRecusa.jsx";
+import Loading from "../components/default/Loading.jsx";
+import Notificacao from "../components/default/Notificacao.jsx";
+import Confirmacao from "../components/default/Confirmacao.jsx";
+import { useEffect, useState } from "react";
+import { getCompras, putRecebimento } from "../services/api/compraServices.js";
+import { useNavigate } from "react-router-dom";
+import { tratarErro } from "../components/default/funcoes.js";
 
 export default function ComprasAdm() {
+  const navigate = useNavigate;
   const [compras, setCompras] = useState([]);
 
   const [status, setStatus] = useState({ show: false, tipo: "", id: null });
@@ -13,23 +20,59 @@ export default function ComprasAdm() {
     motivo: null,
   });
 
+  const [notificacao, setNotificacao] = useState({
+    show: false,
+    tipo: "sucesso",
+    titulo: "",
+    mensagem: "",
+  });
+  const [confirmacao, setConfirmacao] = useState({
+    show: false,
+    titulo: "",
+    texto: "",
+    onSim: null,
+  });
+  const [loading, setLoading] = useState(false);
+
   async function marcaRecebido(id) {
+    setLoading(true);
     try {
       await putRecebimento(id);
       await buscaCompras();
+      setLoading(false);
 
-      alert("Deu bom");
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Recebimento alterado",
+        mensagem: "O status do recebimento foi alterado com sucesso",
+      });
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+      }, 700);
     } catch (err) {
+      setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
   async function buscaCompras() {
+    setLoading(true);
     try {
       const todas = await getCompras(localStorage.getItem("usuario_id"));
+      setLoading(false);
+
       setCompras(todas);
     } catch (err) {
+      setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
@@ -47,12 +90,47 @@ export default function ComprasAdm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+      {confirmacao.show && (
+        <Confirmacao
+          texto={confirmacao.texto}
+          titulo={confirmacao.titulo}
+          onSim={confirmacao.onSim}
+          onNao={() =>
+            setConfirmacao({
+              show: false,
+              titulo: "",
+              texto: "",
+              onSim: null,
+            })
+          }
+        />
+      )}
+      {notificacao.show && (
+        <Notificacao
+          titulo={notificacao.titulo}
+          mensagem={notificacao.mensagem}
+          tipo={notificacao.tipo}
+          onClick={() =>
+            setNotificacao({
+              show: false,
+              tipo: "sucesso",
+              titulo: "",
+              mensagem: "",
+            })
+          }
+        />
+      )}
+      {loading && <Loading />}
       {status.show && (
         <ModalAprovaRecusa
           acao={status.status}
           id={status.id}
           setStatus={setStatus}
           buscaCompras={buscaCompras}
+          setLoading={setLoading}
+          setNotificacao={setNotificacao}
+          setConfirmacao={setConfirmacao}
+          navigate={navigate}
         />
       )}
       {motivoRecusa.show && (
