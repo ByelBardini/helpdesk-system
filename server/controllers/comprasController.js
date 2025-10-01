@@ -1,4 +1,4 @@
-import { Compra, Usuario } from "../models/index.js";
+import { Compra, Usuario, Setor } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 import { Op, literal } from "sequelize";
 
@@ -90,6 +90,18 @@ export async function getCompras(req, res) {
         "compra_valor",
         "compra_motivo_recusa",
       ],
+      include: [
+        {
+          model: Usuario,
+          as: "solicitante",
+          attributes: ["usuario_nome"],
+        },
+        {
+          model: Setor,
+          as: "setor",
+          attributes: ["setor_nome"],
+        },
+      ],
     });
 
     return res.status(200).json(compras);
@@ -121,6 +133,18 @@ export async function getCompras(req, res) {
           },
         ],
       },
+      include: [
+        {
+          model: Usuario,
+          as: "solicitante",
+          attributes: ["usuario_nome"],
+        },
+        {
+          model: Setor,
+          as: "setor",
+          attributes: ["setor_nome"],
+        },
+      ],
       order: [
         [
           literal(`

@@ -1,9 +1,14 @@
-import { Package, CreditCard } from "lucide-react";
+import { Package, CreditCard, User } from "lucide-react";
 import { formatToDate } from "brazilian-values";
+import { useEffect } from "react";
 
 export default function CardCompra({ solicitacao }) {
   const isProduto = solicitacao.compra_tipo === "produto";
   const colorClass = isProduto ? "text-blue-400" : "text-purple-400";
+
+  useEffect(() => {
+    console.log(localStorage.getItem("usuario_role"));
+  }, []);
 
   return (
     <div
@@ -23,6 +28,22 @@ export default function CardCompra({ solicitacao }) {
         </div>
         <span className="text-xs text-gray-400">#{solicitacao.compra_id}</span>
       </div>
+
+      {(localStorage.getItem("usuario_role") == "gerente" ||
+        localStorage.getItem("usuario_role") == "adm") && (
+        <div className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 mb-2 flex items-center gap-2">
+          <User className={`font-semibold ${colorClass}`} size={22} />
+          <span className={`font-semibold ${colorClass} text-sm`}>
+            Solicitante:
+          </span>
+          <span className="text-white/80 text-sm">
+            {solicitacao.solicitante?.usuario_nome}
+          </span>
+          <span className="text-gray-400 text-xs">
+            — {solicitacao.setor?.setor_nome}
+          </span>
+        </div>
+      )}
 
       {isProduto && (
         <p className="text-sm text-gray-300 mb-1">
