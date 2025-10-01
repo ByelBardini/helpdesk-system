@@ -1,12 +1,13 @@
 import ModalSolicitaCompra from "../components/compras/ModalSolicitaCompra.jsx";
 import CardCompra from "../components/compras/CardCompra.jsx";
+import ModalMotivoRecusa from "../components/compras/ModalMotivoRecusa.jsx";
 import { PlusCircle, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCompras } from "../services/api/compraServices.js";
 
 function formatarMesAno(dataString) {
-  const [ano, mes] = dataString.split("-"); 
+  const [ano, mes] = dataString.split("-");
   const date = new Date(ano, mes - 1);
 
   return date.toLocaleDateString("pt-BR", {
@@ -16,6 +17,10 @@ function formatarMesAno(dataString) {
 }
 export default function Compras() {
   const [solicita, setSolicita] = useState(false);
+  const [motivoRecusa, setMotivoRecusa] = useState({
+    show: false,
+    motivo: null,
+  });
 
   const navigate = useNavigate();
   const [solicitacoes, setSolicitacoes] = useState([]);
@@ -44,6 +49,12 @@ export default function Compras() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+      {motivoRecusa.show && (
+        <ModalMotivoRecusa
+          setMotivoRecusa={setMotivoRecusa}
+          motivoRecusa={motivoRecusa}
+        />
+      )}
       {solicita && (
         <ModalSolicitaCompra
           setSolicita={setSolicita}
@@ -95,6 +106,7 @@ export default function Compras() {
                 <CardCompra
                   key={solicitacao.compra_id}
                   solicitacao={solicitacao}
+                  setMotivoRecusa={setMotivoRecusa}
                 />
               ))}
             </div>

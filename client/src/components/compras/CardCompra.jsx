@@ -2,7 +2,7 @@ import { Package, CreditCard, User } from "lucide-react";
 import { formatToDate } from "brazilian-values";
 import { useEffect } from "react";
 
-export default function CardCompra({ solicitacao }) {
+export default function CardCompra({ solicitacao, setMotivoRecusa }) {
   const isProduto = solicitacao.compra_tipo === "produto";
   const colorClass = isProduto ? "text-blue-400" : "text-purple-400";
 
@@ -69,7 +69,7 @@ export default function CardCompra({ solicitacao }) {
               ? "bg-green-500/20 text-green-300 border border-green-400/30"
               : solicitacao.compra_status === "em analise"
               ? "bg-yellow-500/20 text-yellow-300 border border-yellow-400/30"
-              : solicitacao.compra_status === "reprovado"
+              : solicitacao.compra_status === "recusado"
               ? "bg-red-500/20 text-red-300 border border-red-400/30"
               : "bg-gray-500/20 text-gray-300 border border-gray-400/30"
           }`}
@@ -77,9 +77,19 @@ export default function CardCompra({ solicitacao }) {
           {solicitacao.compra_status}
         </span>
 
-        <button className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 transition">
-          Ver Detalhes
-        </button>
+        {solicitacao.compra_status == "recusado" && (
+          <button
+            onClick={() =>
+              setMotivoRecusa({
+                show: true,
+                motivo: solicitacao.compra_motivo_recusa,
+              })
+            }
+            className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 transition"
+          >
+            Motivo
+          </button>
+        )}
       </div>
     </div>
   );
