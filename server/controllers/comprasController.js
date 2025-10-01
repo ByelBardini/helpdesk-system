@@ -6,6 +6,9 @@ const hoje = new Date();
 const trintaDiasAtras = new Date();
 trintaDiasAtras.setDate(hoje.getDate() - 30);
 
+const umAnoAtras = new Date();
+trintaDiasAtras.setDate(hoje.getDate() - 365);
+
 export async function postCompras(req, res) {
   console.log(req.body);
   const {
@@ -87,13 +90,17 @@ export async function getCompras(req, res) {
               {
                 [Op.and]: [
                   { compra_status: "aprovado" },
-                  { compra_data: { [Op.between]: [trintaDiasAtras, hoje] } },
+                  { compra_data: { [Op.between]: [umAnoAtras, hoje] } },
                 ],
               },
               {
                 [Op.and]: [
                   { compra_status: "recusado" },
-                  { compra_data: { [Op.between]: [trintaDiasAtras, hoje] } },
+                  {
+                    compra_data: {
+                      [Op.between]: [umAnoAtras, hoje],
+                    },
+                  },
                 ],
               },
             ],
