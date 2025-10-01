@@ -41,6 +41,21 @@ export async function getResponsaveis(dataInicio, dataFim, empresa) {
   }
 }
 
+export async function getSolicitacoes(dataInicio, dataFim, empresa) {
+  try {
+    const response = await api.put("/relatorio/solicitacoes", {
+      dataInicio,
+      dataFim,
+      empresa,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em getSolicitacoes:", err);
+    throw err;
+  }
+}
+
 export async function getChamadosAbertos(dataInicio, dataFim, empresa) {
   try {
     const response = await api.put(

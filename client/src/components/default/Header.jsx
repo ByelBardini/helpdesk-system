@@ -21,7 +21,6 @@ export default function Header() {
   const nav = [
     { to: "/suporte/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/suporte/chamados", label: "Chamados", icon: Ticket },
-    { to: "/suporte/relatorios", label: "Relatórios", icon: BarChart2 },
   ];
   const navAdm = [
     {
@@ -29,6 +28,7 @@ export default function Header() {
       label: "Solicitações de Compra",
       icon: WalletCards,
     },
+    { to: "/suporte/relatorios", label: "Relatórios", icon: BarChart2 },
     { to: "/suporte/usuarios", label: "Usuários", icon: UsersRound },
     { to: "/suporte/configuracoes", label: "Configurações", icon: Settings },
   ];

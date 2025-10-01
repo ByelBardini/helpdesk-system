@@ -319,5 +319,16 @@ export async function solicitacoes(req, res) {
     raw: true,
   });
 
-  return res.status(200).json(result[0]);
+  let nomeEmpresa = null;
+  if (empresa != 0) {
+    const emp = await Empresa.findByPk(empresa);
+    nomeEmpresa = emp.empresa_nome;
+  }
+
+  return res.status(200).json({
+    totalGeral: result[0].totalGeral,
+    totalServicos: result[0].totalServicos,
+    totalProdutos: result[0].totalProdutos,
+    nomeEmpresa: nomeEmpresa || null,
+  });
 }

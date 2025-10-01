@@ -1,11 +1,13 @@
 import TempoResolucao from "./TempoResolucao.jsx";
 import Responsaveis from "./Responsaveis.jsx";
+import Solicitacoes from "./Solicitacoes.jsx";
 import { useEffect, useState } from "react";
 import {
   getDadosRelatorios,
   getTempoResolucao,
   getResponsaveis,
   getChamadosAbertos,
+  getSolicitacoes,
 } from "../../services/api/relatorioServices.js";
 
 export default function TelaRelatorios({
@@ -28,6 +30,9 @@ export default function TelaRelatorios({
         busca = await getTempoResolucao(dataInicio, dataFim, empresa);
       } else if (selecionado === "responsaveis") {
         busca = await getResponsaveis(dataInicio, dataFim, empresa);
+      } else if (selecionado == "solicitacoes") {
+        busca = await getSolicitacoes(dataInicio, dataFim, empresa);
+        console.log(busca);
       } else if (selecionado === "abertos") {
         console.log("teste");
         await getChamadosAbertos(dataInicio, dataFim, empresa);
@@ -124,6 +129,8 @@ export default function TelaRelatorios({
             <TempoResolucao resultado={resultado} />
           ) : selecionado === "responsaveis" ? (
             <Responsaveis resultado={resultado} />
+          ) : selecionado === "solicitacoes" ? (
+            <Solicitacoes resultado={resultado} />
           ) : null}
         </div>
       )}

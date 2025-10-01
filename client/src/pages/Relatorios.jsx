@@ -17,6 +17,11 @@ export default function Relatorios() {
         title: "Responsáveis",
         desc: "Porcentagem de chamados resolvidos por cada responsável.",
       },
+      {
+        key: "solicitacoes",
+        title: "Solicitações",
+        desc: "Preço gasto com cada tipo de solicitação de compra.",
+      },
     ],
     periodo: [
       {
