@@ -7,6 +7,9 @@ export default function ModalSolicitaCompra({ setSolicita }) {
   const [item, setItem] = useState("");
   const [qtd, setQtd] = useState(0);
   const [motivo, setMotivo] = useState("");
+  const [tipo, setTipo] = useState("");
+
+  const [ok, setOk] = useState(false);
 
   async function solicitaCompra() {
     try {
@@ -14,7 +17,15 @@ export default function ModalSolicitaCompra({ setSolicita }) {
       const id_empresa = localStorage.getItem("empresa_id");
       const id_setor = localStorage.getItem("setor_id");
 
-      await postCompras(id_empresa, id_setor, id_usuario, item, qtd, motivo);
+      await postCompras(
+        id_empresa,
+        id_setor,
+        id_usuario,
+        item,
+        qtd,
+        motivo,
+        tipo
+      );
 
       alert("deu certo");
       setSolicita("");
@@ -22,6 +33,24 @@ export default function ModalSolicitaCompra({ setSolicita }) {
       console.error(err);
     }
   }
+
+  useEffect(() => {
+    if (tipo == "produto") {
+      setOk(
+        item.trim() != "" &&
+          tipo.trim() != "" &&
+          motivo.trim() != "" &&
+          qtd > 0 &&
+          !isNaN(parseFloat(qtd))
+      );
+    } else if (tipo == "servico") {
+      setQtd(null);
+
+      setOk(item.trim() != "" && tipo.trim() != "" && motivo.trim() != "");
+    } else {
+      setOk(false);
+    }
+  }, [item, qtd, tipo, motivo]);
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -67,13 +96,7 @@ export default function ModalSolicitaCompra({ setSolicita }) {
               maxLength={75}
               onChange={(e) => setItem(e.target.value)}
               onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  item.trim() !== "" &&
-                  motivo.trim() !== "" &&
-                  qtd > 0 &&
-                  !isNaN(parseFloat(qtd))
-                ) {
+                if (e.key === "Enter" && ok) {
                   e.preventDefault();
                   solicitaCompra();
                 }
@@ -84,32 +107,55 @@ export default function ModalSolicitaCompra({ setSolicita }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1">
-            <span className="text-xs text-white/70">Quantidade</span>
-            <input
-              type="text"
-              onChange={(e) => setQtd(e.target.value)}
-              onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  item.trim() !== "" &&
-                  motivo.trim() !== "" &&
-                  qtd > 0 &&
-                  !isNaN(parseFloat(qtd))
-                ) {
-                  e.preventDefault();
-                  solicitaCompra();
-                }
-              }}
-              placeholder="Informe a quantidade"
-              className={`w-full h-10 rounded-lg border bg-white/10 px-3 text-sm 
+          {tipo != "servico" && (
+            <label className="flex flex-col gap-1">
+              <span className="text-xs text-white/70">Quantidade</span>
+              <input
+                type="text"
+                onChange={(e) => setQtd(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && ok) {
+                    e.preventDefault();
+                    solicitaCompra();
+                  }
+                }}
+                placeholder="Informe a quantidade"
+                className={`w-full h-10 rounded-lg border bg-white/10 px-3 text-sm 
                         placeholder-white/40 outline-none focus:border-blue-400
                         ${
                           qtd < 1 || isNaN(parseFloat(qtd))
                             ? "border-red-400"
                             : "border-white/10"
                         }`}
-            />
+              />
+            </label>
+          )}
+
+          <label className="flex flex-col gap-1">
+            <span className="text-xs text-white/70">Tipo</span>
+            <select
+              onChange={(e) => setTipo(e.target.value)}
+              className="w-full h-10 rounded-lg border border-white/10 bg-[#1b1f4a] 
+             px-3 text-sm text-white placeholder-white/40 outline-none 
+             focus:ring-2 focus:ring-blue-400 focus:border-blue-400 
+             appearance-none cursor-pointer"
+            >
+              <option hidden value={""}>
+                Selecione o Tipo
+              </option>
+              <option
+                value="produto"
+                className="bg-[#1b1f4a] text-white hover:bg-[#2a2f6d]"
+              >
+                Produto
+              </option>
+              <option
+                value="servico"
+                className="bg-[#1b1f4a] text-white hover:bg-[#2a2f6d]"
+              >
+                Serviço
+              </option>
+            </select>
           </label>
 
           <label className="flex flex-col gap-1">
@@ -128,13 +174,7 @@ export default function ModalSolicitaCompra({ setSolicita }) {
               maxLength={255}
               onChange={(e) => setMotivo(e.target.value)}
               onKeyDown={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  item.trim() !== "" &&
-                  motivo.trim() !== "" &&
-                  qtd > 0 &&
-                  !isNaN(parseFloat(qtd))
-                ) {
+                if (e.key === "Enter" && ok) {
                   e.preventDefault();
                   solicitaCompra();
                 }
@@ -157,12 +197,7 @@ export default function ModalSolicitaCompra({ setSolicita }) {
           </button>
           <button
             onClick={solicitaCompra}
-            disabled={
-              item.trim() === "" ||
-              motivo.trim() === "" ||
-              qtd < 1 ||
-              isNaN(parseFloat(qtd))
-            }
+            disabled={!ok}
             className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border 
              border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 
              hover:bg-green-500/30 transition 

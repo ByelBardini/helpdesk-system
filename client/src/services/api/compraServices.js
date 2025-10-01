@@ -6,7 +6,8 @@ export async function postCompras(
   solicitante_id,
   item,
   quantidade,
-  motivo
+  motivo,
+  tipo
 ) {
   try {
     const response = await api.post(`/compra`, {
@@ -16,11 +17,23 @@ export async function postCompras(
       item,
       quantidade,
       motivo,
+      tipo,
     });
 
     return response.data;
   } catch (err) {
     console.error("Erro em postCompras:", err);
+    throw err;
+  }
+}
+
+export async function getCompras(id) {
+  try {
+    const response = await api.get(`/compra/${id}`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em getCompras:", err);
     throw err;
   }
 }
