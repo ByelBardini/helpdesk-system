@@ -213,3 +213,35 @@ ADD COLUMN `area_ativa` TINYINT NOT NULL DEFAULT 1 AFTER `area_tipo`;
 
 ALTER TABLE `chamados_ti`.`chamados` 
 ADD COLUMN `chamado_resolucao` VARCHAR(255) NULL AFTER `chamado_data_conclusao`;
+
+CREATE TABLE `chamados_ti`.`compras` (
+  `compra_id` INT NOT NULL AUTO_INCREMENT,
+  `compra_empresa_id` INT NOT NULL,
+  `compra_setor_id` INT NOT NULL,
+  `compra_solicitante_id` INT NOT NULL,
+  `compra_item` VARCHAR(125) NOT NULL,
+  `compra_quantidade` INT NOT NULL,
+  `compra_motivo` VARCHAR(255) NOT NULL,
+  `compra_data` DATE NOT NULL,
+  `compra_status` ENUM('em analise', 'aprovado', 'recusado') NOT NULL,
+  `compra_valor` DOUBLE NULL,
+  `compra_motivo_recusa` VARCHAR(255) NULL,
+  PRIMARY KEY (`compra_id`),
+  INDEX `compra_empresa_id_idx` (`compra_empresa_id` ASC) VISIBLE,
+  INDEX `compra_setor_id_idx` (`compra_setor_id` ASC) VISIBLE,
+  INDEX `compra_solicitante_id_idx` (`compra_solicitante_id` ASC) VISIBLE,
+  CONSTRAINT `compra_empresa_id`
+    FOREIGN KEY (`compra_empresa_id`)
+    REFERENCES `chamados_ti`.`empresas` (`empresa_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `compra_setor_id`
+    FOREIGN KEY (`compra_setor_id`)
+    REFERENCES `chamados_ti`.`setores` (`setor_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `compra_solicitante_id`
+    FOREIGN KEY (`compra_solicitante_id`)
+    REFERENCES `chamados_ti`.`usuarios` (`usuario_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);

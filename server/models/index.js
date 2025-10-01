@@ -7,6 +7,7 @@ import Area from "./areas.js";
 import Anexo from "./anexos.js";
 import Chamado from "./chamados.js";
 import Resposta from "./respostas.js";
+import Compra from "./compras.js";
 
 // Foreign keys de setor e empresa
 Empresa.hasMany(Setor, {
@@ -153,6 +154,42 @@ Anexo.belongsTo(Resposta, {
   as: "resposta",
 });
 
+//Foreign keys de compra e empresa
+Empresa.hasMany(Compra, {
+  foreignKey: "compra_empresa_id",
+  sourceKey: "empresa_id",
+  as: "compras",
+});
+Compra.belongsTo(Empresa, {
+  foreignKey: "compra_empresa_id",
+  targetKey: "empresa_id",
+  as: "empresa",
+});
+
+//Foreign keys de compra e setor
+Setor.hasMany(Compra, {
+  foreignKey: "compra_setor_id",
+  sourceKey: "setor_id",
+  as: "compras",
+});
+Compra.belongsTo(Setor, {
+  foreignKey: "compra_setor_id",
+  targetKey: "setor_id",
+  as: "setor",
+});
+
+//Foreign keys de compra e usuario
+Usuario.hasMany(Compra, {
+  foreignKey: "compra_solicitante_id",
+  sourceKey: "usuario_id",
+  as: "compras",
+});
+Compra.belongsTo(Usuario, {
+  foreignKey: "compra_solicitante_id",
+  targetKey: "usuario_id",
+  as: "solicitante",
+});
+
 export {
   Usuario,
   Empresa,
@@ -163,4 +200,5 @@ export {
   Anexo,
   Chamado,
   Resposta,
+  Compra,
 };
