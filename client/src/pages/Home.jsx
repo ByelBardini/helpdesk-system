@@ -9,6 +9,7 @@ import {
   HelpCircle,
   CalendarPlus,
   LayoutDashboard,
+  ShoppingCart,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { tratarErro } from "../components/default/funcoes.js";
@@ -83,6 +84,15 @@ export default function Home() {
         >
           <CalendarPlus className="h-8 w-8 mb-2" />
           <span className="text-sm font-medium">Novo Chamado</span>
+        </button>
+        <button
+          onClick={() => navigate("/compras", { replace: true })}
+          className="cursor-pointer flex flex-col items-center justify-center w-full 
+             bg-white/5 hover:bg-white/10 border border-white/10 
+             rounded-2xl p-4 transition h-1/6"
+        >
+          <ShoppingCart className="h-6 w-6 mb-2" />
+          <span className="text-sm font-medium">Solicitações de Compras</span>
         </button>
       </div>
 

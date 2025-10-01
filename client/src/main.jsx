@@ -7,6 +7,7 @@ import Home from "./pages/Home.jsx";
 import Faq from "./pages/Faq.jsx";
 import NovoChamado from "./pages/NovoChamado.jsx";
 import Chamados from "./pages/Chamados.jsx";
+import Compras from "./pages/Compras.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import AdminLayout from "./pages/AdminLayout.jsx";
 import ChamadosSuporte from "./pages/ChamadosSuporte.jsx";
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
   {
     path: "/chamados",
     element: <Chamados />,
+  },
+  {
+    path: "/compras",
+    element: <Compras />,
   },
   {
     path: "/suporte/dashboard",

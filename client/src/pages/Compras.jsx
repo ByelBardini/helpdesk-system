@@ -1,0 +1,113 @@
+import ModalSolicitaCompra from "../components/compras/ModalSolicitaCompra.jsx";
+import { PlusCircle, ShoppingCart, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function Compras() {
+  const [solicita, setSolicita] = useState(false);
+
+  const navigate = useNavigate();
+  const [solicitacoes, setSolicitacoes] = useState([]);
+
+  useEffect(() => {
+    setSolicitacoes([
+      {
+        id: 1,
+        titulo: "Compra de Monitor",
+        solicitante: "Gabriel",
+        status: "Em análise",
+        valor: "R$ 1.200,00",
+        data: "28/09/2025",
+      },
+      {
+        id: 2,
+        titulo: "Cadeiras para escritório",
+        solicitante: "Maria",
+        status: "Aprovado",
+        valor: "R$ 3.500,00",
+        data: "27/09/2025",
+      },
+    ]);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+      {solicita && <ModalSolicitaCompra setSolicita={setSolicita} />}
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/home", { replace: true })}
+            className="cursor-pointer flex items-center gap-2 bg-white/5 hover:bg-white/10 
+                       border border-white/10 px-4 py-2 rounded-lg transition"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm">Voltar</span>
+          </button>
+          <h1 className="text-xl font-bold flex items-center gap-2">
+            <ShoppingCart className="w-6 h-6 text-blue-400" />
+            Solicitações de Compras
+          </h1>
+        </div>
+
+        <button
+          onClick={() => setSolicita(true)}
+          className="cursor-pointer inline-flex items-center gap-2 rounded-lg border 
+                     border-blue-400/30 bg-blue-500/20 px-4 py-2 text-sm font-medium text-blue-200 
+                     hover:bg-blue-500/30 transition"
+        >
+          <PlusCircle className="h-5 w-5" />
+          Nova Solicitação
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {solicitacoes.map((s) => (
+          <div
+            key={s.id}
+            className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition flex flex-col"
+          >
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="font-semibold text-white/90">{s.titulo}</h2>
+              <span className="text-xs text-gray-400">#{s.id}</span>
+            </div>
+
+            <p className="text-sm text-gray-300 mb-1">
+              Solicitante:{" "}
+              <span className="text-white/80">{s.solicitante}</span>
+            </p>
+            <p className="text-sm text-gray-300 mb-1">
+              Data: <span className="text-white/80">{s.data}</span>
+            </p>
+            <p className="text-sm text-gray-300 mb-3">
+              Valor: <span className="text-blue-300">{s.valor}</span>
+            </p>
+
+            <div className="flex justify-between items-center mt-auto">
+              <span
+                className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                  s.status === "Aprovado"
+                    ? "bg-green-500/20 text-green-300 border border-green-400/30"
+                    : s.status === "Em análise"
+                    ? "bg-yellow-500/20 text-yellow-300 border border-yellow-400/30"
+                    : "bg-gray-500/20 text-gray-300 border border-gray-400/30"
+                }`}
+              >
+                {s.status}
+              </span>
+
+              <button className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 transition">
+                Ver Detalhes
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {solicitacoes.length === 0 && (
+          <div className="col-span-full text-center text-gray-400 italic">
+            Nenhuma solicitação encontrada
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
