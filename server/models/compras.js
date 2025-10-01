@@ -24,7 +24,7 @@ Compra.init(
       allowNull: false,
     },
     compra_item: {
-      type: DataTypes.STRING(125),
+      type: DataTypes.STRING(75),
       allowNull: false,
     },
     compra_quantidade: {

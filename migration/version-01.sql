@@ -219,7 +219,7 @@ CREATE TABLE `chamados_ti`.`compras` (
   `compra_empresa_id` INT NOT NULL,
   `compra_setor_id` INT NOT NULL,
   `compra_solicitante_id` INT NOT NULL,
-  `compra_item` VARCHAR(125) NOT NULL,
+  `compra_item` VARCHAR(75) NOT NULL,
   `compra_quantidade` INT NOT NULL,
   `compra_motivo` VARCHAR(255) NOT NULL,
   `compra_data` DATE NOT NULL,
