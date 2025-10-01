@@ -1,6 +1,13 @@
 import ExcelJS from "exceljs";
 import { fn, literal, Op, col } from "sequelize";
-import { Chamado, Empresa, Usuario, Area, Compra } from "../models/index.js";
+import {
+  Chamado,
+  Empresa,
+  Usuario,
+  Area,
+  Compra,
+  Setor,
+} from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 
 export async function getDados(req, res) {
@@ -331,4 +338,86 @@ export async function solicitacoes(req, res) {
     totalProdutos: result[0].totalProdutos,
     nomeEmpresa: nomeEmpresa || null,
   });
+}
+
+export async function relatorioCompras(req, res) {
+  const { dataInicio, dataFim, empresa } = req.body;
+
+  if (!dataInicio || !dataFim || empresa === undefined) {
+    throw ApiError.badRequest("Data de início, fim e empresa são obrigatórios");
+  }
+
+  const whereClause = {
+    compra_data: { [Op.between]: [dataInicio, dataFim] },
+  };
+
+  if (empresa !== 0) {
+    whereClause.compra_empresa_id = empresa;
+  }
+
+  const compras = await Compra.findAll({
+    where: whereClause,
+    include: [
+      {
+        model: Empresa,
+        as: "empresa",
+        attributes: ["empresa_nome"],
+      },
+      {
+        model: Setor,
+        as: "setor",
+        attributes: ["setor_nome"],
+      },
+      {
+        model: Usuario,
+        as: "solicitante",
+        attributes: ["usuario_nome"],
+      },
+    ],
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Compras");
+
+  worksheet.columns = [
+    { header: "Empresa", key: "empresa", width: 25 },
+    { header: "Setor", key: "setor", width: 25 },
+    { header: "Solicitante", key: "solicitante", width: 25 },
+    { header: "Item", key: "item", width: 30 },
+    { header: "Tipo", key: "tipo", width: 15 },
+    { header: "Quantidade", key: "quantidade", width: 12 },
+    { header: "Valor", key: "valor", width: 15 },
+    { header: "Status", key: "status", width: 15 },
+  ];
+
+  compras.forEach((c) => {
+    worksheet.addRow({
+      empresa: c.empresa?.empresa_nome || "-",
+      setor: c.setor?.setor_nome || "-",
+      solicitante: c.solicitante?.usuario_nome || "-",
+      item: c.compra_item,
+      tipo: c.compra_tipo,
+      quantidade: c.compra_quantidade || 1,
+      valor: c.compra_valor,
+      status: c.compra_status,
+    });
+  });
+
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FF1F4E78" },
+    };
+  });
+
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", 'attachment; filename="compras.xlsx"');
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  res.send(buffer);
 }
