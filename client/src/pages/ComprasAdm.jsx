@@ -70,6 +70,7 @@ export default function ComprasAdm() {
             {abertas.length > 0 ? (
               abertas.map((c) => (
                 <CardCompra
+                  adm={true}
                   key={c.compra_id}
                   solicitacao={c}
                   setStatus={setStatus}
@@ -91,6 +92,7 @@ export default function ComprasAdm() {
             {aprovadas.length > 0 ? (
               aprovadas.map((c) => (
                 <CardCompra
+                  adm={true}
                   key={c.compra_id}
                   solicitacao={c}
                   setStatus={marcaRecebido}
@@ -110,6 +112,7 @@ export default function ComprasAdm() {
             {recusadas.length > 0 ? (
               recusadas.map((c) => (
                 <CardCompra
+                  adm={true}
                   key={c.compra_id}
                   solicitacao={c}
                   setMotivoRecusa={setMotivoRecusa}

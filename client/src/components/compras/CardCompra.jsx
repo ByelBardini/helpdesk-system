@@ -3,6 +3,7 @@ import { formatToDate, formatToBRL } from "brazilian-values";
 import { useEffect } from "react";
 
 export default function CardCompra({
+  adm = false,
   solicitacao,
   setMotivoRecusa,
   setStatus = () => {},
@@ -142,7 +143,8 @@ export default function CardCompra({
         </span>
 
         {solicitacao.compra_status == "em analise" &&
-          localStorage.getItem("usuario_role") == "adm" && (
+          localStorage.getItem("usuario_role") == "adm" &&
+          adm && (
             <div className="gap-2 flex">
               <button
                 onClick={() =>
@@ -172,7 +174,8 @@ export default function CardCompra({
           )}
 
         {solicitacao.compra_recebida == "a caminho" &&
-          localStorage.getItem("usuario_role") == "adm" && (
+          localStorage.getItem("usuario_role") == "adm" &&
+          adm && (
             <button
               onClick={() => setStatus(solicitacao.compra_id)}
               className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-green-400/30 text-green-300 bg-green-500/10 hover:bg-green-500/20 transition"

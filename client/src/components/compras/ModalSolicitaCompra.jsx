@@ -2,8 +2,16 @@
 import { X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { postCompras } from "../../services/api/compraServices.js";
+import { tratarErro } from "../default/funcoes.js";
 
-export default function ModalSolicitaCompra({ setSolicita, buscaCompras }) {
+export default function ModalSolicitaCompra({
+  setSolicita,
+  buscaCompras,
+  setNotificacao,
+  setConfirmacao,
+  setLoading,
+  navigate,
+}) {
   const [item, setItem] = useState("");
   const [qtd, setQtd] = useState(0);
   const [motivo, setMotivo] = useState("");
@@ -12,6 +20,22 @@ export default function ModalSolicitaCompra({ setSolicita, buscaCompras }) {
   const [ok, setOk] = useState(false);
 
   async function solicitaCompra() {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
+    if (!ok) {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Dados incompletos",
+        mensagem: "Preencha todos os dados para enviar a solicitação",
+      });
+      return;
+    }
+    setLoading(true);
     try {
       const id_usuario = localStorage.getItem("usuario_id");
       const id_empresa = localStorage.getItem("empresa_id");
@@ -27,11 +51,26 @@ export default function ModalSolicitaCompra({ setSolicita, buscaCompras }) {
         tipo
       );
       await buscaCompras();
-
-      alert("deu certo");
-      setSolicita("");
+      setLoading(false);
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Solicitação enviada com sucesso",
+        mensagem: "Sua solicitação foi enviada com sucesso ao setor de TI",
+      });
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+        setSolicita("");
+      }, 700);
     } catch (err) {
+      setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
@@ -108,7 +147,7 @@ export default function ModalSolicitaCompra({ setSolicita, buscaCompras }) {
             />
           </label>
 
-          {tipo != "servico" && (
+          {tipo == "produto" && (
             <label className="flex flex-col gap-1">
               <span className="text-xs text-white/70">Quantidade</span>
               <input
@@ -197,7 +236,14 @@ export default function ModalSolicitaCompra({ setSolicita, buscaCompras }) {
             Cancelar
           </button>
           <button
-            onClick={solicitaCompra}
+            onClick={() =>
+              setConfirmacao({
+                show: true,
+                titulo: "Tem certeza que deseja enviar essa solicitação?",
+                texto: "Os dados não poderão ser editados",
+                onSim: () => solicitaCompra(),
+              })
+            }
             disabled={!ok}
             className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border 
              border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 

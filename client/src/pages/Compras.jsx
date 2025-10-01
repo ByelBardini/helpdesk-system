@@ -1,10 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import ModalSolicitaCompra from "../components/compras/ModalSolicitaCompra.jsx";
 import CardCompra from "../components/compras/CardCompra.jsx";
 import ModalMotivoRecusa from "../components/compras/ModalMotivoRecusa.jsx";
+import Loading from "../components/default/Loading.jsx";
+import Notificacao from "../components/default/Notificacao.jsx";
+import Confirmacao from "../components/default/Confirmacao.jsx";
 import { PlusCircle, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCompras } from "../services/api/compraServices.js";
+import { tratarErro } from "../components/default/funcoes.js";
 
 function formatarMesAno(dataString) {
   const [ano, mes] = dataString.split("-");
@@ -16,23 +21,41 @@ function formatarMesAno(dataString) {
   });
 }
 export default function Compras() {
+  const navigate = useNavigate();
+
   const [solicita, setSolicita] = useState(false);
   const [motivoRecusa, setMotivoRecusa] = useState({
     show: false,
     motivo: null,
   });
 
-  const navigate = useNavigate();
   const [solicitacoes, setSolicitacoes] = useState([]);
 
+  const [notificacao, setNotificacao] = useState({
+    show: false,
+    tipo: "sucesso",
+    titulo: "",
+    mensagem: "",
+  });
+  const [confirmacao, setConfirmacao] = useState({
+    show: false,
+    titulo: "",
+    texto: "",
+    onSim: null,
+  });
+  const [loading, setLoading] = useState(false);
+
   async function buscaCompras() {
+    setLoading(true);
     try {
       const compras = await getCompras(localStorage.getItem("usuario_id"));
-      console.log("compras:", compras);
+      setLoading(false);
 
       setSolicitacoes(compras);
     } catch (err) {
+      setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
@@ -49,6 +72,37 @@ export default function Compras() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+      {confirmacao.show && (
+        <Confirmacao
+          texto={confirmacao.texto}
+          titulo={confirmacao.titulo}
+          onSim={confirmacao.onSim}
+          onNao={() =>
+            setConfirmacao({
+              show: false,
+              titulo: "",
+              texto: "",
+              onSim: null,
+            })
+          }
+        />
+      )}
+      {notificacao.show && (
+        <Notificacao
+          titulo={notificacao.titulo}
+          mensagem={notificacao.mensagem}
+          tipo={notificacao.tipo}
+          onClick={() =>
+            setNotificacao({
+              show: false,
+              tipo: "sucesso",
+              titulo: "",
+              mensagem: "",
+            })
+          }
+        />
+      )}
+      {loading && <Loading />}
       {motivoRecusa.show && (
         <ModalMotivoRecusa
           setMotivoRecusa={setMotivoRecusa}
@@ -57,6 +111,10 @@ export default function Compras() {
       )}
       {solicita && (
         <ModalSolicitaCompra
+          setNotificacao={setNotificacao}
+          setConfirmacao={setConfirmacao}
+          setLoading={setLoading}
+          navigate={navigate}
           setSolicita={setSolicita}
           buscaCompras={buscaCompras}
         />
