@@ -27,9 +27,13 @@ Compra.init(
       type: DataTypes.STRING(75),
       allowNull: false,
     },
+    compra_tipo: {
+      type: DataTypes.ENUM("produto", "servico"),
+      allowNull: false,
+    },
     compra_quantidade: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     compra_motivo: {
       type: DataTypes.STRING(255),

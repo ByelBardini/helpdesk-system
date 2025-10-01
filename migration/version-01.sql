@@ -245,3 +245,7 @@ CREATE TABLE `chamados_ti`.`compras` (
     REFERENCES `chamados_ti`.`usuarios` (`usuario_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+
+ALTER TABLE `chamados_ti`.`compras` 
+ADD COLUMN `compra_tipo` ENUM("produto", "servico") NOT NULL AFTER `compra_item`,
+CHANGE COLUMN `compra_quantidade` `compra_quantidade` INT NULL ;
