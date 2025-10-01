@@ -52,7 +52,11 @@ Compra.init(
       allowNull: true,
     },
     compra_recebida: {
-      type: DataTypes.ENUM("a caminho", "recebida"),
+      type: DataTypes.ENUM("a caminho", "recebido"),
+      allowNull: true,
+    },
+    compra_data_recebimento: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
     compra_motivo_recusa: {

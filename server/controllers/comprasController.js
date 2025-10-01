@@ -60,7 +60,7 @@ export async function putStatus(req, res) {
   if (status == "aprovado") {
     solicitacao.compra_status = status;
     solicitacao.compra_recebida = "a caminho";
-    solicitacao.compra_preco = alt;
+    solicitacao.compra_valor = alt;
   } else {
     solicitacao.compra_status = status;
     solicitacao.compra_motivo_recusa = alt;
@@ -68,6 +68,23 @@ export async function putStatus(req, res) {
   await solicitacao.save();
 
   return res.status(200).json({ message: "Status alterado com sucesso" });
+}
+
+export async function putRecebimento(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id é obrigatório");
+  }
+
+  const solicitacao = await Compra.findByPk(id);
+
+  solicitacao.compra_recebida = "recebido";
+  solicitacao.compra_data_recebimento = new Date();
+  await solicitacao.save();
+
+  return res
+    .status(200)
+    .json({ message: "Situação de entrega atualizada com sucesso" });
 }
 
 export async function getCompras(req, res) {
@@ -96,6 +113,8 @@ export async function getCompras(req, res) {
         "compra_status",
         "compra_valor",
         "compra_motivo_recusa",
+        "compra_recebida",
+        "compra_data_recebimento",
       ],
     });
 
@@ -140,6 +159,8 @@ export async function getCompras(req, res) {
         "compra_status",
         "compra_valor",
         "compra_motivo_recusa",
+        "compra_recebida",
+        "compra_data_recebimento",
       ],
       include: [
         {
