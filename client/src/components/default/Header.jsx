@@ -10,6 +10,7 @@ import {
   Menu,
   UsersRound,
   Settings,
+  WalletCards,
   X,
 } from "lucide-react";
 
@@ -23,6 +24,11 @@ export default function Header() {
     { to: "/suporte/relatorios", label: "Relatórios", icon: BarChart2 },
   ];
   const navAdm = [
+    {
+      to: "/suporte/compras",
+      label: "Solicitações de Compra",
+      icon: WalletCards,
+    },
     { to: "/suporte/usuarios", label: "Usuários", icon: UsersRound },
     { to: "/suporte/configuracoes", label: "Configurações", icon: Settings },
   ];
