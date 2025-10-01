@@ -10,6 +10,8 @@ import {
   getSolicitacoes,
   getCompras,
 } from "../../services/api/relatorioServices.js";
+import { tratarErro } from "../default/funcoes.js";
+import { useNavigate } from "react-router-dom";
 
 export default function TelaRelatorios({
   getSelectedTitle,
@@ -17,13 +19,27 @@ export default function TelaRelatorios({
   selecionado,
   resultado,
   setResultado,
+  setNotificacao,
+  setLoading,
 }) {
+  const navigate = useNavigate();
+
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [empresa, setEmpresa] = useState(0);
   const [empresas, setEmpresas] = useState([]);
 
   async function buscaRelatorio() {
+    if (dataInicio == "" || dataFim == "") {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Dados incompletos",
+        mensagem: "Selecione uma data de início e fim para gerar os relatórios",
+      });
+      return;
+    }
+    setLoading(true);
     setResultado([]);
     try {
       let busca;
@@ -39,12 +55,15 @@ export default function TelaRelatorios({
         await getCompras(dataInicio, dataFim, empresa);
       }
       if (busca) setResultado(busca);
+      setLoading(false);
 
       setDataFim("");
       setDataInicio("");
       setEmpresa(0);
     } catch (err) {
       console.error(err);
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 

@@ -1,9 +1,19 @@
 import TelaRelatorios from "../components/relatorios/TelaRelatorios.jsx";
+import Notificacao from "../components/default/Notificacao.jsx";
+import Loading from "../components/default/Loading.jsx";
 import { useState } from "react";
 
 export default function Relatorios() {
   const [selecionado, setSelecionado] = useState("tempo");
   const [resultado, setResultado] = useState([]);
+
+  const [notificacao, setNotificacao] = useState({
+    show: false,
+    tipo: "sucesso",
+    titulo: "",
+    mensagem: "",
+  });
+  const [loading, setLoading] = useState(false);
 
   const menu = {
     geral: [
@@ -76,6 +86,22 @@ export default function Relatorios() {
 
   return (
     <div className="h-full overflow-y-auto pb-12 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+      {notificacao.show && (
+        <Notificacao
+          titulo={notificacao.titulo}
+          mensagem={notificacao.mensagem}
+          tipo={notificacao.tipo}
+          onClick={() =>
+            setNotificacao({
+              show: false,
+              tipo: "sucesso",
+              titulo: "",
+              mensagem: "",
+            })
+          }
+        />
+      )}
+      {loading && <Loading />}
       <div className="max-w-6xl mx-auto grid grid-cols-12 gap-6">
         <nav className="col-span-12 md:col-span-3 space-y-6">
           {renderGrupoMenu("Geral", menu.geral)}
@@ -88,6 +114,8 @@ export default function Relatorios() {
           selecionado={selecionado}
           resultado={resultado}
           setResultado={setResultado}
+          setNotificacao={setNotificacao}
+          setLoading={setLoading}
         />
       </div>
     </div>
