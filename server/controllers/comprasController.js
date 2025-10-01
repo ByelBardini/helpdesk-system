@@ -48,6 +48,28 @@ export async function postCompras(req, res) {
     .json({ message: "Solicitação de compra enviada com sucesso" });
 }
 
+export async function putStatus(req, res) {
+  const { id } = req.params;
+  const { status, alt } = req.body;
+  if (!id || !status) {
+    throw ApiError.badRequest("Id e status são obrigatórios");
+  }
+
+  const solicitacao = await Compra.findByPk(id);
+
+  if (status == "aprovado") {
+    solicitacao.compra_status = status;
+    solicitacao.compra_recebida = "a caminho";
+    solicitacao.compra_preco = alt;
+  } else {
+    solicitacao.compra_status = status;
+    solicitacao.compra_motivo_recusa = alt;
+  }
+  await solicitacao.save();
+
+  return res.status(200).json({ message: "Status alterado com sucesso" });
+}
+
 export async function getCompras(req, res) {
   const { id } = req.params;
   if (!id) {
@@ -87,6 +109,7 @@ export async function getCompras(req, res) {
           {
             [Op.or]: [
               { compra_status: "em analise" },
+              { compra_recebida: "a caminho" },
               {
                 [Op.and]: [
                   { compra_status: "aprovado" },
@@ -139,6 +162,7 @@ export async function getCompras(req, res) {
       where: {
         [Op.or]: [
           { compra_status: "em analise" },
+          { compra_recebida: "a caminho" },
           {
             [Op.and]: [
               { compra_status: "aprovado" },

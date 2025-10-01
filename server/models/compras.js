@@ -51,6 +51,10 @@ Compra.init(
       type: DataTypes.DOUBLE,
       allowNull: true,
     },
+    compra_recebida: {
+      type: DataTypes.ENUM("a caminho", "recebida"),
+      allowNull: true,
+    },
     compra_motivo_recusa: {
       type: DataTypes.STRING(255),
       allowNull: true,
