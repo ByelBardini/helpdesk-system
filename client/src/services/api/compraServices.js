@@ -37,3 +37,17 @@ export async function getCompras(id) {
     throw err;
   }
 }
+
+export async function putStatus(id, status, alt = null) {
+  try {
+    const response = await api.put(`/compra/status/${id}`, {
+      status,
+      alt,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em putStatus:", err);
+    throw err;
+  }
+}

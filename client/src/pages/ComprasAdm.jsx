@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { getCompras } from "../services/api/compraServices.js";
 import CardCompra from "../components/compras/CardCompra.jsx";
+import ModalAprovaRecusa from "../components/compras/ModalAprovaRecusa.jsx";
 
 export default function ComprasAdm() {
   const [compras, setCompras] = useState([]);
+
+  const [status, setStatus] = useState({ show: false, tipo: "", id: null });
 
   async function buscaCompras() {
     try {
@@ -15,6 +18,10 @@ export default function ComprasAdm() {
   }
 
   useEffect(() => {
+    console.log(status);
+  }, [status]);
+
+  useEffect(() => {
     buscaCompras();
   }, []);
 
@@ -24,6 +31,14 @@ export default function ComprasAdm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+      {status.show && (
+        <ModalAprovaRecusa
+          acao={status.status}
+          id={status.id}
+          setStatus={setStatus}
+          buscaCompras={buscaCompras}
+        />
+      )}
       <div className="pb-23 grid grid-cols-1 md:grid-cols-3 gap-6 h-screen">
         <div className="flex flex-col bg-white/5 border border-white/10 rounded-xl p-4 overflow-auto">
           <h2 className="text-lg font-semibold text-yellow-300 mb-4">
@@ -32,7 +47,11 @@ export default function ComprasAdm() {
           <div className="flex-1 space-y-4 overflow-y-auto pr-2">
             {abertas.length > 0 ? (
               abertas.map((c) => (
-                <CardCompra key={c.compra_id} solicitacao={c} />
+                <CardCompra
+                  key={c.compra_id}
+                  solicitacao={c}
+                  setStatus={setStatus}
+                />
               ))
             ) : (
               <p className="text-gray-400 text-sm italic">

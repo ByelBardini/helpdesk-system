@@ -2,7 +2,11 @@ import { Package, CreditCard, User } from "lucide-react";
 import { formatToDate } from "brazilian-values";
 import { useEffect } from "react";
 
-export default function CardCompra({ solicitacao, setMotivoRecusa }) {
+export default function CardCompra({
+  solicitacao,
+  setMotivoRecusa,
+  setStatus = () => {},
+}) {
   const isProduto = solicitacao.compra_tipo === "produto";
   const colorClass = isProduto ? "text-blue-400" : "text-purple-400";
 
@@ -76,6 +80,43 @@ export default function CardCompra({ solicitacao, setMotivoRecusa }) {
         >
           {solicitacao.compra_status}
         </span>
+
+        {solicitacao.compra_status == "em analise" &&
+          localStorage.getItem("usuario_role") == "adm" && (
+            <div className="gap-2 flex">
+              <button
+                onClick={() =>
+                  setStatus({
+                    show: true,
+                    status: "recusado",
+                    id: solicitacao.compra_id,
+                  })
+                }
+                className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-red-400/30 text-red-300 bg-red-500/10 hover:bg-red-500/20 transition"
+              >
+                Recusar
+              </button>
+              <button
+                onClick={() =>
+                  setStatus({
+                    show: true,
+                    status: "aprovado",
+                    id: solicitacao.compra_id,
+                  })
+                }
+                className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-green-400/30 text-green-300 bg-green-500/10 hover:bg-green-500/20 transition"
+              >
+                Aprovar
+              </button>
+            </div>
+          )}
+
+        {solicitacao.compra_recebida == "a caminho" &&
+          localStorage.getItem("usuario_role") == "adm" && (
+            <button className="cursor-pointer text-xs px-3 py-1.5 rounded-lg border border-green-400/30 text-green-300 bg-green-500/10 hover:bg-green-500/20 transition">
+              Atestar Recebimento
+            </button>
+          )}
 
         {solicitacao.compra_status == "recusado" && (
           <button
