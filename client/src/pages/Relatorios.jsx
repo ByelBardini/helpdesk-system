@@ -20,7 +20,7 @@ export default function Relatorios() {
       {
         key: "solicitacoes",
         title: "Solicitações",
-        desc: "Preço gasto com cada tipo de solicitação de compra.",
+        desc: "Valor gasto com cada tipo de solicitação de compra.",
       },
     ],
     periodo: [
@@ -28,6 +28,11 @@ export default function Relatorios() {
         key: "abertos",
         title: "Chamados abertos por período",
         desc: "Quantidade de chamados abertos em um intervalo de tempo.",
+      },
+      {
+        key: "compras",
+        title: "Solicitações de compras por período",
+        desc: "Quantidade de solicitações de compra aberto em um intervalo de tempo.",
       },
     ],
   };
