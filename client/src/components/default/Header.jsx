@@ -12,6 +12,7 @@ import {
   UsersRound,
   Settings,
   WalletCards,
+  MessageSquareWarning,
   X,
 } from "lucide-react";
 import {
@@ -39,6 +40,7 @@ export default function Header() {
       icon: WalletCards,
     },
     { to: "/suporte/relatorios", label: "Relatórios", icon: BarChart2 },
+    { to: "/suporte/avisos", label: "Avisos", icon: MessageSquareWarning },
     { to: "/suporte/usuarios", label: "Usuários", icon: UsersRound },
     { to: "/suporte/configuracoes", label: "Configurações", icon: Settings },
   ];
