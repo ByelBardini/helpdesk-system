@@ -65,9 +65,6 @@ export function io() {
 export const notifyUser = (userId, event, payload) => {
   io().to(`user:${userId}`).emit(event, payload);
 };
-export const notifyChamado = (chamadoId, event, payload) => {
-  io().to(`chamado:${chamadoId}`).emit(event, payload);
-};
 export const notifySuporte = (event, payload) => {
   io().to("suporte").emit(event, payload);
 };

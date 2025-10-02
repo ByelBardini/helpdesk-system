@@ -1,7 +1,7 @@
 import sequelize from "../config/database.js";
 import { Resposta, Anexo, Usuario, Chamado } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
-import { notifyUser, notifyChamado, notifySuporte } from "../socket.js";
+import { notifyUser, notifySuporte } from "../socket.js";
 
 export async function getRespostas(req, res) {
   const { id } = req.params;
@@ -97,7 +97,6 @@ export async function postResposta(req, res) {
     };
 
     if (usuario.usuario_role == "adm" || usuario.usuario_role == "suporte") {
-      notifyChamado(chamado.chamado_id, "reply:new", payload);
       notifyUser(chamado.chamado_usuario_id, "reply:new", payload);
     } else {
       notifySuporte("reply:new", payload);

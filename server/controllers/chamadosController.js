@@ -10,7 +10,7 @@ import {
 } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 import { Op, literal } from "sequelize";
-import { notifyUser, notifyChamado, notifySuporte } from "../socket.js";
+import { notifyUser, notifySuporte } from "../socket.js";
 
 const hoje = new Date();
 const trintaDiasAtras = new Date();
@@ -318,7 +318,6 @@ export async function alterarStatus(req, res) {
       status: status,
     };
 
-    notifyChamado(chamado.chamado_id, "chamado:update", payload);
     notifyUser(chamado.chamado_usuario_id, "chamado:update", payload);
   } else if (status == "resolvido") {
     if (!resolucao) {
@@ -333,7 +332,6 @@ export async function alterarStatus(req, res) {
       resolucao: resolucao,
     };
 
-    notifyChamado(chamado.chamado_id, "chamado:end", payload);
     notifyUser(chamado.chamado_usuario_id, "chamado:end", payload);
   } else {
     chamado.chamado_status = status;
@@ -343,7 +341,6 @@ export async function alterarStatus(req, res) {
       status: status,
     };
 
-    notifyChamado(chamado.chamado_id, "chamado:update", payload);
     notifyUser(chamado.chamado_usuario_id, "chamado:update", payload);
   }
 
