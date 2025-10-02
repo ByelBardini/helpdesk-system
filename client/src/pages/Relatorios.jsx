@@ -65,7 +65,7 @@ export default function Relatorios() {
   );
 
   return (
-    <div className="h-full overflow-y-auto pb-12 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+    <div className="h-full overflow-y-auto pb-12 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 custom-scrollbar">
       <div className="max-w-6xl mx-auto grid grid-cols-12 gap-6">
         <nav className="col-span-12 md:col-span-3 space-y-6">
           {renderGrupoMenu("Geral", menu.geral)}

@@ -117,7 +117,7 @@ export default function Configuracoes() {
   }, []);
 
   return (
-    <div className="min-h-screen h-screen pb-18 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 overflow-y-auto">
+    <div className="min-h-screen h-screen pb-18 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 overflow-y-auto custom-scrollbar">
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}

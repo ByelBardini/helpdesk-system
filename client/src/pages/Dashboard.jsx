@@ -182,7 +182,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="h-full overflow-y-auto pb-12">
+    <div className="h-full overflow-y-auto pb-12 custom-scrollbar">
       <div className="mt-4 px-6 lg:px-10 pb-6">
         <div className="max-w-7xl mx-auto grid grid-cols-12 gap-4">
           <section className="col-span-12 lg:col-span-3 rounded-2xl bg-[#2a2d5a]/60 border border-white/10 p-4 backdrop-blur-sm shadow-lg">
