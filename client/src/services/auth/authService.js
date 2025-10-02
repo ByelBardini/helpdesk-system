@@ -1,4 +1,7 @@
 import { api } from "../api.js";
+import { io } from "socket.io-client";
+
+let socket = null;
 
 export async function login(usuario_senha, usuario_login) {
   try {
@@ -25,6 +28,18 @@ export async function login(usuario_senha, usuario_login) {
         resposta.usuario_caminho_foto
       );
     }
+
+    socket = io(import.meta.env.VITE_API_BASE_URL, {
+      auth: { token },
+    });
+
+    socket.on("connect", () => {
+      console.log("Socket conectado:", socket.id);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Erro socket:", err.message);
+    });
 
     return resposta;
   } catch (err) {

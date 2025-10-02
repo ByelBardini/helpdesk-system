@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import { SocketListener } from "./SocketListener.jsx";
+
 import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
 import Faq from "./pages/Faq.jsx";
@@ -93,6 +95,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <SocketListener>
+      <RouterProvider router={router} />
+    </SocketListener>
   </StrictMode>
 );
