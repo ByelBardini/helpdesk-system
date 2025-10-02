@@ -2,6 +2,7 @@
 import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
 import Confirmacao from "../components/default/Confirmacao.jsx";
+import ModalCriaAviso from "../components/avisos/ModalCriaAviso.jsx";
 import { getAvisos, deleteAviso } from "../services/api/avisosServices.js";
 import { useEffect, useState } from "react";
 import { tratarErro } from "../components/default/funcoes";
@@ -12,6 +13,7 @@ export default function Avisos() {
   const navigate = useNavigate();
   const [avisos, setAvisos] = useState([]);
 
+  const [criaAviso, setCriaAviso] = useState(false);
   const [notificacao, setNotificacao] = useState({
     show: false,
     tipo: "sucesso",
@@ -90,6 +92,7 @@ export default function Avisos() {
 
   return (
     <div className="h-[calc(100vh-3rem)] bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 flex flex-col">
+      {criaAviso && <ModalCriaAviso setCriaAviso={setCriaAviso} />}
       {confirmacao.show && (
         <Confirmacao
           texto={confirmacao.texto}
@@ -124,6 +127,7 @@ export default function Avisos() {
 
       <div className="flex justify-end mb-6">
         <button
+          onClick={() => setCriaAviso(true)}
           className="cursor-pointer flex items-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 
                      text-blue-300 px-4 py-2 rounded-xl border border-blue-500/30 
                      transition"
