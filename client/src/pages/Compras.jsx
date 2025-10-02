@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCompras } from "../services/api/compraServices.js";
 import { tratarErro } from "../components/default/funcoes.js";
+import { socket } from "../services/socket.js";
 
 function formatarMesAno(dataString) {
   const [ano, mes] = dataString.split("-");
@@ -74,6 +75,17 @@ export default function Compras() {
 
   useEffect(() => {
     buscaCompras();
+  }, []);
+
+  useEffect(() => {
+    socket.on("compra:denied", buscaCompras);
+    socket.on("compra:aproved", buscaCompras);
+    socket.on("compra:recieved", buscaCompras);
+    return () => {
+      socket.off("compra:denied", buscaCompras);
+      socket.off("compra:aproved", buscaCompras);
+      socket.off("compra:recieved", buscaCompras);
+    };
   }, []);
 
   const agrupadas = solicitacoes.reduce((acc, s) => {

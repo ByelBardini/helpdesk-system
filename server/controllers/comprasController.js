@@ -8,7 +8,7 @@ const trintaDiasAtras = new Date();
 trintaDiasAtras.setDate(hoje.getDate() - 30);
 
 const umAnoAtras = new Date();
-trintaDiasAtras.setDate(hoje.getDate() - 365);
+umAnoAtras.setDate(hoje.getDate() - 365);
 
 export async function postCompras(req, res) {
   console.log(req.body);
@@ -72,6 +72,7 @@ export async function putStatus(req, res) {
     solicitacao.compra_status = status;
     solicitacao.compra_recebida = "a caminho";
     solicitacao.compra_valor = alt;
+    await solicitacao.save();
 
     const payload = {
       produto: solicitacao.compra_item,
@@ -83,6 +84,7 @@ export async function putStatus(req, res) {
   } else {
     solicitacao.compra_status = status;
     solicitacao.compra_motivo_recusa = alt;
+    await solicitacao.save();
 
     const payload = {
       produto: solicitacao.compra_item,
@@ -92,7 +94,6 @@ export async function putStatus(req, res) {
 
     notifyUser(solicitacao.compra_solicitante_id, "compra:denied", payload);
   }
-  await solicitacao.save();
 
   return res.status(200).json({ message: "Status alterado com sucesso" });
 }

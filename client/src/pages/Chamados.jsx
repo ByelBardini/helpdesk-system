@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { getChamados } from "../services/api/chamadosServices.js";
 import { useNavigate } from "react-router-dom";
 import { tratarErro } from "../components/default/funcoes.js";
+import { socket } from "../services/socket.js";
 
 export default function Chamados() {
   const navigate = useNavigate();
@@ -93,6 +94,15 @@ export default function Chamados() {
       </span>
     );
   }
+
+  useEffect(() => {
+    socket.on("chamado:update", buscarChamados);
+    socket.on("chamado:end", buscarChamados);
+    return () => {
+      socket.off("chamado:update", buscarChamados);
+      socket.off("chamado:end", buscarChamados);
+    };
+  }, []);
 
   useEffect(() => {
     buscarChamados();
