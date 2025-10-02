@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -13,9 +14,14 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
+import { getNotificacoesChamadoSuporte } from "../../services/api/notificacaoServices";
+import { socket } from "../../services/socket.js";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+
+  const [qtdChamado, setQtdChamado] = useState(0);
+
   const navigate = useNavigate();
 
   const nav = [
@@ -40,6 +46,32 @@ export default function Header() {
 
   const usuarioRole = localStorage.getItem("usuario_role");
 
+  async function buscaNotifChamado() {
+    try {
+      const qtd = await getNotificacoesChamadoSuporte();
+      const chamados = qtd.chamados;
+      const respostas = qtd.respostas;
+      setQtdChamado(chamados[0].total + respostas[0].total);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    if (location.pathname.includes("/suporte/chamados")) {
+      setQtdChamado(0);
+    } else {
+      buscaNotifChamado();
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!location.pathname.includes("/suporte/chamados")) {
+      socket.on("chamado:new", buscaNotifChamado);
+      socket.on("reply:new", buscaNotifChamado);
+    }
+  }, []);
+
   return (
     <header className="sticky top-0 z-10 w-full bg-[#171a3f] border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 lg:px-6 h-14 flex items-center justify-between">
@@ -49,11 +81,22 @@ export default function Header() {
               key={to}
               to={to}
               className={({ isActive }) =>
-                `${pillBase} ${isActive ? pillActive : pillIdle}`
+                `${pillBase} ${isActive ? pillActive : pillIdle} relative`
               }
             >
               <Icon className="w-4 h-4" />
               {label}
+
+              {label === "Chamados" && qtdChamado > 0 && (
+                <span
+                  className=" absolute -top-2 -right-2 
+                          bg-red-500 text-white text-[11px] font-bold
+                            rounded-full w-5 h-5 flex items-center justify-center
+                            shadow-md "
+                >
+                  {qtdChamado >= 10 ? "9+" : qtdChamado}
+                </span>
+              )}
             </NavLink>
           ))}
 
