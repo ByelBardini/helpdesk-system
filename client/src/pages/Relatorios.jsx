@@ -85,7 +85,7 @@ export default function Relatorios() {
   );
 
   return (
-    <div className="h-full overflow-y-auto pb-12 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+    <div className="h-full overflow-y-auto pb-12 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 custom-scrollbar">
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}

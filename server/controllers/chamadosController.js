@@ -312,6 +312,7 @@ export async function alterarStatus(req, res) {
   if (status == "resolvendo") {
     chamado.chamado_status = status;
     chamado.chamado_responsavel_id = usuario_id;
+    await chamado.save();
 
     const payload = {
       titulo: chamado.chamado_motivo,
@@ -326,6 +327,7 @@ export async function alterarStatus(req, res) {
     chamado.chamado_status = status;
     chamado.chamado_data_conclusao = new Date();
     chamado.chamado_resolucao = resolucao;
+    await chamado.save();
 
     const payload = {
       titulo: chamado.chamado_motivo,
@@ -335,6 +337,7 @@ export async function alterarStatus(req, res) {
     notifyUser(chamado.chamado_usuario_id, "chamado:end", payload);
   } else {
     chamado.chamado_status = status;
+    await chamado.save();
 
     const payload = {
       titulo: chamado.chamado_motivo,
@@ -343,8 +346,6 @@ export async function alterarStatus(req, res) {
 
     notifyUser(chamado.chamado_usuario_id, "chamado:update", payload);
   }
-
-  await chamado.save();
 
   return res.status(200).json({ message: "Status alterado com sucesso" });
 }

@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCompras } from "../services/api/compraServices.js";
 import { tratarErro } from "../components/default/funcoes.js";
+import { socket } from "../services/socket.js";
 
 function formatarMesAno(dataString) {
   const [ano, mes] = dataString.split("-");
@@ -45,6 +46,19 @@ export default function Compras() {
   });
   const [loading, setLoading] = useState(false);
 
+  const [abertos, setAbertos] = useState(new Set());
+  function toggleMeses(mesAno) {
+    setAbertos((prev) => {
+      const novo = new Set(prev);
+      if (novo.has(mesAno)) {
+        novo.delete(mesAno);
+      } else {
+        novo.add(mesAno);
+      }
+      return novo;
+    });
+  }
+
   async function buscaCompras() {
     setLoading(true);
     try {
@@ -63,6 +77,17 @@ export default function Compras() {
     buscaCompras();
   }, []);
 
+  useEffect(() => {
+    socket.on("compra:denied", buscaCompras);
+    socket.on("compra:aproved", buscaCompras);
+    socket.on("compra:recieved", buscaCompras);
+    return () => {
+      socket.off("compra:denied", buscaCompras);
+      socket.off("compra:aproved", buscaCompras);
+      socket.off("compra:recieved", buscaCompras);
+    };
+  }, []);
+
   const agrupadas = solicitacoes.reduce((acc, s) => {
     const chave = formatarMesAno(s.compra_data);
     if (!acc[chave]) acc[chave] = [];
@@ -71,7 +96,7 @@ export default function Compras() {
   }, {});
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6">
+    <div className="h-screen overflow-auto bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 custom-scrollbar">
       {confirmacao.show && (
         <Confirmacao
           texto={confirmacao.texto}
@@ -153,23 +178,40 @@ export default function Compras() {
           </div>
         )}
 
-        {Object.entries(agrupadas).map(([mesAno, lista]) => (
-          <div key={mesAno} className="mb-10 w-full">
-            <h2 className="text-lg font-semibold text-white/80 border-b border-white/10 pb-2 mb-4">
-              {mesAno.charAt(0).toUpperCase() + mesAno.slice(1)}
-            </h2>
+        {Object.entries(agrupadas).map(([mesAno, lista]) => {
+          const aberto = abertos.has(mesAno);
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-              {lista.map((solicitacao) => (
-                <CardCompra
-                  key={solicitacao.compra_id}
-                  solicitacao={solicitacao}
-                  setMotivoRecusa={setMotivoRecusa}
-                />
-              ))}
+          return (
+            <div
+              key={mesAno}
+              className="mb-6 w-full border-b border-l border-white/10 rounded-lg overflow-hidden"
+            >
+              <button
+                onClick={() => toggleMeses(mesAno)}
+                className="w-full flex justify-between items-center px-4 py-2 bg-white/2 hover:bg-white/7 transition"
+              >
+                <h2 className="text-lg font-semibold text-white/80">
+                  {mesAno.charAt(0).toUpperCase() + mesAno.slice(1)}
+                </h2>
+                <span className="text-sm text-white/40">
+                  {aberto ? "▲" : "▼"}
+                </span>
+              </button>
+
+              {aberto && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                  {lista.map((solicitacao) => (
+                    <CardCompra
+                      key={solicitacao.compra_id}
+                      solicitacao={solicitacao}
+                      setMotivoRecusa={setMotivoRecusa}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

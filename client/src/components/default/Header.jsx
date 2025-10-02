@@ -94,8 +94,18 @@ export default function Header() {
       socket.on("reply:new", buscaNotifChamado);
 
       return () => {
-        socket.on("chamado:new", buscaNotifChamado);
-        socket.on("reply:new", buscaNotifChamado);
+        socket.off("chamado:new", buscaNotifChamado);
+        socket.off("reply:new", buscaNotifChamado);
+      };
+    }
+    if (
+      usuarioRole == "adm" &&
+      !location.pathname.includes("/suporte/compras")
+    ) {
+      socket.on("compra:new", buscaNotifCompra);
+
+      return () => {
+        socket.off("compra:new", buscaNotifCompra);
       };
     }
   }, []);
