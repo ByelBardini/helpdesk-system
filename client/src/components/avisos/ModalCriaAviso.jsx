@@ -1,12 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { postAviso } from "../../services/api/avisosServices.js";
+import { tratarErro } from "../default/funcoes.js";
 import { X } from "lucide-react";
 
-export default function ModalCriaAviso({ setCriaAviso, buscaAvisos }) {
+export default function ModalCriaAviso({
+  setCriaAviso,
+  buscaAvisos,
+  setNotificacao,
+  setConfirmacao,
+  setLoading,
+  navigate,
+}) {
   const [importancia, setImportancia] = useState("media");
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
+
+  const [isOk, setIsOk] = useState(false);
 
   const prioridades = [
     { valor: "baixa", label: "Baixa", cor: "green" },
@@ -15,15 +25,52 @@ export default function ModalCriaAviso({ setCriaAviso, buscaAvisos }) {
   ];
 
   async function criaAviso() {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
+    if (!isOk) {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Dados inválidos",
+        mensagem: "Preencha todos os dados",
+      });
+      return;
+    }
+    setLoading(true);
     try {
       await postAviso(importancia, titulo, descricao);
       await buscaAvisos();
-      alert("Deu certo");
-      setCriaAviso(false);
+      setLoading(false);
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Aviso criado com sucesso",
+        mensagem:
+          "O aviso foi criado com sucesso e será exibido para os usuários",
+      });
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+        setCriaAviso(false);
+      }, 700);
     } catch (err) {
+      setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
+
+  useEffect(() => {
+    setIsOk(titulo != "" && descricao != "" && importancia != "");
+  }, [titulo, descricao, importancia]);
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -80,6 +127,12 @@ export default function ModalCriaAviso({ setCriaAviso, buscaAvisos }) {
             onChange={(e) => {
               setTitulo(e.target.value);
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && isOk) {
+                e.preventDefault();
+                criaAviso();
+              }
+            }}
             placeholder="Digite o título do aviso"
             className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 
                        focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm"
@@ -92,6 +145,12 @@ export default function ModalCriaAviso({ setCriaAviso, buscaAvisos }) {
             rows="4"
             onChange={(e) => {
               setDescricao(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && isOk) {
+                e.preventDefault();
+                criaAviso();
+              }
             }}
             placeholder="Digite a descrição do aviso"
             className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 
@@ -107,8 +166,15 @@ export default function ModalCriaAviso({ setCriaAviso, buscaAvisos }) {
             Cancelar
           </button>
           <button
-            onClick={criaAviso}
-            disabled={importancia == "" || titulo == "" || descricao == ""}
+            onClick={() =>
+              setConfirmacao({
+                show: true,
+                titulo: "Tem certeza que deseja criar esse aviso?",
+                texto: "Ele será exibido para todos os usuários",
+                onSim: () => criaAviso(),
+              })
+            }
+            disabled={!isOk}
             className="cursor-pointer px-4 py-2 rounded-lg 
              bg-blue-500/20 border border-blue-500/40 text-blue-300 
              hover:bg-blue-500/30 transition text-sm
