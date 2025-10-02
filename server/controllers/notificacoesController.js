@@ -1,4 +1,4 @@
-import { Chamado, Resposta } from "../models/index.js";
+import { Chamado, Resposta, Compra } from "../models/index.js";
 import { fn, col, Op } from "sequelize";
 import { ApiError } from "../middlewares/ApiError.js";
 
@@ -45,4 +45,16 @@ export async function getNotificaoesChamadosUsuario(req, res) {
   });
 
   return res.status(200).json({ respostas });
+}
+
+export async function getNotificacoesCompraAdm(req, res) {
+  const compras = await Compra.findAll({
+    attributes: [[fn("COUNT", col("compra_id")), "total"]],
+    where: {
+      compra_status: "em analise",
+    },
+    raw: true,
+  });
+
+  return res.status(200).json({ compras });
 }
