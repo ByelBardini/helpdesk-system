@@ -21,3 +21,28 @@ export async function getNotificaoesChamadosSuporte(req, res) {
 
   return res.status(200).json({ chamados, respostas });
 }
+
+export async function getNotificaoesChamadosUsuario(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("ID do usuário é obrigatório");
+  }
+  const respostas = await Resposta.findAll({
+    attributes: [[fn("COUNT", col("resposta_id")), "total"]],
+    include: [
+      {
+        model: Chamado,
+        as: "chamado",
+        attributes: [],
+        where: { chamado_usuario_id: id },
+      },
+    ],
+    where: {
+      resposta_tipo: "suporte",
+      resposta_visualizada: 0,
+    },
+    raw: true,
+  });
+
+  return res.status(200).json({ respostas });
+}

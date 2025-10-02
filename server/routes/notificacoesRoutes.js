@@ -1,8 +1,12 @@
 import express from "express";
-import { getNotificaoesChamadosSuporte } from "../controllers/notificacoesController.js";
+import {
+  getNotificaoesChamadosSuporte,
+  getNotificaoesChamadosUsuario,
+} from "../controllers/notificacoesController.js";
 
 const router = express.Router();
 
 router.get("/suporte", getNotificaoesChamadosSuporte);
+router.get("/usuario/:id", getNotificaoesChamadosUsuario);
 
 export default router;
