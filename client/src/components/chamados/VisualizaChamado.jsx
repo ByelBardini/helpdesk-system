@@ -101,7 +101,7 @@ export default function VisualizaChamado({
   }, [selecionado]);
 
   return (
-    <section className="flex-1 p-6 overflow-y-auto">
+    <section className="flex-1 p-6 overflow-y-auto custom-scrollbar">
       {selecionado ? (
         <div>
           <h2 className="text-xl font-bold mb-2">
