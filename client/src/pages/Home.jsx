@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Logo from "../assets/logo-empresa.png";
 import ListaAvisos from "../components/avisos/ListaAvisos.jsx";
@@ -17,6 +18,21 @@ import { getAvisos } from "../services/api/avisosServices.js";
 import { useEffect, useState } from "react";
 import { getNotificacoesChamadoUsuario } from "../services/api/notificacaoServices.js";
 import { socket } from "../services/socket.js";
+
+function BotaoMenu({ onClick, icon: Icon, label, cor = "text-blue-300" }) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-3 px-4 py-3 
+                 bg-[#14163d]/60 hover:bg-[#1c1f4a]/80 
+                 border border-white/10 rounded-xl 
+                 text-white/80 font-medium transition"
+    >
+      <Icon className={`h-5 w-5 ${cor}`} />
+      <span className="text-sm">{label}</span>
+    </button>
+  );
+}
 
 export default function Home() {
   const navigate = useNavigate();
@@ -72,7 +88,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-5 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] relative p-6 gap-6 text-white">
+    <div className="h-screen overflow-hidden grid grid-cols-1 lg:grid-cols-5 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] relative pl-6 pr-6 gap-6 text-white custom-scrollbar">
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}
@@ -90,110 +106,87 @@ export default function Home() {
       )}
       {loading && <Loading />}
 
-      <div className="flex flex-col items-center gap-6">
+      {/* Lado Esquerdo - Logo, Bem-vindo e Botões */}
+      <div className="flex flex-col items-center justify-center gap-6 h-screen">
         <img
           src={Logo}
           alt="Logo SubmIT"
-          className="h-20 w-20 object-contain drop-shadow-md"
+          className="h-25 object-contain drop-shadow-md"
         />
 
-        <button
-          onClick={() => navigate("/novo-chamado", { replace: true })}
-          className="cursor-pointer flex flex-col items-center justify-center w-full flex-1 
-                     bg-white/5 hover:bg-white/10 border border-white/10 
-                     rounded-2xl p-6 transition"
+        <h1
+          className="text-lg font-bold text-center 
+                     bg-gradient-to-r from-[#ffb86b] via-[#ff6b98] to-[#6bb7ff] 
+                     bg-clip-text text-transparent drop-shadow"
         >
-          <CalendarPlus className="h-8 w-8 mb-2" />
-          <span className="text-sm font-medium">Novo Chamado</span>
-        </button>
-        {localStorage.getItem("usuario_role") != "liderado" &&
-          localStorage.getItem("usuario_role") != "suporte" && (
-            <button
-              onClick={() => navigate("/compras", { replace: true })}
-              className="cursor-pointer flex flex-col items-center justify-center w-full 
-             bg-white/5 hover:bg-white/10 border border-white/10 
-             rounded-2xl p-4 transition h-1/6"
-            >
-              <ShoppingCart className="h-6 w-6 mb-2" />
-              <span className="text-sm font-medium">
-                Solicitações de Compras
-              </span>
-            </button>
-          )}
-      </div>
+          {`Bem-Vindo(a) ${localStorage.getItem("usuario_nome")}`}
+        </h1>
 
-      <div className="lg:col-span-4 flex flex-col gap-6">
-        <div className="flex justify-between items-center">
-          <div className="flex gap-4">
-            <div className="relative inline-block">
-              <button
-                onClick={() => navigate("/chamados", { replace: true })}
-                className="cursor-pointer flex items-center gap-2 
-               bg-white/5 hover:bg-white/10 border border-white/10
-               px-6 py-3 rounded-2xl transition"
-              >
-                <FileText className="h-5 w-5" />
-                <span>Chamados</span>
-              </button>
+        <div className="flex flex-col gap-3 w-full mt-2">
+          <BotaoMenu
+            onClick={() => navigate("/novo-chamado", { replace: true })}
+            icon={CalendarPlus}
+            label="Novo Chamado"
+            cor="text-green-300"
+          />
 
-              {qtdNotif > 0 && (
-                <span
-                  className="absolute -top-2 -right-2 
+          {localStorage.getItem("usuario_role") != "liderado" &&
+            localStorage.getItem("usuario_role") != "suporte" && (
+              <BotaoMenu
+                onClick={() => navigate("/compras", { replace: true })}
+                icon={ShoppingCart}
+                label="Solicitações de Compras"
+                cor="text-blue-300"
+              />
+            )}
+
+          <div className="relative inline-block">
+            <BotaoMenu
+              onClick={() => navigate("/chamados", { replace: true })}
+              icon={FileText}
+              label="Visualizar Chamados"
+              cor="text-yellow-300"
+            />
+            {qtdNotif > 0 && (
+              <span
+                className="absolute -top-2 -right-2 
                  bg-red-500 text-white text-[11px] font-bold
                  rounded-full w-5 h-5 flex items-center justify-center
                  shadow-md"
-                >
-                  {qtdNotif >= 10 ? "9+" : qtdNotif}
-                </span>
-              )}
-            </div>
-
-            <button
-              onClick={() => navigate("/faq", { replace: true })}
-              className="cursor-pointer flex items-center gap-2 
-                         bg-white/5 hover:bg-white/10 border border-white/10
-                         px-6 py-3 rounded-2xl transition"
-            >
-              <HelpCircle className="h-5 w-5" />
-              <span>FAQ</span>
-            </button>
-
-            {(localStorage.getItem("usuario_role") == "adm" ||
-              localStorage.getItem("usuario_role") == "suporte") && (
-              <button
-                onClick={() =>
-                  navigate("/suporte/dashboard", { replace: true })
-                }
-                className="cursor-pointer flex items-center gap-2 
-                           bg-white/5 hover:bg-white/10 border border-white/10
-                           px-6 py-3 rounded-2xl transition"
               >
-                <LayoutDashboard className="h-5 w-5" />
-                <span>Dashboard</span>
-              </button>
+                {qtdNotif >= 10 ? "9+" : qtdNotif}
+              </span>
             )}
           </div>
 
-          <h1
-            className="text-2xl font-bold 
-                         bg-gradient-to-r from-[#ffb86b] via-[#ff6b98] to-[#6bb7ff] 
-                         bg-clip-text text-transparent drop-shadow"
-          >
-            {`Bem-Vindo(a) ${localStorage.getItem("usuario_nome")}`}
-          </h1>
+          <BotaoMenu
+            onClick={() => navigate("/faq", { replace: true })}
+            icon={HelpCircle}
+            label="FAQ"
+            cor="text-purple-300"
+          />
 
-          <button
+          {(localStorage.getItem("usuario_role") == "adm" ||
+            localStorage.getItem("usuario_role") == "suporte") && (
+            <BotaoMenu
+              onClick={() => navigate("/suporte/dashboard", { replace: true })}
+              icon={LayoutDashboard}
+              label="Dashboard"
+              cor="text-pink-300"
+            />
+          )}
+
+          <BotaoMenu
             onClick={logout}
-            className="cursor-pointer flex items-center gap-2 
-             bg-red-900/40 hover:bg-red-900/60 
-             text-red-300 px-6 py-3 rounded-2xl 
-             transition"
-          >
-            <LogOut className="h-5 w-5" />
-            <span>Sair</span>
-          </button>
+            icon={LogOut}
+            label="Sair"
+            cor="text-red-300"
+          />
         </div>
+      </div>
 
+      {/* Lado Direito - Avisos */}
+      <div className="lg:col-span-4 flex flex-col h-screen gap-6 border-l-2 border-white/10">
         <ListaAvisos avisos={avisos} />
       </div>
     </div>

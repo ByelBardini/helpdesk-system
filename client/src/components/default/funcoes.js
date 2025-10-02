@@ -33,3 +33,11 @@ export function dividirEmPartes(array, tamanho) {
   }
   return resultado;
 }
+
+export function truncarTexto(texto, limite) {
+  if (texto.length <= limite) {
+    return texto;
+  }else {
+    return texto.slice(0, limite) + "...";
+  }
+}

@@ -2,6 +2,7 @@ import { visualizaResposta } from "../../services/api/respostaServices.js";
 import { formatToDate } from "brazilian-values";
 import { tratarErro } from "../default/funcoes.js";
 import { Inbox, Bell } from "lucide-react";
+import { truncarTexto } from "../default/funcoes.js";
 
 export default function ListaChamados({
   setLoading,
@@ -30,7 +31,7 @@ export default function ListaChamados({
     }
   }
   return (
-    <aside className="w-1/4 border-r border-white/10 overflow-y-auto">
+    <aside className="w-1/4 border-r border-white/10 overflow-y-auto custom-scrollbar">
       {chamados.length > 0 &&
         chamados.map((chamado) => {
           const naoLidas = chamado.respostas.filter(
@@ -57,7 +58,7 @@ export default function ListaChamados({
               <div className="flex items-center justify-between">
                 <div className="flex flex-col flex-1">
                   <h3 className="font-medium truncate text-sm">
-                    {chamado.chamado_motivo}
+                    {truncarTexto(chamado.chamado_motivo, 24)}
                   </h3>
 
                   {modo === "liderados" && (

@@ -144,7 +144,7 @@ export default function ComprasAdm() {
           <h2 className="text-lg font-semibold text-yellow-300 mb-4">
             Em Análise
           </h2>
-          <div className="flex-1 space-y-4 overflow-y-auto pr-2">
+          <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
             {abertas.length > 0 ? (
               abertas.map((c) => (
                 <CardCompra
@@ -166,7 +166,7 @@ export default function ComprasAdm() {
           <h2 className="text-lg font-semibold text-green-300 mb-4">
             Aprovadas
           </h2>
-          <div className="flex-1 space-y-4 overflow-y-auto pr-2">
+          <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
             {aprovadas.length > 0 ? (
               aprovadas.map((c) => (
                 <CardCompra
@@ -186,7 +186,7 @@ export default function ComprasAdm() {
 
         <div className="flex flex-col bg-white/5 border border-white/10 rounded-xl p-4 overflow-auto">
           <h2 className="text-lg font-semibold text-red-300 mb-4">Recusadas</h2>
-          <div className="flex-1 space-y-4 overflow-y-auto pr-2">
+          <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
             {recusadas.length > 0 ? (
               recusadas.map((c) => (
                 <CardCompra

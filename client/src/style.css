@@ -3,3 +3,20 @@
 .force-overflow {
   overflow: hidden !important;
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #14163d;
+  border-radius: 40px;
+  border: 1px solid #2a2d5a;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #1d2057;
+  border-radius: 40px;
+  border: 1px solid #2a2d5a;
+}
