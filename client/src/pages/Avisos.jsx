@@ -92,7 +92,9 @@ export default function Avisos() {
 
   return (
     <div className="h-[calc(100vh-3rem)] bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 flex flex-col">
-      {criaAviso && <ModalCriaAviso setCriaAviso={setCriaAviso} />}
+      {criaAviso && (
+        <ModalCriaAviso setCriaAviso={setCriaAviso} buscaAvisos={buscaAvisos} />
+      )}
       {confirmacao.show && (
         <Confirmacao
           texto={confirmacao.texto}

@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
+import { postAviso } from "../../services/api/avisosServices.js";
 import { X } from "lucide-react";
 
-export default function ModalCriaAviso({ setCriaAviso }) {
+export default function ModalCriaAviso({ setCriaAviso, buscaAvisos }) {
   const [importancia, setImportancia] = useState("media");
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -12,6 +13,17 @@ export default function ModalCriaAviso({ setCriaAviso }) {
     { valor: "media", label: "Média", cor: "orange" },
     { valor: "alta", label: "Alta", cor: "red" },
   ];
+
+  async function criaAviso() {
+    try {
+      await postAviso(importancia, titulo, descricao);
+      await buscaAvisos();
+      alert("Deu certo");
+      setCriaAviso(false);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -95,6 +107,7 @@ export default function ModalCriaAviso({ setCriaAviso }) {
             Cancelar
           </button>
           <button
+            onClick={criaAviso}
             disabled={importancia == "" || titulo == "" || descricao == ""}
             className="cursor-pointer px-4 py-2 rounded-lg 
              bg-blue-500/20 border border-blue-500/40 text-blue-300 

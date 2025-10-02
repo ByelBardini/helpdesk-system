@@ -21,3 +21,18 @@ export async function deleteAviso(id) {
     throw err;
   }
 }
+
+export async function postAviso(importancia, titulo, descricao) {
+  try {
+    const response = await api.post("/aviso/", {
+      importancia,
+      titulo,
+      descricao,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em postAviso:", err);
+    throw err;
+  }
+}
