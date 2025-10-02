@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useRef, useEffect } from "react";
 import { formatToDate } from "brazilian-values";
 import {
   Send,
@@ -13,6 +14,7 @@ import {
   postResposta,
   getResposta,
 } from "../../services/api/respostaServices.js";
+import { socket } from "../../services/socket.js";
 
 export default function RespostasSuporte({
   respostas,
@@ -49,6 +51,11 @@ export default function RespostasSuporte({
     setAnexos((prev) => prev.filter((a) => a.id !== id));
   };
 
+  async function buscaRespostas() {
+    const novasRespostas = await getResposta(chamado.chamado_id);
+    setRespostas(novasRespostas);
+  }
+
   async function enviarResposta() {
     setConfirmacao({
       show: false,
@@ -81,8 +88,7 @@ export default function RespostasSuporte({
 
       await postResposta(idUsuario, chamado.chamado_id, fd);
 
-      const novasRespostas = await getResposta(chamado.chamado_id);
-      setRespostas(novasRespostas);
+      await buscaRespostas();
 
       setLoading(false);
 
@@ -110,6 +116,10 @@ export default function RespostasSuporte({
       tratarErro(setNotificacao, err, navigate);
     }
   }
+
+  useEffect(() => {
+    socket.on("reply:new", buscaRespostas);
+  }, []);
 
   return (
     <div className="w-1/2 p-6 flex flex-col">

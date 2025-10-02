@@ -11,6 +11,7 @@ import { visualizaResposta } from "../services/api/respostaServices.js";
 import { formatToCapitalized } from "brazilian-values";
 import { tratarErro } from "../components/default/funcoes.js";
 import { useNavigate } from "react-router-dom";
+import { socket } from "../services/socket.js";
 
 export default function ChamadosSuporte() {
   const navigate = useNavigate();
@@ -71,6 +72,10 @@ export default function ChamadosSuporte() {
 
   useEffect(() => {
     buscaChamados();
+  }, []);
+
+  useEffect(() => {
+    socket.on("chamado:new", buscaChamados);
   }, []);
 
   return (
