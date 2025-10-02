@@ -47,8 +47,8 @@ export async function login(req, res) {
 
     const payload = {
       usuario_id: usuario.usuario_id,
-      usuario_tipo: usuario.usuario_tipo,
       usuario_nome: usuario.usuario_nome,
+      usuario_role: usuario.usuario_role,
     };
 
     const token = jwt.sign(payload, CHAVE, {

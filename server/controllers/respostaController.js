@@ -1,6 +1,7 @@
 import sequelize from "../config/database.js";
-import { Resposta, Anexo, Usuario } from "../models/index.js";
+import { Resposta, Anexo, Usuario, Chamado } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
+import { notifyUser, notifyChamado, notifySuporte } from "../socket.js";
 
 export async function getRespostas(req, res) {
   const { id } = req.params;
@@ -52,6 +53,8 @@ export async function postResposta(req, res) {
 
   const anexosArr = Array.isArray(req.anexos) ? req.anexos : [];
 
+  let respostaCriada = null;
+
   await sequelize.transaction(async (t) => {
     const resposta = await Resposta.create(
       {
@@ -67,6 +70,8 @@ export async function postResposta(req, res) {
       }
     );
 
+    respostaCriada = resposta;
+
     for (const a of anexosArr) {
       await Anexo.create(
         {
@@ -78,6 +83,27 @@ export async function postResposta(req, res) {
       );
     }
   });
+  const chamado = await Chamado.findByPk(idChamado, {
+    attributes: ["chamado_id", "chamado_motivo", "chamado_usuario_id"],
+  });
+  const usuario = await Usuario.findByPk(idUsuario, {
+    attributes: ["usuario_role"],
+  });
+
+  if (chamado) {
+    const payload = {
+      titulo: chamado.chamado_motivo,
+      snippet: descricao.slice(0, 120),
+    };
+
+    if (usuario.usuario_role == "adm" || usuario.usuario_role == "suporte") {
+      notifyChamado(chamado.chamado_id, "reply:new", payload);
+      notifyUser(chamado.chamado_usuario_id, "reply:new", payload);
+    } else {
+      notifySuporte("reply:new", payload);
+    }
+  }
+
   return res.status(201).json({ message: "Resposta enviada com sucesso" });
 }
 

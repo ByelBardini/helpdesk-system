@@ -10,6 +10,7 @@ import {
 } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 import { Op, literal } from "sequelize";
+import { notifyUser, notifyChamado, notifySuporte } from "../socket.js";
 
 const hoje = new Date();
 const trintaDiasAtras = new Date();
@@ -233,6 +234,8 @@ export async function postChamado(req, res) {
     throw ApiError.badRequest("Todos os dados são obrigatórios");
   }
 
+  let motivo;
+
   const anexosArr = Array.isArray(req.anexos) ? req.anexos : [];
 
   await sequelize.transaction(async (t) => {
@@ -251,6 +254,8 @@ export async function postChamado(req, res) {
       { transaction: t }
     );
 
+    motivo = chamado.chamado_motivo;
+
     for (const a of anexosArr) {
       await Anexo.create(
         {
@@ -261,9 +266,17 @@ export async function postChamado(req, res) {
         { transaction: t }
       );
     }
-
-    return res.status(201).json({ message: "Chamado criado com sucesso" });
   });
+  const usuario = await Usuario.findByPk(chamado_usuario_id);
+
+  const payload = {
+    motivo: motivo,
+    criadoPor: usuario.usuario_nome,
+  };
+
+  notifySuporte("chamado:new", payload);
+
+  return res.status(201).json({ message: "Chamado criado com sucesso" });
 }
 
 export async function alterarPrioridade(req, res) {
@@ -299,6 +312,14 @@ export async function alterarStatus(req, res) {
   if (status == "resolvendo") {
     chamado.chamado_status = status;
     chamado.chamado_responsavel_id = usuario_id;
+
+    const payload = {
+      titulo: chamado.chamado_motivo,
+      status: status,
+    };
+
+    notifyChamado(chamado.chamado_id, "chamado:update", payload);
+    notifyUser(chamado.chamado_usuario_id, "chamado:update", payload);
   } else if (status == "resolvido") {
     if (!resolucao) {
       throw ApiError.badRequest("Resolução do chamado é obrigatória");
@@ -306,11 +327,28 @@ export async function alterarStatus(req, res) {
     chamado.chamado_status = status;
     chamado.chamado_data_conclusao = new Date();
     chamado.chamado_resolucao = resolucao;
+
+    const payload = {
+      titulo: chamado.chamado_motivo,
+      resolucao: resolucao,
+    };
+
+    notifyChamado(chamado.chamado_id, "chamado:end", payload);
+    notifyUser(chamado.chamado_usuario_id, "chamado:end", payload);
   } else {
     chamado.chamado_status = status;
+
+    const payload = {
+      titulo: chamado.chamado_motivo,
+      status: status,
+    };
+
+    notifyChamado(chamado.chamado_id, "chamado:update", payload);
+    notifyUser(chamado.chamado_usuario_id, "chamado:update", payload);
   }
 
   await chamado.save();
+
   return res.status(200).json({ message: "Status alterado com sucesso" });
 }
 

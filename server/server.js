@@ -1,5 +1,14 @@
+import http from "http";
+import dotenv from "dotenv";
 import app from "./app.js";
+import { initSocket } from "./socket.js";
 
-app.listen(3030, '0.0.0.0', () => {
+dotenv.config();
+
+const server = http.createServer(app);
+
+initSocket(server);
+
+server.listen(3030, "0.0.0.0", () => {
   console.log("Server aberto na porta 3030");
 });
