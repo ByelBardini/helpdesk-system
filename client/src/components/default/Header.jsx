@@ -14,13 +14,17 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { getNotificacoesChamadoSuporte } from "../../services/api/notificacaoServices";
+import {
+  getNotificacoesChamadoSuporte,
+  getNotificacoesCompraAdm,
+} from "../../services/api/notificacaoServices";
 import { socket } from "../../services/socket.js";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
 
   const [qtdChamado, setQtdChamado] = useState(0);
+  const [qtdCompra, setQtdCompra] = useState(0);
 
   const navigate = useNavigate();
 
@@ -57,11 +61,28 @@ export default function Header() {
     }
   }
 
+  async function buscaNotifCompra() {
+    try {
+      const qtd = await getNotificacoesCompraAdm();
+      setQtdCompra(qtd.compras[0].total);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   useEffect(() => {
     if (location.pathname.includes("/suporte/chamados")) {
       setQtdChamado(0);
     } else {
       buscaNotifChamado();
+    }
+    if (usuarioRole == "adm") {
+      if (location.pathname.includes("/suporte/compras")) {
+        setQtdCompra(0);
+      } else {
+        buscaNotifCompra();
+        console.log(qtdCompra);
+      }
     }
   }, [location.pathname]);
 
@@ -106,11 +127,22 @@ export default function Header() {
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `${pillBase} ${isActive ? pillActive : pillIdle}`
+                  `${pillBase} ${isActive ? pillActive : pillIdle} relative`
                 }
               >
                 <Icon className="w-4 h-4" />
                 {label}
+
+                {label === "Solicitações de Compra" && qtdCompra > 0 && (
+                  <span
+                    className=" absolute -top-2 -right-2 
+                          bg-red-500 text-white text-[11px] font-bold
+                            rounded-full w-5 h-5 flex items-center justify-center
+                            shadow-md "
+                  >
+                    {qtdCompra >= 10 ? "9+" : qtdCompra}
+                  </span>
+                )}
               </NavLink>
             ))}
         </nav>
