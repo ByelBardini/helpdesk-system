@@ -1,6 +1,7 @@
 import { Compra, Usuario, Setor } from "../models/index.js";
 import { ApiError } from "../middlewares/ApiError.js";
 import { Op, literal } from "sequelize";
+import { notifyUser, notifyAdm } from "../socket.js";
 
 const hoje = new Date();
 const trintaDiasAtras = new Date();
@@ -31,7 +32,7 @@ export async function postCompras(req, res) {
     throw ApiError.badRequest("Todos os dados são obrigatórios");
   }
 
-  await Compra.create({
+  const compra = await Compra.create({
     compra_empresa_id: empresa_id,
     compra_setor_id: setor_id,
     compra_solicitante_id: solicitante_id,
@@ -42,6 +43,16 @@ export async function postCompras(req, res) {
     compra_data: new Date(),
     compra_status: "em analise",
   });
+
+  const solicitante = await Usuario.findByPk(solicitante_id);
+
+  const payload = {
+    solicitante: solicitante.usuario_nome,
+    produto: compra.compra_item,
+    tipo: compra.compra_tipo,
+  };
+
+  notifyAdm("compra:new", payload);
 
   return res
     .status(201)
@@ -61,9 +72,25 @@ export async function putStatus(req, res) {
     solicitacao.compra_status = status;
     solicitacao.compra_recebida = "a caminho";
     solicitacao.compra_valor = alt;
+
+    const payload = {
+      produto: solicitacao.compra_item,
+      tipo: solicitacao.compra_tipo,
+      status: solicitacao.compra_recebida,
+    };
+
+    notifyUser(solicitacao.compra_solicitante_id, "compra:aproved", payload);
   } else {
     solicitacao.compra_status = status;
     solicitacao.compra_motivo_recusa = alt;
+
+    const payload = {
+      produto: solicitacao.compra_item,
+      tipo: solicitacao.compra_tipo,
+      motivo: solicitacao.compra_motivo_recusa,
+    };
+
+    notifyUser(solicitacao.compra_solicitante_id, "compra:denied", payload);
   }
   await solicitacao.save();
 
@@ -82,6 +109,13 @@ export async function putRecebimento(req, res) {
   solicitacao.compra_data_recebimento = new Date();
   await solicitacao.save();
 
+  const payload = {
+    produto: solicitacao.compra_item,
+    tipo: solicitacao.compra_tipo,
+  };
+
+  notifyUser(solicitacao.compra_solicitante_id, "compra:recieved", payload);
+
   return res
     .status(200)
     .json({ message: "Situação de entrega atualizada com sucesso" });
@@ -92,7 +126,6 @@ export async function getCompras(req, res) {
   if (!id) {
     throw ApiError.badRequest("ID do usuário é obrigatório");
   }
-
   const usuario = await Usuario.findByPk(id);
 
   if (usuario.usuario_role == "liderado" || usuario.usuario_role == "suporte") {
@@ -106,6 +139,7 @@ export async function getCompras(req, res) {
       attributes: [
         "compra_id",
         "compra_item",
+        "compra_tipo",
         "compra_quantidade",
         "compra_motivo",
         "compra_motivo",
@@ -151,6 +185,7 @@ export async function getCompras(req, res) {
       },
       attributes: [
         "compra_id",
+        "compra_tipo",
         "compra_item",
         "compra_quantidade",
         "compra_motivo",
