@@ -10,3 +10,14 @@ export async function getAvisos() {
     throw err;
   }
 }
+
+export async function deleteAviso(id) {
+  try {
+    const response = await api.delete(`/aviso/${id}`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em deleteAviso:", err);
+    throw err;
+  }
+}
