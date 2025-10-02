@@ -90,6 +90,11 @@ export default function Header() {
     if (!location.pathname.includes("/suporte/chamados")) {
       socket.on("chamado:new", buscaNotifChamado);
       socket.on("reply:new", buscaNotifChamado);
+
+      return () => {
+        socket.on("chamado:new", buscaNotifChamado);
+        socket.on("reply:new", buscaNotifChamado);
+      };
     }
   }, []);
 

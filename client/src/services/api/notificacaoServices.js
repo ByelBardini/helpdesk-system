@@ -11,6 +11,17 @@ export async function getNotificacoesChamadoSuporte() {
   }
 }
 
+export async function getNotificacoesChamadoUsuario(id) {
+  try {
+    const response = await api.get(`/notificacao/usuario/${id}`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em getNotificacoesChamadoUsuario:", err);
+    throw err;
+  }
+}
+
 export async function getNotificacoesCompraAdm() {
   try {
     const response = await api.get("/notificacao/compra/adm");

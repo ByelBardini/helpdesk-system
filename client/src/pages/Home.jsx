@@ -15,11 +15,14 @@ import { useNavigate } from "react-router-dom";
 import { tratarErro } from "../components/default/funcoes.js";
 import { getAvisos } from "../services/api/avisosServices.js";
 import { useEffect, useState } from "react";
+import { getNotificacoesChamadoUsuario } from "../services/api/notificacaoServices.js";
+import { socket } from "../services/socket.js";
 
 export default function Home() {
   const navigate = useNavigate();
 
   const [avisos, setAvisos] = useState([]);
+  const [qtdNotif, setQtdNotif] = useState([]);
 
   const [notificacao, setNotificacao] = useState({
     show: false,
@@ -32,6 +35,18 @@ export default function Home() {
   function logout() {
     localStorage.clear();
     navigate("/", { replace: true });
+  }
+
+  async function buscaNotificacoes() {
+    try {
+      const qtd = await getNotificacoesChamadoUsuario(
+        localStorage.getItem("usuario_id")
+      );
+
+      setQtdNotif(qtd.respostas[0].total);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async function buscaAvisos() {
@@ -48,6 +63,12 @@ export default function Home() {
 
   useEffect(() => {
     buscaAvisos();
+    buscaNotificacoes();
+
+    socket.on("reply:new", buscaNotificacoes);
+    return () => {
+      socket.off("reply:new", buscaNotificacoes);
+    };
   }, []);
 
   return (
@@ -99,15 +120,28 @@ export default function Home() {
       <div className="lg:col-span-4 flex flex-col gap-6">
         <div className="flex justify-between items-center">
           <div className="flex gap-4">
-            <button
-              onClick={() => navigate("/chamados", { replace: true })}
-              className="cursor-pointer flex items-center gap-2 
-                         bg-white/5 hover:bg-white/10 border border-white/10
-                         px-6 py-3 rounded-2xl transition"
-            >
-              <FileText className="h-5 w-5" />
-              <span>Chamados</span>
-            </button>
+            <div className="relative inline-block">
+              <button
+                onClick={() => navigate("/chamados", { replace: true })}
+                className="cursor-pointer flex items-center gap-2 
+               bg-white/5 hover:bg-white/10 border border-white/10
+               px-6 py-3 rounded-2xl transition"
+              >
+                <FileText className="h-5 w-5" />
+                <span>Chamados</span>
+              </button>
+
+              {qtdNotif > 0 && (
+                <span
+                  className="absolute -top-2 -right-2 
+                 bg-red-500 text-white text-[11px] font-bold
+                 rounded-full w-5 h-5 flex items-center justify-center
+                 shadow-md"
+                >
+                  {qtdNotif >= 10 ? "9+" : qtdNotif}
+                </span>
+              )}
+            </div>
 
             <button
               onClick={() => navigate("/faq", { replace: true })}
