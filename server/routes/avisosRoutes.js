@@ -4,8 +4,10 @@ import {
   deleteAviso,
   postAviso,
 } from "../controllers/avisosController.js";
+import { autenticar } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
+router.use(autenticar);
 
 router.post("/", postAviso);
 router.get("/", getAvisos);

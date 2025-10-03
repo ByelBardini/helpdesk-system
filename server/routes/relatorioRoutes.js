@@ -7,8 +7,10 @@ import {
   solicitacoes,
   relatorioCompras,
 } from "../controllers/relatoriosController.js";
+import { autenticar } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
+router.use(autenticar);
 
 router.get("/dados", getDados);
 router.put("/resolucao", tempoResolucao);

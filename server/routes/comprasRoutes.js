@@ -5,8 +5,10 @@ import {
   putStatus,
   putRecebimento,
 } from "../controllers/comprasController.js";
+import { autenticar } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
+router.use(autenticar);
 
 router.get("/:id", getCompras);
 router.post("/", postCompras);

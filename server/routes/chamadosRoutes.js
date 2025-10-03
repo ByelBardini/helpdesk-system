@@ -8,8 +8,10 @@ import {
   alterarStatus,
   alterarResponsavel,
 } from "../controllers/chamadosController.js";
+import { autenticar } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
+router.use(autenticar);
 
 router.get("/usuario/:role/:id", getChamados);
 router.get("/suporte", getChamadosSuporte);
