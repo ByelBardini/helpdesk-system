@@ -40,3 +40,18 @@ export async function putPergunta(req, res) {
 
   return res.status(200).json({ message: "Pergunta editada com sucesso" });
 }
+
+export async function postPergunta(req, res) {
+  const { categoria, titulo, resposta } = req.body;
+  if (!categoria || !titulo || !resposta) {
+    throw ApiError.badRequest("Todos os dados são obrigatórios");
+  }
+
+  await Pergunta.create({
+    pergunta_categoria: categoria,
+    pergunta_titulo: titulo,
+    pergunta_resposta: resposta,
+  });
+
+  return res.status(200).json({ message: "Pergunta criada com sucesso" });
+}
