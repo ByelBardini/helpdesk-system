@@ -9,6 +9,7 @@ import {
 import { PlusCircle, Paperclip, X, Send, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { tratarErro } from "../default/funcoes.js";
+import { socket } from "../../services/socket.js";
 
 export default function VisualizaChamado({
   setLoading,
@@ -64,8 +65,7 @@ export default function VisualizaChamado({
         mensagem: "Sua resposta foi enviada com sucesso ao setor de TI",
       });
 
-      const novasRespostas = await getResposta(selecionado.chamado_id);
-      setRespostas(novasRespostas);
+      buscarRespostas();
 
       setTimeout(() => {
         setRespondendo(false);
@@ -82,6 +82,18 @@ export default function VisualizaChamado({
       tratarErro(setNotificacao, err, navigate);
     }
   }
+
+  async function buscarRespostas() {
+    const novasRespostas = await getResposta(selecionado.chamado_id);
+    setRespostas(novasRespostas);
+  }
+
+  useEffect(() => {
+    socket.on("reply:new", buscarRespostas);
+    return () => {
+      socket.off("reply:new", buscarRespostas);
+    };
+  }, []);
 
   useEffect(() => {
     setDescricao("");

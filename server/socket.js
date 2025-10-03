@@ -40,9 +40,7 @@ export function initSocket(server) {
     ) {
       socket.join("suporte");
     }
-    if (
-      String(socket.userRole).toLowerCase().includes("adm")
-    ) {
+    if (String(socket.userRole).toLowerCase().includes("adm")) {
       socket.join("adm");
     }
     console.log("Usuário conectado:", socket.userId, "role:", socket.userRole);
@@ -68,11 +66,14 @@ export function io() {
 }
 
 export const notifyUser = (userId, event, payload) => {
+  console.log("Enviou");
   io().to(`user:${userId}`).emit(event, payload);
 };
 export const notifySuporte = (event, payload) => {
+  console.log("Enviou");
   io().to("suporte").emit(event, payload);
 };
 export const notifyAdm = (event, payload) => {
+  console.log("Enviou");
   io().to("adm").emit(event, payload);
 };
