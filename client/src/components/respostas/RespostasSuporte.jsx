@@ -125,7 +125,7 @@ export default function RespostasSuporte({
     <div className="w-1/2 p-6 flex flex-col">
       <h2 className="text-xl font-bold mb-4">Respostas</h2>
 
-      <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+      <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
         {respostas.length > 0 ? (
           respostas.map((resposta) => (
             <div
@@ -260,7 +260,7 @@ export default function RespostasSuporte({
             <textarea
               value={novaResposta}
               onChange={(e) => setNovaResposta(e.target.value)}
-              className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm resize-none"
+              className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm resize-none custom-scrollbar"
               rows={2}
               placeholder="Digite sua resposta..."
             />

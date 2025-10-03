@@ -14,7 +14,7 @@ export default function DadosModalChamado({
   setConcluindo,
 }) {
   return (
-    <div className="w-1/2 p-6 flex flex-col space-y-6 border-r border-white/10 overflow-y-auto">
+    <div className="w-1/2 p-6 flex flex-col space-y-6 border-r border-white/10 overflow-y-auto custom-scrollbar">
       {chamado.chamado_status === "resolvido" && (
         <div className="relative bg-green-500/10 border-l-4 border-green-500 rounded-r-lg px-5 py-4 text-sm mt-6 shadow-md">
           <div className="flex items-center gap-2 mb-2">

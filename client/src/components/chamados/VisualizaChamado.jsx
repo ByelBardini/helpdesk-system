@@ -7,7 +7,7 @@ import {
   getResposta,
 } from "../../services/api/respostaServices.js";
 import { PlusCircle, Paperclip, X, Send, Check } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { tratarErro } from "../default/funcoes.js";
 
 export default function VisualizaChamado({
@@ -23,6 +23,8 @@ export default function VisualizaChamado({
   const [descricao, setDescricao] = useState("");
   const [anexos, setAnexos] = useState([]);
   const [respostas, setRespostas] = useState([]);
+
+  const sectionRef = useRef(null);
 
   async function enviarResposta() {
     setConfirmacao({
@@ -95,8 +97,14 @@ export default function VisualizaChamado({
   }, []);
 
   useEffect(() => {
-    if (selecionado) {
-      setRespostas(selecionado.respostas);
+    if (!sectionRef.current || !selecionado) return;
+
+    const container = sectionRef.current;
+
+    if (selecionado.chamado_status === "resolvido") {
+      container.scollTop = 0;
+    } else {
+      container.scollTop = container.scrollHeight;
     }
   }, [selecionado]);
 
