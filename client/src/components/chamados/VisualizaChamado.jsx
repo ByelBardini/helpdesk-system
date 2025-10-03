@@ -25,7 +25,8 @@ export default function VisualizaChamado({
   const [anexos, setAnexos] = useState([]);
   const [respostas, setRespostas] = useState([]);
 
-  const scrollRef = useRef(null); // <<< ref do container que scrolla (o <section>)
+  const [monstrarAnexos, setMostrarAnexos] = useState(false);
+  const scrollRef = useRef(null);
 
   async function enviarResposta() {
     setConfirmacao({
@@ -66,7 +67,7 @@ export default function VisualizaChamado({
         mensagem: "Sua resposta foi enviada com sucesso ao setor de TI",
       });
 
-      await buscarRespostas(); // <<<
+      await buscarRespostas();
       setTimeout(() => {
         setRespondendo(false);
         setNotificacao({
@@ -130,15 +131,19 @@ export default function VisualizaChamado({
     const t = setTimeout(run, 0);
     return () => clearTimeout(t);
   }, [
-    selecionado?.chamado_id,        // quando troca o chamado
-    selecionado?.chamado_status,    // quando status muda
-    respostas.length,               // quando quantidade de respostas muda
+    selecionado?.chamado_id, // quando troca o chamado
+    selecionado?.chamado_status, // quando status muda
+    respostas.length, // quando quantidade de respostas muda
   ]);
+
+  const toggleMostrarAnexos = () => {
+    setMostrarAnexos((prev) => !prev);
+  };
 
   return (
     <section
-      key={selecionado?.chamado_id || "none"}                 // <<< força reset por chamado
-      ref={scrollRef}                                         // <<< aqui está o ref do scroll
+      key={selecionado?.chamado_id || "none"} // <<< força reset por chamado
+      ref={scrollRef} // <<< aqui está o ref do scroll
       className="flex-1 p-6 overflow-y-auto custom-scrollbar"
     >
       {selecionado ? (
@@ -186,9 +191,13 @@ export default function VisualizaChamado({
               </h3>
               <ul className="list-disc list-inside text-sm text-white/70">
                 {selecionado.anexos.map((anexo) => (
-                  <li key={anexo.anexo_id}> {/* <<< movi a key para o li */}
+                  <li key={anexo.anexo_id}>
+                    {" "}
+                    {/* <<< movi a key para o li */}
                     <a
-                      href={`${import.meta.env.VITE_API_BASE_URL}/imagem?path=${anexo.anexo_caminho}`}
+                      href={`${import.meta.env.VITE_API_BASE_URL}/imagem?path=${
+                        anexo.anexo_caminho
+                      }`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-[#6bb7ff] cursor-pointer"
@@ -224,14 +233,21 @@ export default function VisualizaChamado({
               </div>
             ) : (
               <div className="flex flex-col gap-3 p-4 rounded-lg border border-white/10 bg-white/5">
-                <textarea
-                  value={descricao}
-                  onChange={(e) => setDescricao(e.target.value)}
-                  placeholder="Digite sua resposta..."
-                  className="w-full h-28 resize-none rounded-md bg-[#0e1033]/50 border border-white/10 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a5acd] text-white placeholder-white/40"
-                />
-
-                <RespostaUsuario anexos={anexos} setAnexos={setAnexos} />
+                <div className="relative w-full">
+                  <textarea
+                    value={descricao}
+                    onChange={(e) => setDescricao(e.target.value)}
+                    placeholder="Digite sua resposta..."
+                    className="w-full h-28 resize-none rounded-md bg-[#0e1033]/50 border border-white/10 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#6a5acd] text-white placeholder-white/40"
+                  />
+                  <button
+                    onClick={toggleMostrarAnexos}
+                    className="absolute bottom-2 right-2 pb-2 rounded cursor-pointer"
+                  >
+                    <Paperclip className="h-4 text-white/50" />
+                  </button>
+                </div>
+                  {monstrarAnexos && (<RespostaUsuario anexos={anexos} setAnexos={setAnexos} />)}
 
                 <div className="flex justify-end gap-3">
                   <button

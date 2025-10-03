@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Paperclip, Trash2, FileText, Image as ImageIcon } from "lucide-react";
 
-export default function RespostaUsuario({anexos, setAnexos}) {
+export default function RespostaUsuario({ anexos, setAnexos }) {
   const [anexoNome, setAnexoNome] = useState("");
   const [anexoArquivo, setAnexoArquivo] = useState(null);
   const fileInputRef = useRef(null);
@@ -21,38 +21,52 @@ export default function RespostaUsuario({anexos, setAnexos}) {
   const handleRemoveAnexo = (id) => {
     setAnexos((prev) => prev.filter((a) => a.id !== id));
   };
-  return (
-    <div className="rounded-lg border border-white/10 bg-white/5 p-3 space-y-3">
-      <div className="text-sm font-medium text-white/80">Anexos</div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
-        <input
-          ref={fileInputRef}
-          type="file"
-          onChange={(e) => setAnexoArquivo(e.target.files?.[0] ?? null)}
-          className="block w-full text-xs file:mr-3 file:py-2 file:px-3
-                   file:rounded-md file:border-0 file:bg-[#6a5acd]/40
-                   file:text-white/90 hover:file:bg-[#6a5acd]/60 file:cursor-pointer
-                   bg-transparent"
-        />
-        <input
-          type="text"
-          value={anexoNome}
-          onChange={(e) => setAnexoNome(e.target.value)}
-          placeholder="Nome do arquivo "
-          className="flex-1 rounded-md bg-[#0e1033]/50 border border-white/10 p-2 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-[#6a5acd] text-white placeholder-white/40"
-        />
-        <button
-          onClick={handleAddAnexo}
-          disabled={!anexoArquivo}
-          className="cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg
-                   bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium
-                   disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Paperclip className="h-4 w-4" />
-          Adicionar
-        </button>
+  return (
+    <div className="flex rounded-lg border border-white/10 bg-white/5 p-3">
+      <div className="flex gap-3 items-center justify-between w-full">
+        <div className="text-sm font-medium text-white/80">
+          Anexos
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={(e) => setAnexoArquivo(e.target.files?.[0] ?? null)}
+            className="block w-full text-xs file:mr-3 file:py-2 file:px-3
+          file:rounded-md file:border-0 file:bg-[#6a5acd]/40
+          file:text-white/90 hover:file:bg-[#6a5acd]/60 file:cursor-pointer
+          bg-transparent"
+          />
+        </div>
+        <div className="">
+          <span
+            className={`text-[11px] ${
+              anexoNome.length < 50 ? "text-white/50" : "text-red-400"
+            }`}
+          >
+            {anexoNome.length}/50
+          </span>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={anexoNome}
+              maxLength={50}
+              onChange={(e) => setAnexoNome(e.target.value)}
+              placeholder="Nome do arquivo "
+              className="flex-1 rounded-md bg-[#0e1033]/50 border border-white/10 p-2 text-sm
+            focus:outline-none focus:ring-2 focus:ring-[#6a5acd] text-white placeholder-white/40"
+            />
+            <button
+              onClick={handleAddAnexo}
+              disabled={!anexoArquivo}
+              className="cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg
+          bg-[#6a5acd]/40 hover:bg-[#6a5acd]/60 transition text-sm font-medium
+          disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Paperclip className="h-4 w-4" />
+              Adicionar
+            </button>
+          </div>
+        </div>
       </div>
 
       {anexos.length > 0 && (
