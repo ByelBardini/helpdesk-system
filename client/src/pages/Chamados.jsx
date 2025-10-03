@@ -98,9 +98,11 @@ export default function Chamados() {
   useEffect(() => {
     socket.on("chamado:update", buscarChamados);
     socket.on("chamado:end", buscarChamados);
+    socket.on("reply:new", buscarChamados);
     return () => {
       socket.off("chamado:update", buscarChamados);
       socket.off("chamado:end", buscarChamados);
+      socket.off("reply:new", buscarChamados);
     };
   }, []);
 

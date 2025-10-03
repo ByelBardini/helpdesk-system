@@ -53,9 +53,9 @@ export async function postResposta(req, res) {
 
   const anexosArr = Array.isArray(req.anexos) ? req.anexos : [];
 
-  let respostaCriada = null;
+  const t = await sequelize.transaction();
 
-  await sequelize.transaction(async (t) => {
+  try {
     const resposta = await Resposta.create(
       {
         resposta_chamado_id: idChamado,
@@ -65,12 +65,8 @@ export async function postResposta(req, res) {
         resposta_visualizada: 0,
         resposta_data_emissao: new Date(),
       },
-      {
-        transaction: t,
-      }
+      { transaction: t }
     );
-
-    respostaCriada = resposta;
 
     for (const a of anexosArr) {
       await Anexo.create(
@@ -82,7 +78,12 @@ export async function postResposta(req, res) {
         { transaction: t }
       );
     }
-  });
+
+    await t.commit();
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
   const chamado = await Chamado.findByPk(idChamado, {
     attributes: ["chamado_id", "chamado_motivo", "chamado_usuario_id"],
   });

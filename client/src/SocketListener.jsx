@@ -13,6 +13,7 @@ export function SocketListener({ children }) {
     }
 
     const novaResposta = (payload) => {
+      console.log("Evento");
       if (Notification.permission === "granted") {
         new Notification("Nova resposta", {
           body: `${payload.titulo} - ${payload.snippet}`,
@@ -22,6 +23,7 @@ export function SocketListener({ children }) {
     };
 
     const novoChamado = (payload) => {
+      console.log("Evento");
       if (Notification.permission === "granted") {
         new Notification("Novo chamado criado", {
           body: `${payload.motivo} - Usuário: ${payload.criadoPor}`,
@@ -33,6 +35,7 @@ export function SocketListener({ children }) {
     };
 
     const updateChamado = (payload) => {
+      console.log("Evento");
       if (Notification.permission === "granted") {
         new Notification(`Chamado atualizado: ${payload.titulo}`, {
           body: `Novo Status: ${formatToCapitalized(payload.status)}`,
@@ -44,6 +47,7 @@ export function SocketListener({ children }) {
     };
 
     const encerraChamado = (payload) => {
+      console.log("Evento");
       if (Notification.permission === "granted") {
         new Notification(`Chamado finalizado: ${payload.titulo}`, {
           body: `Resolução: ${payload.resolucao}`,
@@ -55,6 +59,7 @@ export function SocketListener({ children }) {
     };
 
     const novaCompra = (payload) => {
+      console.log("Evento");
       if (Notification.permission === "granted") {
         new Notification(`Nova Solicitação de Compra: ${payload.produto}`, {
           body: `Solicitante: ${payload.solicitante} - Tipo: ${
@@ -70,6 +75,7 @@ export function SocketListener({ children }) {
     };
 
     const compraNegada = (payload) => {
+      console.log("Evento");
       if (Notification.permission === "granted") {
         new Notification(`Solicitação de Compra Negada: ${payload.produto}`, {
           body: `Motivo: ${payload.motivo}`,
@@ -81,6 +87,7 @@ export function SocketListener({ children }) {
     };
 
     const compraAprovada = (payload) => {
+      console.log("Evento");
       if (Notification.permission === "granted") {
         new Notification(`Solicitação de Compra Aprovada: ${payload.produto}`, {
           body: `Status: ${formatToCapitalized(payload.status)}`,
@@ -92,6 +99,7 @@ export function SocketListener({ children }) {
     };
 
     const compraRecebida = (payload) => {
+      console.log("Evento");
       if (Notification.permission === "granted") {
         new Notification(`Item recebido: ${payload.produto}`, {
           body: `Sua solicitação foi encerrada`,

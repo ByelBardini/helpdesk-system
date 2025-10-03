@@ -23,7 +23,7 @@ function BotaoMenu({ onClick, icon: Icon, label, cor = "text-blue-300" }) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-3 
+      className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 
                  bg-[#14163d]/60 hover:bg-[#1c1f4a]/80 
                  border border-white/10 rounded-xl 
                  text-white/80 font-medium transition"
