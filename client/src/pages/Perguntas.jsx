@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
+import Confirmacao from "../components/default/Confirmacao.jsx";
 import {
   PlusCircle,
   Trash2,
@@ -9,7 +10,7 @@ import {
   ChevronUp,
   Search,
 } from "lucide-react";
-import { getPerguntas } from "../services/api/faqServices.js";
+import { getPerguntas, deletePergunta } from "../services/api/faqServices.js";
 import { tratarErro } from "../components/default/funcoes.js";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +30,12 @@ export default function Perguntas() {
     titulo: "",
     mensagem: "",
   });
+  const [confirmacao, setConfirmacao] = useState({
+    show: false,
+    titulo: "",
+    texto: "",
+    onSim: null,
+  });
   const [loading, setLoading] = useState(false);
 
   async function buscarPerguntas() {
@@ -43,6 +50,40 @@ export default function Perguntas() {
 
       setPerguntas(perguntasComExibindo);
       setPerguntasFiltradas(perguntasComExibindo);
+    } catch (err) {
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
+    }
+  }
+
+  async function excluiPergunta(id) {
+    setConfirmacao({
+      show: false,
+      titulo: "",
+      texto: "",
+      onSim: null,
+    });
+    setLoading(true);
+    try {
+      await deletePergunta(id);
+      await buscarPerguntas();
+
+      setLoading(false);
+
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: "Pergunta excluída com sucesso",
+        mensagem: "A pergunta não irá mais aparecer no FAQ",
+      });
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+      }, 700);
     } catch (err) {
       setLoading(false);
       tratarErro(setNotificacao, err, navigate);
@@ -70,6 +111,21 @@ export default function Perguntas() {
                     from-[#0e1033] via-[#14163d] to-[#1c1f4a] 
                     text-white p-6 flex flex-col"
     >
+      {confirmacao.show && (
+        <Confirmacao
+          texto={confirmacao.texto}
+          titulo={confirmacao.titulo}
+          onSim={confirmacao.onSim}
+          onNao={() =>
+            setConfirmacao({
+              show: false,
+              titulo: "",
+              texto: "",
+              onSim: null,
+            })
+          }
+        />
+      )}
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}
@@ -161,6 +217,15 @@ export default function Perguntas() {
                       <Edit3 className="h-4 w-4" />
                     </button>
                     <button
+                      onClick={() =>
+                        setConfirmacao({
+                          show: true,
+                          titulo:
+                            "Tem certeza que deseja excluir essa pergunta?",
+                          texto: "Essa ação não pode ser desfeita",
+                          onSim: () => excluiPergunta(p.pergunta_id),
+                        })
+                      }
                       className="cursor-pointer p-1 rounded-lg hover:bg-red-500/20 text-red-400 transition"
                       title="Remover pergunta"
                     >
