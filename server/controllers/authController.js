@@ -73,3 +73,40 @@ export async function login(req, res) {
     throw ApiError.internal("Erro ao validar usuário");
   }
 }
+
+export async function getMe(req, res) {
+  try {
+    const usuario = await Usuario.findByPk(req.usuario.id, {
+      attributes: [
+        "usuario_id",
+        "usuario_login",
+        "usuario_nome",
+        "usuario_role",
+        "usuario_troca_senha",
+        "usuario_caminho_foto",
+      ],
+      include: [
+        {
+          model: Empresa,
+          as: "empresa",
+          attributes: ["empresa_id", "empresa_nome"],
+        },
+        {
+          model: Setor,
+          as: "setor",
+          attributes: ["setor_id", "setor_nome"],
+        },
+      ],
+    });
+
+    if (!usuario) {
+      throw ApiError.notFound("Usuário não encontrado");
+    }
+
+    return res.json(usuario);
+  } catch (err) {
+    console.error("Erro ao buscar perfil:", err);
+    if (err instanceof ApiError) throw err;
+    throw ApiError.internal("Erro ao buscar informações do usuário");
+  }
+}
