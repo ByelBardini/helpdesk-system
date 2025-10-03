@@ -119,7 +119,7 @@ export default function Chamados() {
   }, [modo]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 lg:p-10 relative">
+    <div className="h-screen w-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white">
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}
@@ -151,7 +151,8 @@ export default function Chamados() {
         />
       )}
       {loading && <Loading />}
-      <header className="max-w-7xl mx-auto flex items-center justify-between mb-6">
+
+      <header className="flex items-center justify-between px-6 py-3 bg-[#1c1f4a]/80 backdrop-blur-md shadow-md overflow-hidden">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/home", { replace: true })}
@@ -191,7 +192,7 @@ export default function Chamados() {
         )}
       </header>
 
-      <div className="max-w-7xl mx-auto flex h-[80vh] rounded-2xl overflow-hidden shadow-lg bg-[#2a2d5a]/60 backdrop-blur-sm">
+      <main className="mx-auto flex h-[90vh] overflow-hidden bg-[#2a2d5a]/60">
         <ListaChamados
           setLoading={setLoading}
           setNotificacao={setNotificacao}
@@ -214,7 +215,7 @@ export default function Chamados() {
           selecionado={selecionado}
           statusBadge={statusBadge}
         />
-      </div>
+      </main>
     </div>
   );
 }
