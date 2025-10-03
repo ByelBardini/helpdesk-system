@@ -11,7 +11,6 @@ import NovoChamado from "./pages/NovoChamado.jsx";
 import Chamados from "./pages/Chamados.jsx";
 import Compras from "./pages/Compras.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import AdminLayout from "./pages/AdminLayout.jsx";
 import ChamadosSuporte from "./pages/ChamadosSuporte.jsx";
 import Relatorios from "./pages/Relatorios.jsx";
 import Usuarios from "./pages/Usuarios.jsx";
@@ -20,30 +19,57 @@ import ComprasAdm from "./pages/ComprasAdm.jsx";
 import Avisos from "./pages/Avisos.jsx";
 import Perguntas from "./pages/Perguntas.jsx";
 
+import AdminLayout from "./pages/AdminLayout.jsx";
+import UserLayout from "./pages/UserLayout.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Login />,
+    element: (
+      <UserLayout>
+        <Login />
+      </UserLayout>
+    ),
   },
   {
     path: "/home",
-    element: <Home />,
+    element: (
+      <UserLayout>
+        <Home />
+      </UserLayout>
+    ),
   },
   {
     path: "/faq",
-    element: <Faq />,
+    element: (
+      <UserLayout>
+        <Faq />
+      </UserLayout>
+    ),
   },
   {
     path: "/novo-chamado",
-    element: <NovoChamado />,
+    element: (
+      <UserLayout>
+        <NovoChamado />
+      </UserLayout>
+    ),
   },
   {
     path: "/chamados",
-    element: <Chamados />,
+    element: (
+      <UserLayout>
+        <Chamados />
+      </UserLayout>
+    ),
   },
   {
     path: "/compras",
-    element: <Compras />,
+    element: (
+      <UserLayout>
+        <Compras />
+      </UserLayout>
+    ),
   },
   {
     path: "/suporte/dashboard",
