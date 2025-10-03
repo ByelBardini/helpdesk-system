@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
-import { putPergunta } from "../../services/api/faqServices.js";
+import { putPergunta, postPergunta } from "../../services/api/faqServices.js";
 
 export default function ModalPergunta({
   setModal,
@@ -21,13 +21,17 @@ export default function ModalPergunta({
 
   const [isOk, setIsOk] = useState(false);
 
-  async function editaPergunta() {
+  async function enviaPergunta() {
     if (categoria == "" || titulo == "" || resposta == "") {
       return;
     }
     setLoading(true);
     try {
-      await putPergunta(id, categoria, titulo, resposta);
+      if (tipo == "editar") {
+        await putPergunta(id, categoria, titulo, resposta);
+      } else {
+        await postPergunta(categoria, titulo, resposta);
+      }
 
       await buscarPerguntas();
       setLoading(false);
@@ -162,11 +166,7 @@ export default function ModalPergunta({
             Cancelar
           </button>
           <button
-            onClick={
-              tipo == "cadastro"
-                ? () => alert("cadastro")
-                : () => editaPergunta()
-            }
+            onClick={enviaPergunta}
             disabled={!isOk}
             className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border 
              border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 

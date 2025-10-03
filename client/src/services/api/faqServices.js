@@ -36,3 +36,18 @@ export async function putPergunta(id, categoria, titulo, resposta) {
     throw err;
   }
 }
+
+export async function postPergunta(categoria, titulo, resposta) {
+  try {
+    const response = await api.post(`/faq/`, {
+      categoria,
+      titulo,
+      resposta,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em postPergunta:", err);
+    throw err;
+  }
+}
