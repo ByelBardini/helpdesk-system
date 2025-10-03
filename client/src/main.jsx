@@ -18,6 +18,7 @@ import Usuarios from "./pages/Usuarios.jsx";
 import Configuracoes from "./pages/Configuracoes.jsx";
 import ComprasAdm from "./pages/ComprasAdm.jsx";
 import Avisos from "./pages/Avisos.jsx";
+import Perguntas from "./pages/Perguntas.jsx";
 
 const router = createBrowserRouter([
   {
@@ -89,6 +90,14 @@ const router = createBrowserRouter([
     element: (
       <AdminLayout>
         <Avisos />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/suporte/perguntas",
+    element: (
+      <AdminLayout>
+        <Perguntas />
       </AdminLayout>
     ),
   },

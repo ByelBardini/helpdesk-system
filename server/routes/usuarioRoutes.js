@@ -10,7 +10,7 @@ import {
 import { autenticar, autorizarRoles } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
-router.use(autenticar, autorizarRoles);
+router.use(autenticar);
 
 router.get("/", autorizarRoles("adm"), getUsuarios);
 router.get("/dados", autorizarRoles("adm"), getDados);
