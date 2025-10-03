@@ -2,6 +2,7 @@
 import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
 import Confirmacao from "../components/default/Confirmacao.jsx";
+import ModalPergunta from "../components/faq/ModalPergunta.jsx";
 import {
   PlusCircle,
   Trash2,
@@ -23,6 +24,13 @@ export default function Perguntas() {
   const [aberto, setAberto] = useState(null);
 
   const [filtro, setFiltro] = useState("");
+  const [modal, setModal] = useState({
+    show: false,
+    categoria: "",
+    titulo: "",
+    resposta: "",
+    tipo: "",
+  });
 
   const [notificacao, setNotificacao] = useState({
     show: false,
@@ -111,6 +119,18 @@ export default function Perguntas() {
                     from-[#0e1033] via-[#14163d] to-[#1c1f4a] 
                     text-white p-6 flex flex-col"
     >
+      {modal.show && (
+        <ModalPergunta
+          setModal={setModal}
+          cat={modal.categoria}
+          tit={modal.titulo}
+          resp={modal.resposta}
+          tipo={modal.tipo}
+          setNotificacao={setNotificacao}
+          setLoading={setLoading}
+          navigate={navigate}
+        />
+      )}
       {confirmacao.show && (
         <Confirmacao
           texto={confirmacao.texto}
@@ -170,6 +190,15 @@ export default function Perguntas() {
         </div>
 
         <button
+          onClick={() =>
+            setModal({
+              show: true,
+              categoria: "",
+              titulo: "",
+              resposta: "",
+              tipo: "cadastro",
+            })
+          }
           className="cursor-pointer flex items-center gap-2 bg-blue-500/20 hover:bg-blue-500/30 
                      text-blue-300 px-4 py-2 rounded-xl border border-blue-500/30 
                      transition w-fit"
@@ -211,6 +240,15 @@ export default function Perguntas() {
                       {p.pergunta_categoria}
                     </span>
                     <button
+                      onClick={() =>
+                        setModal({
+                          show: true,
+                          categoria: p.pergunta_categoria,
+                          titulo: p.pergunta_titulo,
+                          resposta: p.pergunta_resposta,
+                          tipo: "editar",
+                        })
+                      }
                       className="cursor-pointer p-1 rounded-lg hover:bg-yellow-500/20 text-yellow-400 transition"
                       title="Editar pergunta"
                     >
