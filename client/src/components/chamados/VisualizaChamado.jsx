@@ -113,7 +113,6 @@ export default function VisualizaChamado({
     }
   }, [selecionado]);
 
-  // <<< Controle de scroll: topo se resolvido, fundo caso contrário
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (!el || !selecionado) return;
@@ -227,6 +226,7 @@ export default function VisualizaChamado({
 
             {selecionado.chamado_usuario_id ==
               localStorage.getItem("usuario_id") &&
+              selecionado.chamado_status != "resolvido" &&
               (!respondendo ? (
                 <div className="mt-6">
                   <button
