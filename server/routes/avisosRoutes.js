@@ -4,13 +4,13 @@ import {
   deleteAviso,
   postAviso,
 } from "../controllers/avisosController.js";
-import { autenticar } from "../middlewares/autenticaToken.js";
+import { autenticar, autorizarRoles } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
 router.use(autenticar);
 
-router.post("/", postAviso);
+router.post("/", autorizarRoles("adm"), postAviso);
 router.get("/", getAvisos);
-router.delete("/:id", deleteAviso);
+router.delete("/:id", autorizarRoles("adm"), deleteAviso);
 
 export default router;
