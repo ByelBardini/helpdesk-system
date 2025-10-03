@@ -7,16 +7,16 @@ import {
   ativaInativa,
   getDados,
 } from "../controllers/usuarioController.js";
-import { autenticar } from "../middlewares/autenticaToken.js";
+import { autenticar, autorizarRoles } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
-router.use(autenticar);
+router.use(autenticar, autorizarRoles);
 
-router.get("/", getUsuarios);
-router.get("/dados", getDados);
-router.post("/", cadastrarUsuario);
-router.put("/:id", putUsuario);
-router.put("/senha/reseta/:id", resetaSenha);
-router.put("/inativa/:id", ativaInativa);
+router.get("/", autorizarRoles("adm"), getUsuarios);
+router.get("/dados", autorizarRoles("adm"), getDados);
+router.post("/", autorizarRoles("adm"), cadastrarUsuario);
+router.put("/:id", autorizarRoles("adm"), putUsuario);
+router.put("/senha/reseta/:id", autorizarRoles("adm"), resetaSenha);
+router.put("/inativa/:id", autorizarRoles("adm"), ativaInativa);
 
 export default router;
