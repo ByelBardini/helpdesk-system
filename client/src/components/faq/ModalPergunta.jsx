@@ -2,6 +2,8 @@
 import { X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { putPergunta, postPergunta } from "../../services/api/faqServices.js";
+import { tratarErro } from "../default/funcoes.js";
+import { formatToCapitalized, formatToNumber } from "brazilian-values";
 
 export default function ModalPergunta({
   setModal,
@@ -23,30 +25,52 @@ export default function ModalPergunta({
 
   async function enviaPergunta() {
     if (categoria == "" || titulo == "" || resposta == "") {
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Dados inválidos",
+        mensagem: "Todos os campos devem ser preenchidos",
+      });
       return;
     }
     setLoading(true);
     try {
       if (tipo == "editar") {
-        await putPergunta(id, categoria, titulo, resposta);
+        await putPergunta(id, formatToCapitalized(categoria), titulo, resposta);
       } else {
-        await postPergunta(categoria, titulo, resposta);
+        await postPergunta(formatToCapitalized(categoria), titulo, resposta);
       }
-
       await buscarPerguntas();
       setLoading(false);
-      alert("Deu bom");
-      setModal({
-        show: false,
-        id: "",
-        categoria: "",
-        titulo: "",
-        resposta: "",
-        tipo: "",
+
+      setNotificacao({
+        show: true,
+        tipo: "sucesso",
+        titulo: `Pergunta ${
+          tipo == "editar" ? "editada" : "criada"
+        } com sucesso`,
+        mensagem: "A partir de agora ela irá ser exibida no FAQ",
       });
+      setTimeout(() => {
+        setNotificacao({
+          show: false,
+          tipo: "sucesso",
+          titulo: "",
+          mensagem: "",
+        });
+        setModal({
+          show: false,
+          id: "",
+          categoria: "",
+          titulo: "",
+          resposta: "",
+          tipo: "",
+        });
+      }, 700);
     } catch (err) {
       setLoading(false);
       console.error(err);
+      tratarErro(setNotificacao, err, navigate);
     }
   }
 
@@ -111,11 +135,24 @@ export default function ModalPergunta({
 
         <div className="px-6 py-5 space-y-4">
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-white/70">Categoria</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Categoria</span>
+              <span
+                className={`text-[11px] ${
+                  categoria.length < 50 ? "text-white/50" : "text-red-500"
+                }`}
+              >
+                {categoria.length}/50
+              </span>
+            </div>
             <input
               value={categoria}
               onChange={(e) => setCategoria(e.target.value)}
               type="text"
+              maxLength={50}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") enviaPergunta;
+              }}
               placeholder="Digite a categoria"
               className="w-full h-10 rounded-lg border border-white/10 bg-white/10 
                      px-3 text-sm placeholder-white/40 outline-none focus:border-blue-400"
@@ -123,11 +160,24 @@ export default function ModalPergunta({
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-white/70">Título</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Titulo</span>
+              <span
+                className={`text-[11px] ${
+                  titulo.length < 150 ? "text-white/50" : "text-red-500"
+                }`}
+              >
+                {titulo.length}/150
+              </span>
+            </div>
             <input
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               type="text"
+              maxLength={150}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") enviaPergunta;
+              }}
               placeholder="Digite o título da pergunta"
               className="w-full h-10 rounded-lg border border-white/10 bg-white/10 
                      px-3 text-sm placeholder-white/40 outline-none focus:border-blue-400"
@@ -135,11 +185,24 @@ export default function ModalPergunta({
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-xs text-white/70">Resposta</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-white/70">Resposta</span>
+              <span
+                className={`text-[11px] ${
+                  resposta.length < 1000 ? "text-white/50" : "text-red-500"
+                }`}
+              >
+                {formatToNumber(resposta.length)}/1.000
+              </span>
+            </div>
             <textarea
               value={resposta}
               onChange={(e) => setResposta(e.target.value)}
               rows="4"
+              maxLength={1000}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") enviaPergunta;
+              }}
               placeholder="Digite a resposta para a pergunta"
               className="w-full rounded-lg border border-white/10 bg-white/10 
                      px-3 py-2 text-sm placeholder-white/40 outline-none focus:border-blue-400 resize-none"
