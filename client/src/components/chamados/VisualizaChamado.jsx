@@ -7,7 +7,7 @@ import {
   getResposta,
 } from "../../services/api/respostaServices.js";
 import { PlusCircle, Paperclip, X, Send, Check } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react"; // <<<
 import { tratarErro } from "../default/funcoes.js";
 import { socket } from "../../services/socket.js";
 
@@ -25,7 +25,7 @@ export default function VisualizaChamado({
   const [anexos, setAnexos] = useState([]);
   const [respostas, setRespostas] = useState([]);
 
-  const sectionRef = useRef(null);
+  const scrollRef = useRef(null); // <<< ref do container que scrolla (o <section>)
 
   async function enviarResposta() {
     setConfirmacao({
@@ -48,7 +48,6 @@ export default function VisualizaChamado({
       const idUsuario = localStorage.getItem("usuario_id");
 
       const fd = new FormData();
-
       fd.append("descricao", descricao);
       fd.append("tipo", "usuario");
 
@@ -67,8 +66,7 @@ export default function VisualizaChamado({
         mensagem: "Sua resposta foi enviada com sucesso ao setor de TI",
       });
 
-      buscarRespostas();
-
+      await buscarRespostas(); // <<<
       setTimeout(() => {
         setRespondendo(false);
         setNotificacao({
@@ -109,19 +107,40 @@ export default function VisualizaChamado({
   }, []);
 
   useEffect(() => {
-    if (!sectionRef.current || !selecionado) return;
-
-    const container = sectionRef.current;
-
-    if (selecionado.chamado_status === "resolvido") {
-      container.scollTop = 0;
-    } else {
-      container.scollTop = container.scrollHeight;
+    if (selecionado) {
+      setRespostas(selecionado.respostas);
     }
   }, [selecionado]);
 
+  // <<< Controle de scroll: topo se resolvido, fundo caso contrário
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el || !selecionado) return;
+
+    const toTop = selecionado.chamado_status === "resolvido";
+
+    // roda duas vezes para garantir após layout/medidas e imagens/anexos
+    const run = () => {
+      el.scrollTo({
+        top: toTop ? 0 : el.scrollHeight,
+        behavior: "auto",
+      });
+    };
+    requestAnimationFrame(run);
+    const t = setTimeout(run, 0);
+    return () => clearTimeout(t);
+  }, [
+    selecionado?.chamado_id,        // quando troca o chamado
+    selecionado?.chamado_status,    // quando status muda
+    respostas.length,               // quando quantidade de respostas muda
+  ]);
+
   return (
-    <section className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+    <section
+      key={selecionado?.chamado_id || "none"}                 // <<< força reset por chamado
+      ref={scrollRef}                                         // <<< aqui está o ref do scroll
+      className="flex-1 p-6 overflow-y-auto custom-scrollbar"
+    >
       {selecionado ? (
         <div>
           <h2 className="text-xl font-bold mb-2">
@@ -137,6 +156,7 @@ export default function VisualizaChamado({
             )}
           </p>
           <div className="mb-4">{statusBadge(selecionado.chamado_status)}</div>
+
           {selecionado.chamado_status == "resolvido" && (
             <div className="relative bg-green-500/10 border-l-4 border-green-500 rounded-lg px-5 py-4 text-sm text-green-100 shadow-md mt-4">
               <div className="flex items-center gap-2 mb-2">
@@ -166,14 +186,11 @@ export default function VisualizaChamado({
               </h3>
               <ul className="list-disc list-inside text-sm text-white/70">
                 {selecionado.anexos.map((anexo) => (
-                  <li>
+                  <li key={anexo.anexo_id}> {/* <<< movi a key para o li */}
                     <a
-                      href={`${import.meta.env.VITE_API_BASE_URL}/imagem?path=${
-                        anexo.anexo_caminho
-                      }`}
+                      href={`${import.meta.env.VITE_API_BASE_URL}/imagem?path=${anexo.anexo_caminho}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      key={anexo.anexo_id}
                       className="hover:text-[#6bb7ff] cursor-pointer"
                     >
                       {anexo.anexo_nome}
@@ -186,7 +203,7 @@ export default function VisualizaChamado({
 
           <div className="mb-6">
             <h3 className="font-medium mb-3">Respostas</h3>
-            {selecionado.respostas.length > 0 ? (
+            {respostas.length > 0 ? (
               <ListaRespostas respostas={respostas} />
             ) : (
               <p className="text-sm text-white/50">Nenhuma resposta ainda.</p>
