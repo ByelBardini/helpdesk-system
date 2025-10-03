@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { postAviso } from "../../services/api/avisosServices.js";
 import { tratarErro } from "../default/funcoes.js";
+import { formatToNumber } from "brazilian-values";
 import { X } from "lucide-react";
 
 export default function ModalCriaAviso({
@@ -121,9 +122,19 @@ export default function ModalCriaAviso({
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm text-gray-300 mb-2">Título</label>
+          <div className="flex items-center justify-between">
+            <label className="block text-sm text-gray-300 mb-2">Título</label>
+            <span
+              className={`text-xs ${
+                titulo.length < 150 ? "text-white/50" : "text-red-400"
+              }`}
+            >
+              {titulo.length}/150
+            </span>
+          </div>
           <input
             type="text"
+            maxLength={150}
             onChange={(e) => {
               setTitulo(e.target.value);
             }}
@@ -140,9 +151,21 @@ export default function ModalCriaAviso({
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm text-gray-300 mb-2">Descrição</label>
+          <div className="flex items-center justify-between">
+            <label className="block text-sm text-gray-300 mb-2">
+              Descrição
+            </label>
+            <span
+              className={`text-xs ${
+                descricao.length < 1500 ? "text-white/50" : "text-red-400"
+              }`}
+            >
+              {formatToNumber(descricao.length)}/1.500
+            </span>
+          </div>
           <textarea
             rows="4"
+            maxLength={1500}
             onChange={(e) => {
               setDescricao(e.target.value);
             }}
@@ -154,7 +177,7 @@ export default function ModalCriaAviso({
             }}
             placeholder="Digite a descrição do aviso"
             className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm resize-none"
+                       focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm resize-none custom-scrollbar"
           ></textarea>
         </div>
 

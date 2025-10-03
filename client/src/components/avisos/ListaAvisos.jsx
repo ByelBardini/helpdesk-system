@@ -37,7 +37,7 @@ export default function ListaAvisos({ avisos }) {
       </div>
 
       {/* Lista */}
-      <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto pr-2 space-y-4">
         {avisos.length > 0 ? (
           avisos.map((aviso) => (
             <div
