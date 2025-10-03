@@ -152,7 +152,7 @@ export default function Chamados() {
       )}
       {loading && <Loading />}
 
-      <header className="flex items-center justify-between px-6 py-3 bg-[#1c1f4a]/80 backdrop-blur-md shadow-md overflow-hidden">
+      <header className="flex items-center justify-between px-6 py-3 bg-[#1c1f4a]/80 backdrop-blur-md shadow-md overflow-hidden border-b border-white/10">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/home", { replace: true })}
