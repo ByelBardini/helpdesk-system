@@ -78,6 +78,7 @@ export default function Faq() {
     try {
       setLoading(true);
       const perguntas = await getPerguntas();
+      console.log(perguntas);
       setLoading(false);
       const perguntasComExibindo = perguntas.map((p) => ({
         ...p,

@@ -13,6 +13,7 @@ import {
   Settings,
   WalletCards,
   MessageSquareWarning,
+  MessageCircleQuestionMark,
   X,
 } from "lucide-react";
 import {
@@ -41,6 +42,11 @@ export default function Header() {
     },
     { to: "/suporte/relatorios", label: "Relatórios", icon: BarChart2 },
     { to: "/suporte/avisos", label: "Avisos", icon: MessageSquareWarning },
+    {
+      to: "/suporte/perguntas",
+      label: "Perguntas",
+      icon: MessageCircleQuestionMark,
+    },
     { to: "/suporte/usuarios", label: "Usuários", icon: UsersRound },
     { to: "/suporte/configuracoes", label: "Configurações", icon: Settings },
   ];
@@ -112,7 +118,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-10 w-full bg-[#171a3f] border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 lg:px-6 h-14 flex items-center justify-between">
+      <div className=" mx-auto px-4 lg:px-6 h-14 flex items-center justify-between">
         <nav className="hidden md:flex items-center gap-2">
           {nav.map(({ to, label, icon: Icon }) => (
             <NavLink

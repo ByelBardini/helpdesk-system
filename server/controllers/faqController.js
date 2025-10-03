@@ -6,3 +6,52 @@ export async function getPerguntas(req, res) {
 
   return res.status(200).json(perguntas);
 }
+
+export async function deletePergunta(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id da pergunta é obrigatório");
+  }
+
+  const pergunta = await Pergunta.findByPk(id);
+
+  await pergunta.destroy();
+
+  return res.status(200).json({ message: "Pergunta deletada com sucesso" });
+}
+
+export async function putPergunta(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id da pergunta é obrigatório");
+  }
+  const { categoria, titulo, resposta } = req.body;
+  if (!categoria || !titulo || !resposta) {
+    throw ApiError.badRequest("Todos os dados são obrigatórios");
+  }
+
+  const pergunta = await Pergunta.findByPk(id);
+
+  pergunta.pergunta_categoria = categoria;
+  pergunta.pergunta_titulo = titulo;
+  pergunta.pergunta_resposta = resposta;
+
+  await pergunta.save();
+
+  return res.status(200).json({ message: "Pergunta editada com sucesso" });
+}
+
+export async function postPergunta(req, res) {
+  const { categoria, titulo, resposta } = req.body;
+  if (!categoria || !titulo || !resposta) {
+    throw ApiError.badRequest("Todos os dados são obrigatórios");
+  }
+
+  await Pergunta.create({
+    pergunta_categoria: categoria,
+    pergunta_titulo: titulo,
+    pergunta_resposta: resposta,
+  });
+
+  return res.status(200).json({ message: "Pergunta criada com sucesso" });
+}

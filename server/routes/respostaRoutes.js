@@ -5,8 +5,10 @@ import {
   visualizaResposta,
   getRespostas,
 } from "../controllers/respostaController.js";
+import { autenticar } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
+router.use(autenticar);
 
 router.get("/:id", getRespostas);
 router.put("/visualiza/:id", visualizaResposta);
