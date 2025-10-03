@@ -133,12 +133,12 @@ export default function Login() {
                   E-mail
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/80" />
                   <input
                     onChange={(e) => setUsuario(e.target.value)}
                     id="email"
                     type="email"
-                    placeholder="voce@empresa.com"
+                    placeholder="Nome.Sobrenome"
                     className="w-full pl-10 rounded-xl bg-white/10 border border-white/10 px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#6bb7ff]/40 focus:border-[#6bb7ff]/40 placeholder:text-white/50"
                   />
                 </div>
@@ -150,7 +150,7 @@ export default function Login() {
                   Senha
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/80" />
                   <input
                     onChange={(e) => setSenha(e.target.value)}
                     onKeyDown={enter}

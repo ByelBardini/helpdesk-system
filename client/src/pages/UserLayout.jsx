@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { AnimatePresence, motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 
-export default function UserLayout({ children }) {
+export default function UserLayout() {
   const location = useLocation();
 
   return (
@@ -16,7 +16,7 @@ export default function UserLayout({ children }) {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar"
         >
-          {children}
+          <Outlet />
         </motion.main>
       </AnimatePresence>
     </div>

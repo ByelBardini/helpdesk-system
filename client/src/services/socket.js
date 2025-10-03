@@ -1,10 +1,10 @@
 import { io } from "socket.io-client";
 
 export const socket = io(import.meta.env.VITE_API_BASE_URL, {
-  auth: {
-    token: localStorage.getItem("token"),
+  auth: (cb) => {
+    cb({ token: localStorage.getItem("token") });
   },
-  withCredentials: true,
+  transports: ["websocket"],
 });
 
 socket.on("connect", () => {

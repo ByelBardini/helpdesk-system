@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   ShoppingCart,
 } from "lucide-react";
+import { logout } from "../services/auth/authService.js";
 import { useNavigate } from "react-router-dom";
 import { tratarErro } from "../components/default/funcoes.js";
 import { getAvisos } from "../services/api/avisosServices.js";
@@ -48,7 +49,8 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(false);
 
-  function logout() {
+  async function deslogar() {
+    await logout();
     localStorage.clear();
     navigate("/", { replace: true });
   }
@@ -177,7 +179,7 @@ export default function Home() {
           )}
 
           <BotaoMenu
-            onClick={logout}
+            onClick={deslogar}
             icon={LogOut}
             label="Sair"
             cor="text-red-300"

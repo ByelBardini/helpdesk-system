@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useEffect } from "react";
+import { conectarSocket, getUserInfo } from "./services/auth/authService";
 
 import { SocketListener } from "./SocketListener.jsx";
 
@@ -25,122 +27,51 @@ import UserLayout from "./pages/UserLayout.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <UserLayout>
-        <Login />
-      </UserLayout>
-    ),
+    element: <UserLayout />,
+    children: [
+      { path: "/", element: <Login /> },
+      { path: "/home", element: <Home /> },
+      { path: "/faq", element: <Faq /> },
+      { path: "/novo-chamado", element: <NovoChamado /> },
+      { path: "/chamados", element: <Chamados /> },
+      { path: "/compras", element: <Compras /> },
+    ],
   },
   {
-    path: "/home",
-    element: (
-      <UserLayout>
-        <Home />
-      </UserLayout>
-    ),
-  },
-  {
-    path: "/faq",
-    element: (
-      <UserLayout>
-        <Faq />
-      </UserLayout>
-    ),
-  },
-  {
-    path: "/novo-chamado",
-    element: (
-      <UserLayout>
-        <NovoChamado />
-      </UserLayout>
-    ),
-  },
-  {
-    path: "/chamados",
-    element: (
-      <UserLayout>
-        <Chamados />
-      </UserLayout>
-    ),
-  },
-  {
-    path: "/compras",
-    element: (
-      <UserLayout>
-        <Compras />
-      </UserLayout>
-    ),
-  },
-  {
-    path: "/suporte/dashboard",
-    element: (
-      <AdminLayout>
-        <Dashboard />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/suporte/chamados",
-    element: (
-      <AdminLayout>
-        <ChamadosSuporte />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/suporte/relatorios",
-    element: (
-      <AdminLayout>
-        <Relatorios />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/suporte/compras",
-    element: (
-      <AdminLayout>
-        <ComprasAdm />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/suporte/usuarios",
-    element: (
-      <AdminLayout>
-        <Usuarios />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/suporte/avisos",
-    element: (
-      <AdminLayout>
-        <Avisos />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/suporte/perguntas",
-    element: (
-      <AdminLayout>
-        <Perguntas />
-      </AdminLayout>
-    ),
-  },
-  {
-    path: "/suporte/configuracoes",
-    element: (
-      <AdminLayout>
-        <Configuracoes />
-      </AdminLayout>
-    ),
+    path: "/suporte",
+    element: <AdminLayout />,
+    children: [
+      { path: "dashboard", element: <Dashboard /> },
+      { path: "chamados", element: <ChamadosSuporte /> },
+      { path: "relatorios", element: <Relatorios /> },
+      { path: "compras", element: <ComprasAdm /> },
+      { path: "usuarios", element: <Usuarios /> },
+      { path: "avisos", element: <Avisos /> },
+      { path: "perguntas", element: <Perguntas /> },
+      { path: "configuracoes", element: <Configuracoes /> },
+    ],
   },
 ]);
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
+function AppWrapper() {
+  useEffect(() => {
+    async function init() {
+      await conectarSocket();
+      await getUserInfo();
+    }
+    init();
+  }, []);
+
+  return (
     <SocketListener>
       <RouterProvider router={router} />
     </SocketListener>
+  );
+}
+export default AppWrapper;
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <AppWrapper />
   </StrictMode>
 );

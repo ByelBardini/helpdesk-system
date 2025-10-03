@@ -20,6 +20,7 @@ import {
   getNotificacoesChamadoSuporte,
   getNotificacoesCompraAdm,
 } from "../../services/api/notificacaoServices";
+import { logout } from "../../services/auth/authService.js";
 import { socket } from "../../services/socket.js";
 
 export default function Header() {
@@ -180,7 +181,8 @@ export default function Header() {
             Home
           </button>
           <button
-            onClick={() => {
+            onClick={async () => {
+              await logout();
               localStorage.clear();
               navigate("/", { replace: true });
             }}

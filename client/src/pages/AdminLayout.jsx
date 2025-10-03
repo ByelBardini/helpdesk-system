@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import Header from "../components/default/Header.jsx";
 import { AnimatePresence, motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 
-export default function AdminLayout({ children }) {
+export default function AdminLayout() {
   const location = useLocation();
 
   return (
@@ -19,7 +19,7 @@ export default function AdminLayout({ children }) {
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="w-full h-full overflow-hidden"
         >
-          {children}
+          <Outlet />
         </motion.main>
       </AnimatePresence>
     </div>

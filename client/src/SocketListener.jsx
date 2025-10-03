@@ -1,113 +1,90 @@
 import { useEffect } from "react";
 import { socket } from "./services/socket";
 import { formatToCapitalized } from "brazilian-values";
+import {
+  sendNotification,
+  requestPermission,
+  isPermissionGranted,
+} from "@tauri-apps/plugin-notification";
 
 export function SocketListener({ children }) {
   useEffect(() => {
-    if (Notification.permission === "default") {
-      Notification.requestPermission().then((permission) => {
-        console.log("Permissão de notificação definida como:", permission);
-      });
-    } else {
-      console.log("Permissão atual de notificação:", Notification.permission);
+    async function notify(title, body) {
+      let granted = await isPermissionGranted();
+      if (!granted) {
+        const permission = await requestPermission();
+        granted = permission === "granted";
+      }
+      if (granted) {
+        sendNotification({ title, body });
+      } else {
+        console.log("Notificação bloqueada:", title, body);
+      }
     }
 
     const novaResposta = (payload) => {
-      console.log("Evento");
-      if (Notification.permission === "granted") {
-        new Notification("Nova resposta", {
-          body: `${payload.titulo} - ${payload.snippet}`,
-          tag: `reply-${Date.now()}`,
-        });
-      }
+      console.log("Evento reply:new");
+      notify("Nova resposta", `${payload.titulo} - ${payload.snippet}`);
     };
 
     const novoChamado = (payload) => {
-      console.log("Evento");
-      if (Notification.permission === "granted") {
-        new Notification("Novo chamado criado", {
-          body: `${payload.motivo} - Usuário: ${payload.criadoPor}`,
-          tag: `reply-${Date.now()}`,
-        });
-      } else {
-        console.log("Notificação bloqueada");
-      }
+      console.log("Evento chamado:new");
+      notify(
+        "Novo chamado criado",
+        `${payload.motivo} - Usuário: ${payload.criadoPor}`
+      );
     };
 
     const updateChamado = (payload) => {
-      console.log("Evento");
-      if (Notification.permission === "granted") {
-        new Notification(`Chamado atualizado: ${payload.titulo}`, {
-          body: `Novo Status: ${formatToCapitalized(payload.status)}`,
-          tag: `reply-${Date.now()}`,
-        });
-      } else {
-        console.log("Notificação bloqueada");
-      }
+      console.log("Evento chamado:update");
+      notify(
+        `Chamado atualizado: ${payload.titulo}`,
+        `Novo Status: ${formatToCapitalized(payload.status)}`
+      );
     };
 
     const encerraChamado = (payload) => {
-      console.log("Evento");
-      if (Notification.permission === "granted") {
-        new Notification(`Chamado finalizado: ${payload.titulo}`, {
-          body: `Resolução: ${payload.resolucao}`,
-          tag: `reply-${Date.now()}`,
-        });
-      } else {
-        console.log("Notificação bloqueada");
-      }
+      console.log("Evento chamado:end");
+      notify(
+        `Chamado finalizado: ${payload.titulo}`,
+        `Resolução: ${payload.resolucao}`
+      );
     };
 
     const novaCompra = (payload) => {
-      console.log("Evento");
-      if (Notification.permission === "granted") {
-        new Notification(`Nova Solicitação de Compra: ${payload.produto}`, {
-          body: `Solicitante: ${payload.solicitante} - Tipo: ${
-            payload.tipo == "servico"
-              ? "Serviço"
-              : formatToCapitalized(payload.tipo)
-          }`,
-          tag: `reply-${Date.now()}`,
-        });
-      } else {
-        console.log("Notificação bloqueada");
-      }
+      console.log("Evento compra:new");
+      notify(
+        `Nova Solicitação de Compra: ${payload.produto}`,
+        `Solicitante: ${payload.solicitante} - Tipo: ${
+          payload.tipo === "servico"
+            ? "Serviço"
+            : formatToCapitalized(payload.tipo)
+        }`
+      );
     };
 
     const compraNegada = (payload) => {
-      console.log("Evento");
-      if (Notification.permission === "granted") {
-        new Notification(`Solicitação de Compra Negada: ${payload.produto}`, {
-          body: `Motivo: ${payload.motivo}`,
-          tag: `reply-${Date.now()}`,
-        });
-      } else {
-        console.log("Notificação bloqueada");
-      }
+      console.log("Evento compra:denied");
+      notify(
+        `Solicitação de Compra Negada: ${payload.produto}`,
+        `Motivo: ${payload.motivo}`
+      );
     };
 
     const compraAprovada = (payload) => {
-      console.log("Evento");
-      if (Notification.permission === "granted") {
-        new Notification(`Solicitação de Compra Aprovada: ${payload.produto}`, {
-          body: `Status: ${formatToCapitalized(payload.status)}`,
-          tag: `reply-${Date.now()}`,
-        });
-      } else {
-        console.log("Notificação bloqueada");
-      }
+      console.log("Evento compra:aproved");
+      notify(
+        `Solicitação de Compra Aprovada: ${payload.produto}`,
+        `Status: ${formatToCapitalized(payload.status)}`
+      );
     };
 
     const compraRecebida = (payload) => {
-      console.log("Evento");
-      if (Notification.permission === "granted") {
-        new Notification(`Item recebido: ${payload.produto}`, {
-          body: `Sua solicitação foi encerrada`,
-          tag: `reply-${Date.now()}`,
-        });
-      } else {
-        console.log("Notificação bloqueada");
-      }
+      console.log("Evento compra:recieved");
+      notify(
+        `Item recebido: ${payload.produto}`,
+        `Sua solicitação foi encerrada`
+      );
     };
 
     socket.on("reply:new", novaResposta);
