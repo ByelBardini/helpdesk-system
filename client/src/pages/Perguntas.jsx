@@ -26,6 +26,7 @@ export default function Perguntas() {
   const [filtro, setFiltro] = useState("");
   const [modal, setModal] = useState({
     show: false,
+    id: "",
     categoria: "",
     titulo: "",
     resposta: "",
@@ -126,9 +127,11 @@ export default function Perguntas() {
           tit={modal.titulo}
           resp={modal.resposta}
           tipo={modal.tipo}
+          id={modal.id}
           setNotificacao={setNotificacao}
           setLoading={setLoading}
           navigate={navigate}
+          buscarPerguntas={buscarPerguntas}
         />
       )}
       {confirmacao.show && (
@@ -193,6 +196,7 @@ export default function Perguntas() {
           onClick={() =>
             setModal({
               show: true,
+              id: "",
               categoria: "",
               titulo: "",
               resposta: "",
@@ -243,6 +247,7 @@ export default function Perguntas() {
                       onClick={() =>
                         setModal({
                           show: true,
+                          id: p.pergunta_id,
                           categoria: p.pergunta_categoria,
                           titulo: p.pergunta_titulo,
                           resposta: p.pergunta_resposta,

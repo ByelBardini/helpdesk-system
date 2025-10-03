@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { X, Save } from "lucide-react";
 import { useEffect, useState } from "react";
+import { putPergunta } from "../../services/api/faqServices.js";
 
 export default function ModalPergunta({
   setModal,
@@ -8,13 +9,48 @@ export default function ModalPergunta({
   tit,
   resp,
   tipo,
+  id = null,
   setNotificacao,
   setLoading,
   navigate,
+  buscarPerguntas,
 }) {
   const [categoria, setCategoria] = useState("");
   const [titulo, setTitulo] = useState("");
   const [resposta, setResposta] = useState("");
+
+  const [isOk, setIsOk] = useState(false);
+
+  async function editaPergunta() {
+    if (categoria == "" || titulo == "" || resposta == "") {
+      return;
+    }
+    setLoading(true);
+    try {
+      await putPergunta(id, categoria, titulo, resposta);
+
+      await buscarPerguntas();
+      setLoading(false);
+      alert("Deu bom");
+      setModal({
+        show: false,
+        id: "",
+        categoria: "",
+        titulo: "",
+        resposta: "",
+        tipo: "",
+      });
+    } catch (err) {
+      setLoading(false);
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    setIsOk(
+      categoria.trim() != "" && titulo.trim() != "" && resposta.trim() != ""
+    );
+  }, [categoria, titulo, resposta]);
 
   useEffect(() => {
     setCategoria(cat);
@@ -27,6 +63,7 @@ export default function ModalPergunta({
       if (e.key === "Escape")
         setModal({
           show: false,
+          id: "",
           categoria: "",
           titulo: "",
           resposta: "",
@@ -55,6 +92,7 @@ export default function ModalPergunta({
             onClick={() =>
               setModal({
                 show: false,
+                id: "",
                 categoria: "",
                 titulo: "",
                 resposta: "",
@@ -110,6 +148,7 @@ export default function ModalPergunta({
             onClick={() =>
               setModal({
                 show: false,
+                id: "",
                 categoria: "",
                 titulo: "",
                 resposta: "",
@@ -123,9 +162,16 @@ export default function ModalPergunta({
             Cancelar
           </button>
           <button
+            onClick={
+              tipo == "cadastro"
+                ? () => alert("cadastro")
+                : () => editaPergunta()
+            }
+            disabled={!isOk}
             className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg border 
-                   border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 
-                   hover:bg-green-500/30 transition"
+             border-green-400/30 bg-green-500/20 px-5 py-2 text-sm font-medium text-green-200 
+             hover:bg-green-500/30 transition 
+             disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-500/20"
           >
             <Save className="h-4 w-4" />
             Salvar

@@ -21,3 +21,18 @@ export async function deletePergunta(id) {
     throw err;
   }
 }
+
+export async function putPergunta(id, categoria, titulo, resposta) {
+  try {
+    const response = await api.put(`/faq/${id}`, {
+      categoria,
+      titulo,
+      resposta,
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em putPergunta:", err);
+    throw err;
+  }
+}
