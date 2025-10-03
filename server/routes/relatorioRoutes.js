@@ -7,16 +7,16 @@ import {
   solicitacoes,
   relatorioCompras,
 } from "../controllers/relatoriosController.js";
-import { autenticar } from "../middlewares/autenticaToken.js";
+import { autenticar, autorizarRoles } from "../middlewares/autenticaToken.js";
 
 const router = express.Router();
 router.use(autenticar);
 
-router.get("/dados", getDados);
-router.put("/resolucao", tempoResolucao);
-router.put("/responsaveis", responsaveis);
-router.put("/abertos", chamadosAbertos);
-router.put("/solicitacoes", solicitacoes);
-router.put("/compras", relatorioCompras);
+router.get("/dados", autorizarRoles("adm"), getDados);
+router.put("/resolucao", autorizarRoles("adm"), tempoResolucao);
+router.put("/responsaveis", autorizarRoles("adm"), responsaveis);
+router.put("/abertos", autorizarRoles("adm"), chamadosAbertos);
+router.put("/solicitacoes", autorizarRoles("adm"), solicitacoes);
+router.put("/compras", autorizarRoles("adm"), relatorioCompras);
 
 export default router;
