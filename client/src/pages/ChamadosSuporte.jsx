@@ -77,7 +77,7 @@ export default function ChamadosSuporte() {
   useEffect(() => {
     socket.on("chamado:new", buscaChamados);
     return () => {
-      socket.on("chamado:new", buscaChamados);
+      socket.off("chamado:new", buscaChamados);
     };
   }, []);
 

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { getCompras, putRecebimento } from "../services/api/compraServices.js";
 import { useNavigate } from "react-router-dom";
 import { tratarErro } from "../components/default/funcoes.js";
+import { socket } from "../services/socket.js";
 
 export default function ComprasAdm() {
   const navigate = useNavigate;
@@ -82,6 +83,13 @@ export default function ComprasAdm() {
 
   useEffect(() => {
     buscaCompras();
+  }, []);
+
+  useEffect(() => {
+    socket.on("compra:new", buscaCompras);
+    return () => {
+      socket.on("compra:new", buscaCompras);
+    };
   }, []);
 
   const abertas = compras.filter((c) => c.compra_status === "em analise");
