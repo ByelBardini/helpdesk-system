@@ -146,7 +146,7 @@ export default function Avisos() {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+      <div className="flex-1 w-full overflow-x-hidden overflow-y-auto space-y-3 pr-2 custom-scrollbar">
         {avisos.length === 0 ? (
           <p className="text-gray-400 text-sm">Nenhum aviso cadastrado.</p>
         ) : (
