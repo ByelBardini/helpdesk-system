@@ -10,7 +10,9 @@ import {
   alterarPrioridade,
   alterarResponsavel,
 } from "../../services/api/chamadosServices.js";
+import { getResposta } from "../../services/api/respostaServices.js";
 import { tratarErro } from "../default/funcoes.js";
+import { socket } from "../../services/socket.js";
 
 export default function ModalChamado({
   setAbreChamado,
@@ -77,6 +79,18 @@ export default function ModalChamado({
       tratarErro(setNotificacao, err, navigate);
     }
   }
+
+  async function buscaRespostas() {
+    const resps = await getResposta(chamado.chamado_id);
+    setRespostas(resps);
+  }
+
+  useEffect(() => {
+    socket.on("reply:new", buscaRespostas);
+    return () => {
+      socket.off("reply:new", buscaRespostas);
+    };
+  }, []);
 
   useEffect(() => {
     setRespostas(chamado.respostas);
