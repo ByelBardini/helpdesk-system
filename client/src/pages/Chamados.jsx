@@ -119,7 +119,7 @@ export default function Chamados() {
   }, [modo]);
 
   return (
-    <div className="h-screen w-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white">
+    <div className="h-screen w-screen overflow-hidden bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white">
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}
@@ -192,7 +192,7 @@ export default function Chamados() {
         )}
       </header>
 
-      <main className="mx-auto flex h-[90vh] overflow-hidden bg-[#2a2d5a]/60">
+      <main className="mx-auto flex h-[92vh] overflow-hidden bg-[#2a2d5a]/60">
         <ListaChamados
           setLoading={setLoading}
           setNotificacao={setNotificacao}

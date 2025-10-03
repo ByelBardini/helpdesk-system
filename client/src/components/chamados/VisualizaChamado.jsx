@@ -144,7 +144,7 @@ export default function VisualizaChamado({
     <section
       key={selecionado?.chamado_id || "none"} // <<< força reset por chamado
       ref={scrollRef} // <<< aqui está o ref do scroll
-      className="flex-1 overflow-y-auto custom-scrollbar"
+      className="flex-1 overflow-y-auto custom-scrollbar mb-3"
     >
       {selecionado ? (
         <div className="flex flex-col">
