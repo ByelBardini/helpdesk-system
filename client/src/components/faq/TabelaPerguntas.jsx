@@ -25,7 +25,7 @@ export default function TabelaPerguntas({
           className="rounded-2xl bg-[#2a2d5a] shadow-md overflow-hidden transition"
         >
           <header
-            className={`flex items-center justify-between p-4 cursor-pointer transition-colors ${
+            className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${
               pergunta.exibindo ? "bg-[#343765]" : "hover:bg-[#343765]"
             }`}
           >

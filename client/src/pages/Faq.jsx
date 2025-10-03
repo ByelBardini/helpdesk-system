@@ -3,11 +3,17 @@ import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
 import TabelaPerguntas from "../components/faq/TabelaPerguntas.jsx";
 import ListaCategorias from "../components/faq/ListaCategorias.jsx";
-import { HelpCircle, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  HelpCircle,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  Currency,
+} from "lucide-react";
 import { getPerguntas } from "../services/api/faqServices.js";
 import { tratarErro, dividirEmPartes } from "../components/default/funcoes.js";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 
 export default function Faq() {
   const navigate = useNavigate();
@@ -22,6 +28,10 @@ export default function Faq() {
   const [sessao, setSessao] = useState(0);
   const [porPagina, setPorPagina] = useState(6);
 
+  const containerRef = useRef(null);
+  const searchRef = useRef(null);
+  const tituloRef = useRef(null);
+
   const [notificacao, setNotificacao] = useState({
     show: false,
     tipo: "sucesso",
@@ -31,15 +41,23 @@ export default function Faq() {
   const [loading, setLoading] = useState(false);
 
   function calcularPorPagina() {
-    const altura = window.innerHeight;
-    const header = 250;
-    const footer = 80;
-    const cardMedio = 60;
-    const disponivel = altura - header - footer;
+    if (!containerRef.current) return;
+    const alturaContainer = containerRef.current.clientHeight;
+    const alturaBusca = searchRef.current?.getBoundingClientRect().height || 0;
+    const alturaTitulo = tituloRef.current?.getBoundingClientRect().height || 0;
 
-    const qtd = Math.max(1, Math.floor(disponivel / cardMedio));
+    const footer = document.querySelector("#faq-paginacao");
+    const alturaFooter = footer?.getBoundingClientRect().height || 0;
 
-    console.log(qtd);
+    const alturaDisponivel =
+      alturaContainer - alturaBusca - alturaTitulo - alturaFooter;
+
+    const primeiroCard = containerRef.current.querySelector("article");
+    const alturaCard = primeiroCard?.getBoundingClientRect().height || 60;
+
+
+    const qtd = Math.max(1, Math.floor(alturaDisponivel / alturaCard));
+
     setPorPagina(qtd);
   }
 
@@ -89,11 +107,12 @@ export default function Faq() {
   useEffect(() => {
     const ordenadas = dividirEmPartes(perguntasFiltradas, porPagina);
     setPerguntasOrdenadas(ordenadas);
-    console.log(ordenadas);
-  }, [perguntasFiltradas]);
+
+    calcularPorPagina();
+  }, [perguntasFiltradas, porPagina]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white p-6 lg:p-10 relative overflow-hidden">
+    <div className="h-screen w-screen bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] text-white lg:py-5 overflow-hidden">
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}
@@ -113,7 +132,7 @@ export default function Faq() {
 
       <div className="absolute inset-0 bg-gradient-to-tr from-[#1c1f4a]/40 via-transparent to-[#6bb7ff]/10 pointer-events-none" />
 
-      <header className="relative max-w-6xl mx-auto mb-8 flex items-center justify-between z-10">
+      <header className="relative max-w-7xl mx-auto mb-8 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
           <HelpCircle className="h-7 w-7 text-[#6bb7ff]" />
           <h1 className="text-2xl sm:text-3xl font-bold">FAQ</h1>
@@ -128,7 +147,7 @@ export default function Faq() {
         </button>
       </header>
 
-      <div className="relative max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6 z-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6 z-10">
         <ListaCategorias
           setCategoriaSelecionada={setCategoriaSelecionada}
           categoriaSelecionada={categoriaSelecionada}
@@ -147,10 +166,16 @@ export default function Faq() {
               )
             )
           }
+          containerRef={containerRef}
+          searchRef={searchRef}
+          tituloRef={tituloRef}
         />
         {perguntasOrdenadas.length > 1 && (
-          <div className="fixed bottom-0 left-0 w-full flex items-center justify-center pb-4 z-20">
-            <div className="flex items-center gap-4 px-6 py-2 rounded-xl bg-[#2a2d5a]/90 shadow-lg backdrop-blur-sm">
+          <div className="fixed bottom-0 left-0 w-full flex items-center justify-center pb-6 z-20">
+            <div
+              className="flex items-center gap-4 px-6 py-2 rounded-xl bg-[#2a2d5a]/90 shadow-lg backdrop-blur-sm"
+              id="faq-paginacao"
+            >
               <button
                 disabled={sessao === 0}
                 onClick={() => setSessao((prev) => prev - 1)}
