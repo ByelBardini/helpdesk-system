@@ -1,13 +1,24 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import RespostaUsuario from "../respostas/RespostaUsuario.jsx";
 import ListaRespostas from "../respostas/ListaRespostas.jsx";
+import { motion, AnimatePresence } from "framer-motion";
 import { formatToDate, formatToCapitalized } from "brazilian-values";
 import {
   postResposta,
   getResposta,
 } from "../../services/api/respostaServices.js";
-import { PlusCircle, Paperclip, X, Send, Check } from "lucide-react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react"; // <<<
+import {
+  PlusCircle,
+  Paperclip,
+  X,
+  Send,
+  Check,
+  Download,
+  Loader2,
+  CheckCircle2,
+} from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { tratarErro } from "../default/funcoes.js";
 import { socket } from "../../services/socket.js";
 
@@ -26,7 +37,57 @@ export default function VisualizaChamado({
   const [respostas, setRespostas] = useState([]);
 
   const [monstrarAnexos, setMostrarAnexos] = useState(false);
+  const [baixando, setBaixando] = useState(null);
+  const [concluido, setConcluido] = useState(null);
   const scrollRef = useRef(null);
+
+  async function baixarArquivo(anexo) {
+    try {
+      setBaixando(anexo.anexo_id);
+      setConcluido(null);
+
+      const token = localStorage.getItem("token");
+      const resp = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/download?path=${encodeURIComponent(
+          anexo.anexo_caminho
+        )}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!resp.ok) throw new Error("Erro ao baixar o arquivo");
+
+      const blob = await resp.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = anexo.anexo_nome;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      await new Promise((resolve) => setTimeout(resolve, 700));
+
+      setConcluido(anexo.anexo_id);
+
+      setTimeout(() => {
+        setConcluido(null);
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Falha no download",
+        mensagem: "Não foi possível baixar o arquivo.",
+      });
+    } finally {
+      setBaixando(null);
+    }
+  }
 
   async function enviarResposta() {
     setConfirmacao({
@@ -59,6 +120,10 @@ export default function VisualizaChamado({
 
       await postResposta(idUsuario, selecionado.chamado_id, fd);
       setLoading(false);
+
+      setDescricao("");
+      setAnexos([]);
+      setMostrarAnexos(false);
 
       setNotificacao({
         show: true,
@@ -196,19 +261,46 @@ export default function VisualizaChamado({
                 </h3>
                 <ul className="list-disc list-inside text-sm text-white/70">
                   {selecionado.anexos.map((anexo) => (
-                    <li key={anexo.anexo_id}>
-                      {" "}
-                      {/* <<< movi a key para o li */}
-                      <a
-                        href={`${
-                          import.meta.env.VITE_API_BASE_URL
-                        }/imagem?path=${anexo.anexo_caminho}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-[#6bb7ff] cursor-pointer"
+                    <li
+                      key={anexo.anexo_id}
+                      className="flex items-center justify-between bg-[#1a1c46] border border-white/10 hover:border-[#6bb7ff]/40 rounded-lg px-4 py-3 transition-all"
+                    >
+                      <div className="flex items-center gap-3 truncate">
+                        <Paperclip className="h-4 w-4 text-white/40 shrink-0" />
+                        <span className="truncate text-white/80 text-sm">
+                          {anexo.anexo_nome}
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => baixarArquivo(anexo)}
+                        disabled={baixando === anexo.anexo_id}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all shadow-sm
+      ${
+        baixando === anexo.anexo_id
+          ? "bg-[#444a88] text-white/70 cursor-not-allowed"
+          : concluido === anexo.anexo_id
+          ? "bg-green-600 text-white hover:bg-green-700 cursor-default"
+          : "bg-[#6a5acd]/70 hover:bg-[#7a6cff] text-white cursor-pointer"
+      }`}
                       >
-                        {anexo.anexo_nome}
-                      </a>
+                        {baixando === anexo.anexo_id ? (
+                          <>
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            Fazendo o download...
+                          </>
+                        ) : concluido === anexo.anexo_id ? (
+                          <>
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            Download concluído!
+                          </>
+                        ) : (
+                          <>
+                            <Download className="h-3.5 w-3.5" />
+                            Baixar
+                          </>
+                        )}
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -253,9 +345,21 @@ export default function VisualizaChamado({
                       <Paperclip className="h-4 text-white/50" />
                     </button>
                   </div>
-                  {monstrarAnexos && (
-                    <RespostaUsuario anexos={anexos} setAnexos={setAnexos} />
-                  )}
+                  <AnimatePresence>
+                    {monstrarAnexos && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      >
+                        <RespostaUsuario
+                          anexos={anexos}
+                          setAnexos={setAnexos}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   <div className="flex justify-end gap-3">
                     <button

@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
-  Currency,
 } from "lucide-react";
 import { getPerguntas } from "../services/api/faqServices.js";
 import { tratarErro, dividirEmPartes } from "../components/default/funcoes.js";

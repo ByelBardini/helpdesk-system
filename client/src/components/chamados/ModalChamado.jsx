@@ -145,6 +145,7 @@ export default function ModalChamado({
           setAbreChamado={setAbreChamado}
           alteraResponsavel={alteraResponsavel}
           setConcluindo={setConcluindo}
+          setNotificacao={setNotificacao}
         />
 
         <RespostasSuporte

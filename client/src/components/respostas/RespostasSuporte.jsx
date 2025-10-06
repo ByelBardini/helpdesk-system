@@ -7,6 +7,9 @@ import {
   Trash2,
   FileText,
   Image as ImageIcon,
+  Loader2,
+  CheckCircle2,
+  Download,
 } from "lucide-react";
 import { tratarErro } from "../default/funcoes";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +38,9 @@ export default function RespostasSuporte({
   const [anexos, setAnexos] = useState([]);
   const fileInputRef = useRef(null);
 
+  const [baixando, setBaixando] = useState(null);
+  const [concluido, setConcluido] = useState(null);
+
   const handleAddAnexo = () => {
     if (!anexoArquivo) return;
     const id = crypto?.randomUUID?.() ?? Date.now().toString();
@@ -57,12 +63,7 @@ export default function RespostasSuporte({
   }
 
   async function enviarResposta() {
-    setConfirmacao({
-      show: false,
-      titulo: "",
-      texto: "",
-      onSim: null,
-    });
+    setConfirmacao({ show: false, titulo: "", texto: "", onSim: null });
     if (novaResposta.trim() == "") {
       setNotificacao({
         show: true,
@@ -77,7 +78,6 @@ export default function RespostasSuporte({
       const idUsuario = localStorage.getItem("usuario_id");
 
       const fd = new FormData();
-
       fd.append("descricao", novaResposta);
       fd.append("tipo", "suporte");
 
@@ -87,11 +87,9 @@ export default function RespostasSuporte({
       });
 
       await postResposta(idUsuario, chamado.chamado_id, fd);
-
       await buscaRespostas();
 
       setLoading(false);
-
       setNovaResposta("");
       setAnexos([]);
       setShowAnexoMenu(false);
@@ -102,18 +100,58 @@ export default function RespostasSuporte({
         titulo: "Resposta enviada",
         mensagem: "Sua resposta foi enviada com sucesso ao usuário",
       });
-      setTimeout(() => {
-        setNotificacao({
-          show: false,
-          tipo: "sucesso",
-          titulo: "",
-          mensagem: "",
-        });
-      }, 700);
+      setTimeout(() => setNotificacao({ show: false }), 700);
     } catch (err) {
       setLoading(false);
       console.error(err);
       tratarErro(setNotificacao, err, navigate);
+    }
+  }
+
+  async function baixarArquivo(anexo) {
+    try {
+      setBaixando(anexo.anexo_id);
+      setConcluido(null);
+
+      const token = localStorage.getItem("token");
+      const resp = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/download?path=${encodeURIComponent(
+          anexo.anexo_caminho
+        )}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!resp.ok) throw new Error("Erro ao baixar o arquivo");
+
+      const blob = await resp.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = anexo.anexo_nome;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      await new Promise((r) => setTimeout(r, 700));
+
+      setBaixando(null);
+      setConcluido(anexo.anexo_id);
+
+      setTimeout(() => setConcluido(null), 700);
+    } catch (err) {
+      console.error(err);
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Falha no download",
+        mensagem: "Não foi possível baixar o arquivo.",
+      });
+    } finally {
+      setTimeout(() => setBaixando(null), 1500);
     }
   }
 
@@ -144,21 +182,42 @@ export default function RespostasSuporte({
                 <div className="mt-2">
                   <p className="text-xs text-gray-400 mb-1">Anexos:</p>
                   <ul className="space-y-1">
-                    {resposta.anexos.map((anexo, index) => (
+                    {resposta.anexos.map((anexo) => (
                       <li
-                        key={index}
+                        key={anexo.anexo_id}
                         className="flex items-center justify-between bg-white/5 border border-white/10 rounded px-2 py-1 text-xs"
                       >
                         <span className="truncate">{anexo.anexo_nome}</span>
-                        <a
-                          href={`${import.meta.env.VITE_API_BASE_URL}${
-                            anexo.anexo_caminho
-                          }`}
-                          download
-                          className="cursor-pointer ml-3 bg-indigo-600 hover:bg-indigo-700 px-2 py-0.5 rounded text-[11px] font-semibold transition-colors"
+
+                        <button
+                          onClick={() => baixarArquivo(anexo)}
+                          disabled={baixando === anexo.anexo_id}
+                          className={`flex items-center gap-2 px-2 py-1 rounded-md text-[11px] font-semibold transition-all shadow-sm
+                            ${
+                              baixando === anexo.anexo_id
+                                ? "bg-[#444a88] text-white/70 cursor-not-allowed"
+                                : concluido === anexo.anexo_id
+                                ? "bg-green-600 text-white cursor-default"
+                                : "bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
+                            }`}
                         >
-                          Download
-                        </a>
+                          {baixando === anexo.anexo_id ? (
+                            <>
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              Baixando...
+                            </>
+                          ) : concluido === anexo.anexo_id ? (
+                            <>
+                              <CheckCircle2 className="w-3 h-3" />
+                              Concluído!
+                            </>
+                          ) : (
+                            <>
+                              <Download className="w-3 h-3" />
+                              Download
+                            </>
+                          )}
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -178,6 +237,7 @@ export default function RespostasSuporte({
         )}
       </div>
 
+      {/* Envio de nova resposta */}
       {podeResponder && (
         <div className="mt-4 flex flex-col gap-3">
           {showAnexoMenu && (

@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import VisualizaChamado from "../components/chamados/VisualizaChamado.jsx";
 import ListaChamados from "../components/chamados/ListaChamados.jsx";
 import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
 import Confirmacao from "../components/default/Confirmacao.jsx";
+import { AnimatePresence, motion } from "framer-motion";
 import { formatToCapitalized } from "brazilian-values";
 import { ArrowLeft, Users, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -37,8 +39,13 @@ export default function Chamados() {
     onSim: null,
   });
 
-  async function buscarChamados() {
+  async function primeiroCarregamento(){
     setLoading(true);
+    await buscarChamados();
+    setLoading(false);
+  }
+
+  async function buscarChamados() {
     try {
       const role = localStorage.getItem("usuario_role");
       let id;
@@ -52,7 +59,6 @@ export default function Chamados() {
       const chamados = await getChamados(role, id);
 
       if (role != "liderado") {
-        setLoading(false);
         console.log(chamados);
         const meus = chamados.filter(
           (chamado) =>
@@ -68,8 +74,6 @@ export default function Chamados() {
           )
         );
       } else {
-        setLoading(false);
-
         setChamados(chamados);
       }
     } catch (err) {
@@ -107,7 +111,7 @@ export default function Chamados() {
   }, []);
 
   useEffect(() => {
-    buscarChamados();
+    primeiroCarregamento();
   }, []);
 
   useEffect(() => {
@@ -204,17 +208,27 @@ export default function Chamados() {
           statusBadge={statusBadge}
           selecionado={selecionado}
         />
-
-        <VisualizaChamado
-          setLoading={setLoading}
-          setNotificacao={setNotificacao}
-          navigate={navigate}
-          setConfirmacao={setConfirmacao}
-          buscarChamados={buscarChamados}
-          setSelecionado={setSelecionado}
-          selecionado={selecionado}
-          statusBadge={statusBadge}
-        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selecionado?.chamado_id}
+            initial={{ opacity: 0, x: 30, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -30, scale: 0.98 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="overflow-auto flex-1"
+          >
+            <VisualizaChamado
+              setLoading={setLoading}
+              setNotificacao={setNotificacao}
+              navigate={navigate}
+              setConfirmacao={setConfirmacao}
+              buscarChamados={buscarChamados}
+              setSelecionado={setSelecionado}
+              selecionado={selecionado}
+              statusBadge={statusBadge}
+            />
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );

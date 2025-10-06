@@ -1,5 +1,6 @@
-import { Check } from "lucide-react";
+import { Check, Download, CheckCircle2, Loader2 } from "lucide-react";
 import { formatToCapitalized, formatToDate } from "brazilian-values";
+import { useState } from "react";
 
 export default function DadosModalChamado({
   chamado,
@@ -12,7 +13,59 @@ export default function DadosModalChamado({
   setAbreChamado,
   alteraResponsavel,
   setConcluindo,
+  setNotificacao,
 }) {
+  const [baixando, setBaixando] = useState(null);
+  const [concluido, setConcluido] = useState(null);
+
+  async function baixarArquivo(anexo) {
+    try {
+      setBaixando(anexo.anexo_id);
+      setConcluido(null);
+
+      const token = localStorage.getItem("token");
+      const resp = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/download?path=${encodeURIComponent(
+          anexo.anexo_caminho
+        )}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!resp.ok) throw new Error("Erro ao baixar o arquivo");
+
+      const blob = await resp.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = anexo.anexo_nome;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      await new Promise((resolve) => setTimeout(resolve, 700));
+
+      setConcluido(anexo.anexo_id);
+
+      setTimeout(() => {
+        setConcluido(null);
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Falha no download",
+        mensagem: "Não foi possível baixar o arquivo.",
+      });
+    } finally {
+      setBaixando(null);
+    }
+  }
+
   return (
     <div className="w-1/2 p-6 flex flex-col space-y-6 border-r border-white/10 overflow-y-auto custom-scrollbar">
       {chamado.chamado_status === "resolvido" && (
@@ -137,15 +190,35 @@ export default function DadosModalChamado({
                 className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm"
               >
                 <span className="truncate">{anexo.anexo_nome}</span>
-                <a
-                  href={`${import.meta.env.VITE_API_BASE_URL}${
-                    anexo.anexo_caminho
-                  }`}
-                  download
-                  className="cursor-pointer ml-3 bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-lg text-xs font-semibold transition-colors"
+                <button
+                  onClick={() => baixarArquivo(anexo)}
+                  disabled={baixando === anexo.anexo_id}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all shadow-sm
+      ${
+        baixando === anexo.anexo_id
+          ? "bg-[#444a88] text-white/70 cursor-not-allowed"
+          : concluido === anexo.anexo_id
+          ? "bg-green-600 text-white hover:bg-green-700 cursor-default"
+          : "bg-[#6a5acd]/70 hover:bg-[#7a6cff] text-white cursor-pointer"
+      }`}
                 >
-                  Download
-                </a>
+                  {baixando === anexo.anexo_id ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      Fazendo o download...
+                    </>
+                  ) : concluido === anexo.anexo_id ? (
+                    <>
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Download concluído!
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-3.5 w-3.5" />
+                      Baixar
+                    </>
+                  )}
+                </button>
               </li>
             ))}
           </ul>

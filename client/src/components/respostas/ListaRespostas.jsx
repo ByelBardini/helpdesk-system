@@ -1,9 +1,19 @@
 import { useState } from "react";
-import { Paperclip, FileText, Download, ChevronDown } from "lucide-react";
+import {
+  Paperclip,
+  FileText,
+  Download,
+  Loader2,
+  CheckCircle2,
+  ChevronDown,
+  Image,
+} from "lucide-react";
 import { formatToDate } from "brazilian-values";
 
 export default function ListaRespostas({ respostas }) {
   const [abertos, setAbertos] = useState(() => new Set());
+  const [baixando, setBaixando] = useState(null);
+  const [concluido, setConcluido] = useState(null);
 
   const toggle = (id) => {
     setAbertos((prev) => {
@@ -12,6 +22,45 @@ export default function ListaRespostas({ respostas }) {
       return next;
     });
   };
+
+  async function baixarArquivo(anexo) {
+    try {
+      setBaixando(anexo.anexo_id);
+      setConcluido(null);
+
+      const token = localStorage.getItem("token");
+      const resp = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/download?path=${encodeURIComponent(
+          anexo.anexo_caminho
+        )}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!resp.ok) throw new Error("Erro ao baixar o arquivo");
+
+      const blob = await resp.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = anexo.anexo_nome;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      await new Promise((r) => setTimeout(r, 700));
+
+      setBaixando(null);
+      setConcluido(anexo.anexo_id);
+
+      setTimeout(() => setConcluido(null), 1000);
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao baixar o arquivo.");
+    } finally {
+      setTimeout(() => setBaixando(null), 700);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -82,10 +131,10 @@ export default function ListaRespostas({ respostas }) {
                         /\.(png|jpe?g|gif|webp|svg)$/i.test(
                           anexo.anexo_caminho || ""
                         );
-                      const nome = anexo.anexo_nome;
-                      const href = `${
-                        import.meta.env.VITE_API_BASE_URL
-                      }/imagem?path=${anexo.anexo_caminho}`;
+
+                      const sempreVisivel =
+                        baixando === anexo.anexo_id ||
+                        concluido === anexo.anexo_id;
 
                       return (
                         <li
@@ -94,32 +143,47 @@ export default function ListaRespostas({ respostas }) {
                         >
                           <div className="flex items-center gap-2 min-w-0">
                             {isImg ? (
-                              <img
-                                src={`${
-                                  import.meta.env.VITE_API_BASE_URL
-                                }/imagem?path=${anexo.anexo_caminho}`}
-                                className="w-10"
-                              ></img>
+                              <Image className="w-4 h-4 text-white/60" />
                             ) : (
                               <FileText className="w-4 h-4 text-white/60" />
                             )}
-                            <a
-                              href={href}
-                              className="truncate text-sm text-white/90 hover:underline"
-                            >
-                              {nome}
-                            </a>
+                            <span className="truncate text-sm text-white/90">
+                              {anexo.anexo_nome}
+                            </span>
                           </div>
 
-                          <a
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="opacity-0 group-hover:opacity-100 transition p-1 rounded hover:bg-white/10"
-                            aria-label={`Baixar ${nome}`}
+                          <button
+                            onClick={() => baixarArquivo(anexo)}
+                            disabled={baixando === anexo.anexo_id}
+                            className={`transition-all duration-300 p-1.5 rounded shadow-sm
+                              ${
+                                sempreVisivel
+                                  ? "opacity-100"
+                                  : "opacity-0 group-hover:opacity-100"
+                              }
+                              ${
+                                baixando === anexo.anexo_id
+                                  ? "bg-[#444a88] cursor-wait"
+                                  : concluido === anexo.anexo_id
+                                  ? "bg-green-600"
+                                  : "bg-[#6a5acd]/70 hover:bg-[#7a6cff]"
+                              }`}
+                            title={
+                              baixando === anexo.anexo_id
+                                ? "Baixando..."
+                                : concluido === anexo.anexo_id
+                                ? "Concluído"
+                                : "Baixar"
+                            }
                           >
-                            <Download className="w-4 h-4 text-white/70" />
-                          </a>
+                            {baixando === anexo.anexo_id ? (
+                              <Loader2 className="w-4 h-4 text-white animate-spin" />
+                            ) : concluido === anexo.anexo_id ? (
+                              <CheckCircle2 className="w-4 h-4 text-white" />
+                            ) : (
+                              <Download className="w-4 h-4 text-white" />
+                            )}
+                          </button>
                         </li>
                       );
                     })}

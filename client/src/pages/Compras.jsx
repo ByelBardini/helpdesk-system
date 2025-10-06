@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import ModalSolicitaCompra from "../components/compras/ModalSolicitaCompra.jsx";
 import CardCompra from "../components/compras/CardCompra.jsx";
@@ -11,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { getCompras } from "../services/api/compraServices.js";
 import { tratarErro } from "../components/default/funcoes.js";
 import { socket } from "../services/socket.js";
+import { AnimatePresence, motion } from "framer-motion";
 
 function formatarMesAno(dataString) {
   const [ano, mes] = dataString.split("-");
@@ -198,17 +200,34 @@ export default function Compras() {
                 </span>
               </button>
 
-              {aberto && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-                  {lista.map((solicitacao) => (
-                    <CardCompra
-                      key={solicitacao.compra_id}
-                      solicitacao={solicitacao}
-                      setMotivoRecusa={setMotivoRecusa}
-                    />
-                  ))}
-                </div>
-              )}
+              <AnimatePresence initial={false}>
+                {aberto && (
+                  <motion.div
+                    key={mesAno}
+                    initial={{ height: 0, opacity: 0, y: -10 }}
+                    animate={{ height: "auto", opacity: 1, y: 0 }}
+                    exit={{ height: 0, opacity: 0, y: -10 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                      {lista.map((solicitacao) => (
+                        <motion.div
+                          key={solicitacao.compra_id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.05 }}
+                        >
+                          <CardCompra
+                            solicitacao={solicitacao}
+                            setMotivoRecusa={setMotivoRecusa}
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}
