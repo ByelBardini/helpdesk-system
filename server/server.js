@@ -9,6 +9,6 @@ const server = http.createServer(app);
 
 initSocket(server);
 
-server.listen(3030, "0.0.0.0", () => {
-  console.log("Server aberto na porta 3030");
+server.listen(3034, "0.0.0.0", () => {
+  console.log("Server aberto na porta 3034");
 });
