@@ -6,6 +6,7 @@ import {
   resetaSenha,
   ativaInativa,
   getDados,
+  trocarSenha,
 } from "../controllers/usuarioController.js";
 import { autenticar, autorizarRoles } from "../middlewares/autenticaToken.js";
 
@@ -18,5 +19,6 @@ router.post("/", autorizarRoles("adm"), cadastrarUsuario);
 router.put("/:id", autorizarRoles("adm"), putUsuario);
 router.put("/senha/reseta/:id", autorizarRoles("adm"), resetaSenha);
 router.put("/inativa/:id", autorizarRoles("adm"), ativaInativa);
+router.put("/senha/:id", trocarSenha);
 
 export default router;

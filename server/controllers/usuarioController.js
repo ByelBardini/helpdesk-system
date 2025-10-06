@@ -229,3 +229,20 @@ export async function getDados(req, res) {
 
   return res.status(200).json({ empresas, setores });
 }
+
+export async function trocarSenha(req, res) {
+  const { id } = req.params;
+  const { nova_senha } = req.body;
+  if (!id || !nova_senha) {
+    throw ApiError.badRequest("Id do usuário e nova senha são obrigatórios");
+  }
+  const usuario = await Usuario.findByPk(id);
+  const senhaHash = bcrypt.hashSync(nova_senha, 10);
+
+  usuario.usuario_senha = senhaHash;
+  usuario.usuario_troca_senha = 0;
+
+  await usuario.save();
+
+  return res.status(200).json({ message: "Senha alterada com sucesso" });
+}

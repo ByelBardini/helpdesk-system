@@ -46,15 +46,3 @@ export function autorizarRoles(...rolesPermitidos) {
     next();
   };
 }
-
-export function autorizarUser() {
-  return (req, _res, next) => {
-    if (!req.usuario) {
-      throw ApiError.unauthorized("Usuário não autenticado");
-    }
-    if (req.usuario.id != req.params.id && req.usuario.role !== "adm") {
-      throw ApiError.forbidden("Ação não permitida para este usuário");
-    }
-    next();
-  };
-}
