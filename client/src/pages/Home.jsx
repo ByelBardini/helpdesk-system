@@ -11,6 +11,7 @@ import {
   CalendarPlus,
   LayoutDashboard,
   ShoppingCart,
+  Bell,
 } from "lucide-react";
 import { logout } from "../services/auth/authService.js";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,11 @@ import { getAvisos } from "../services/api/avisosServices.js";
 import { useEffect, useState } from "react";
 import { getNotificacoesChamadoUsuario } from "../services/api/notificacaoServices.js";
 import { socket } from "../services/socket.js";
+import {
+  requestPermission,
+  isPermissionGranted,
+  sendNotification,
+} from "@tauri-apps/plugin-notification";
 
 function BotaoMenu({ onClick, icon: Icon, label, cor = "text-blue-300" }) {
   return (
@@ -40,6 +46,7 @@ export default function Home() {
 
   const [avisos, setAvisos] = useState([]);
   const [qtdNotif, setQtdNotif] = useState([]);
+  const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
 
   const [notificacao, setNotificacao] = useState({
     show: false,
@@ -79,9 +86,53 @@ export default function Home() {
     }
   }
 
+  async function verificarPermissaoNotificacoes() {
+    try {
+      const granted = await isPermissionGranted();
+      if (granted) {
+        setNotificacoesAtivas(true);
+      } else {
+        setNotificacoesAtivas(false);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar permissões de notificação:", error);
+    }
+  }
+
+  async function permitirNotificacoes() {
+    const granted = await isPermissionGranted();
+    if (granted) {
+      setNotificacoesAtivas(true);
+      sendNotification({
+        title: "Notificações ativadas",
+        body: "Você receberá alertas mesmo com o app em segundo plano.",
+      });
+      return;
+    }
+
+    const permission = await requestPermission();
+    if (permission === "granted") {
+      setNotificacoesAtivas(true);
+      sendNotification({
+        title: "Notificações Ativadas",
+        body: "Permissão concedida com sucesso!",
+      });
+    } else {
+      setNotificacoesAtivas(false);
+      setNotificacao({
+        show: true,
+        tipo: "erro",
+        titulo: "Permissão negada",
+        mensagem:
+          "Você negou as notificações. Pode ativar novamente nas configurações do sistema.",
+      });
+    }
+  }
+
   useEffect(() => {
     buscaAvisos();
     buscaNotificacoes();
+    verificarPermissaoNotificacoes();
 
     socket.on("reply:new", buscaNotificacoes);
     return () => {
@@ -177,6 +228,17 @@ export default function Home() {
               cor="text-pink-300"
             />
           )}
+
+          <BotaoMenu
+            onClick={permitirNotificacoes}
+            icon={Bell}
+            label={
+              notificacoesAtivas
+                ? "Notificações Ativadas"
+                : "Permitir Notificações"
+            }
+            cor={notificacoesAtivas ? "text-green-300" : "text-blue-300"}
+          />
 
           <BotaoMenu
             onClick={deslogar}
