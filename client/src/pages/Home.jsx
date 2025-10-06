@@ -4,6 +4,7 @@ import Logo from "../assets/logo-empresa.png";
 import ListaAvisos from "../components/avisos/ListaAvisos.jsx";
 import Notificacao from "../components/default/Notificacao.jsx";
 import Loading from "../components/default/Loading.jsx";
+import ModalPrimeiroAcesso from "../components/usuarios/ModalPrimeiroAcesso.jsx";
 import {
   LogOut,
   FileText,
@@ -48,6 +49,9 @@ export default function Home() {
   const [qtdNotif, setQtdNotif] = useState([]);
   const [notificacoesAtivas, setNotificacoesAtivas] = useState(false);
 
+  const [trocaSenha, setTrocaSenha] = useState(
+    localStorage.getItem("usuario_troca_senha") == "1"
+  );
   const [notificacao, setNotificacao] = useState({
     show: false,
     tipo: "sucesso",
@@ -142,6 +146,14 @@ export default function Home() {
 
   return (
     <div className="h-screen overflow-hidden grid grid-cols-1 lg:grid-cols-5 bg-gradient-to-br from-[#0e1033] via-[#14163d] to-[#1c1f4a] relative pl-6 pr-6 gap-6 text-white custom-scrollbar">
+      {trocaSenha && (
+        <ModalPrimeiroAcesso
+          setNotificacao={setNotificacao}
+          setLoading={setLoading}
+          navigate={navigate}
+          setTrocaSenha={setTrocaSenha}
+        />
+      )}
       {notificacao.show && (
         <Notificacao
           titulo={notificacao.titulo}

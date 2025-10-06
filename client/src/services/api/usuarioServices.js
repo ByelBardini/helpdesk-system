@@ -80,3 +80,14 @@ export async function getDados() {
     throw err;
   }
 }
+
+export async function novaSenha(id, nova_senha) {
+  try {
+    const response = await api.put(`/usuario/senha/${id}`, { nova_senha });
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro em novaSenha:", err);
+    throw err;
+  }
+}
