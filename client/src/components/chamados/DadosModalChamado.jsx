@@ -138,7 +138,9 @@ export default function DadosModalChamado({
               >
                 <span className="truncate">{anexo.anexo_nome}</span>
                 <a
-                  href={anexo.anexo_caminho}
+                  href={`${import.meta.env.VITE_API_BASE_URL}${
+                    anexo.anexo_caminho
+                  }`}
                   download
                   className="cursor-pointer ml-3 bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded-lg text-xs font-semibold transition-colors"
                 >
