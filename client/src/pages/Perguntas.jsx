@@ -279,7 +279,7 @@ export default function Perguntas() {
 
                 {isAberto && (
                   <div className="mt-2 border-t border-white/10 pt-2">
-                    <p className="text-sm text-gray-300">
+                    <p className="text-sm text-gray-300 whitespace-pre-line">
                       {p.pergunta_resposta}
                     </p>
                   </div>

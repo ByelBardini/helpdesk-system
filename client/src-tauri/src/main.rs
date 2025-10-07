@@ -3,12 +3,13 @@
 use tauri::{
     Manager,
     menu::{MenuBuilder, MenuItemBuilder},
-    tray::{TrayIconBuilder, TrayIconEvent},
+    tray::{TrayIconBuilder, TrayIconEvent, MouseButton},
 };
 
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             let app_handle = app.handle();
 
@@ -25,7 +26,8 @@ fn main() {
             }
 
             let tray_menu = MenuBuilder::new(app)
-                .item(&MenuItemBuilder::new("Mostrar App").id("show").build(app)?)
+                .item(&MenuItemBuilder::new("Abrir SubmIT").id("show").build(app)?)
+                .separator()
                 .item(&MenuItemBuilder::new("Sair").id("quit").build(app)?)
                 .build()?;
 
@@ -34,33 +36,38 @@ fn main() {
                 .menu(&tray_menu)
                 .on_menu_event({
                     let app_handle = app_handle.clone();
-                    move |_tray, event| {
-                        match event.id().as_ref() {
-                            "show" => {
-                                if let Some(win) = app_handle.get_webview_window("main") {
-                                    win.show().unwrap();
-                                    win.set_focus().unwrap();
-                                }
+                    move |_tray, event| match event.id().as_ref() {
+                        "show" => {
+                            if let Some(win) = app_handle.get_webview_window("main") {
+                                win.show().unwrap();
+                                win.set_focus().unwrap();
                             }
-                            "quit" => {
-                                std::process::exit(0);
-                            }
-                            _ => {}
                         }
+                        "quit" => {
+                            std::process::exit(0);
+                        }
+                        _ => {}
                     }
                 })
                 .on_tray_icon_event({
                     let app_handle = app_handle.clone();
                     move |_tray, event| {
-                        if let TrayIconEvent::Click { .. } = event {
-                            if let Some(win) = app_handle.get_webview_window("main") {
-                                if win.is_visible().unwrap() {
-                                    win.hide().unwrap();
-                                } else {
-                                    win.show().unwrap();
-                                    win.set_focus().unwrap();
+                        match event {
+                            TrayIconEvent::Click { button: MouseButton::Left, .. } => {
+                                if let Some(win) = app_handle.get_webview_window("main") {
+                                    if win.is_visible().unwrap() {
+                                        win.hide().unwrap();
+                                    } else {
+                                        win.show().unwrap();
+                                        win.set_focus().unwrap();
+                                    }
                                 }
                             }
+
+                            TrayIconEvent::Click { button: MouseButton::Right, .. } => {
+                            }
+
+                            _ => {}
                         }
                     }
                 })
@@ -68,7 +75,6 @@ fn main() {
 
             Ok(())
         })
-        .plugin(tauri_plugin_notification::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri app");
 }

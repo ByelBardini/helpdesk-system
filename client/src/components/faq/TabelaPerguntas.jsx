@@ -63,7 +63,7 @@ export default function TabelaPerguntas({
                   transition={{ duration: 0.25, ease: "easeOut" }}
                   className="overflow-hidden"
                 >
-                  <div className="px-4 pb-4 pt-2 text-sm leading-relaxed text-white/70 bg-[#1c1f4a] border-t border-white/10">
+                  <div className="px-4 pb-4 pt-2 text-sm leading-relaxed text-white/70 bg-[#1c1f4a] border-t border-white/10 whitespace-pre-line">
                     {pergunta.pergunta_resposta}
                   </div>
                 </motion.div>
