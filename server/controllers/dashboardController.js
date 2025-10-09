@@ -6,6 +6,9 @@ const hoje = new Date();
 const trintaDiasAtras = new Date();
 trintaDiasAtras.setDate(hoje.getDate() - 30);
 
+console.log("Data de hoje:", hoje);
+console.log("Data de 30 dias atrás:", trintaDiasAtras);
+
 export async function getDashboard(req, res) {
   const empresas = await Chamado.findAll({
     attributes: [
@@ -60,35 +63,23 @@ export async function getDashboard(req, res) {
     raw: true,
   });
 
-  const novos = await Chamado.findAll({
-    attributes: [[fn("COUNT", col("chamado_id")), "total"]],
-    where: {
-      chamado_status: "em aberto",
-    },
-    raw: true,
+  const novos = await Chamado.count({
+    where: { chamado_status: "em aberto" },
   });
 
-  const visualizados = await Chamado.findAll({
-    attributes: [[fn("COUNT", col("chamado_id")), "total"]],
-    where: {
-      chamado_status: "visualizado",
-    },
-    raw: true,
+  const visualizados = await Chamado.count({
+    where: { chamado_status: "visualizado" },
   });
 
-  const resolvendo = await Chamado.findAll({
-    attributes: [[fn("COUNT", col("chamado_id")), "total"]],
-    where: {
-      chamado_status: "resolvendo",
-    },
-    raw: true,
+  const resolvendo = await Chamado.count({
+    where: { chamado_status: "resolvendo" },
   });
 
   const resolvidos = await Chamado.findAll({
     attributes: [[fn("COUNT", col("chamado_id")), "total"]],
     where: {
       chamado_status: "resolvido",
-      chamado_data_abertura: {
+      chamado_data_conclusao: {
         [Op.between]: [trintaDiasAtras, hoje],
       },
     },

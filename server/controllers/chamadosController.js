@@ -114,19 +114,18 @@ export async function getChamadosSuporte(req, res) {
   const chamados = await Chamado.findAll({
     where: {
       [Op.or]: [
-        { chamado_status: "em aberto" },
-        { chamado_status: "visualizado" },
-        { chamado_status: "resolvendo" },
         {
-          [Op.and]: [
-            { chamado_status: "resolvido" },
-            {
-              chamado_data_abertura: { [Op.between]: [trintaDiasAtras, hoje] },
-            },
-          ],
+          chamado_status: {
+            [Op.in]: ["em aberto", "visualizado", "resolvendo"],
+          },
+        },
+        {
+          chamado_status: "resolvido",
+          chamado_data_conclusao: { [Op.between]: [trintaDiasAtras, hoje] },
         },
       ],
     },
+
     order: [
       [
         literal(`
