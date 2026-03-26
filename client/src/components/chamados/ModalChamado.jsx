@@ -9,7 +9,9 @@ import {
   alterarStatus,
   alterarPrioridade,
   alterarResponsavel,
+  alterarTipoArea,
 } from "../../services/api/chamadosServices.js";
+import { getAreas } from "../../services/api/areaServices.js";
 import { tratarErro } from "../default/funcoes.js";
 
 export default function ModalChamado({
@@ -25,6 +27,9 @@ export default function ModalChamado({
   const [prioridade, setPrioridade] = useState(
     chamado?.chamado_prioridade || "baixa"
   );
+  const [tipo, setTipo] = useState(chamado?.chamado_tipo || "solicitacao");
+  const [areaId, setAreaId] = useState(chamado?.chamado_area_id || "");
+  const [areas, setAreas] = useState([]);
   const [respostas, setRespostas] = useState([]);
 
   async function alteraPrioridade(prioridade) {
@@ -78,8 +83,22 @@ export default function ModalChamado({
     }
   }
 
+  async function alteraTipoArea(tipo, areaId) {
+    setLoading(true);
+    try {
+      await alterarTipoArea(chamado.chamado_id, tipo, areaId);
+      await buscaChamados();
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      tratarErro(setNotificacao, err, navigate);
+    }
+  }
+
   useEffect(() => {
     setRespostas(chamado.respostas);
+    getAreas().then((data) => setAreas(data)).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -131,6 +150,12 @@ export default function ModalChamado({
           setAbreChamado={setAbreChamado}
           alteraResponsavel={alteraResponsavel}
           setConcluindo={setConcluindo}
+          tipo={tipo}
+          setTipo={setTipo}
+          areaId={areaId}
+          setAreaId={setAreaId}
+          areas={areas}
+          alteraTipoArea={alteraTipoArea}
         />
 
         <RespostasSuporte

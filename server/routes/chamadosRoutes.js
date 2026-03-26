@@ -7,6 +7,7 @@ import {
   alterarPrioridade,
   alterarStatus,
   alterarResponsavel,
+  alterarTipoArea,
 } from "../controllers/chamadosController.js";
 
 const router = express.Router();
@@ -16,6 +17,7 @@ router.get("/suporte", getChamadosSuporte);
 router.put("/prioridade/:id", alterarPrioridade);
 router.put("/status/:id", alterarStatus);
 router.put("/responsavel/:id", alterarResponsavel);
+router.put("/tipo-area/:id", alterarTipoArea);
 router.post("/", anexosUpload, postChamado);
 
 export default router;

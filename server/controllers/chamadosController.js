@@ -367,3 +367,22 @@ export async function alterarResponsavel(req, res) {
   await chamado.save();
   return res.status(200).json({ message: "Responsável alterado com sucesso" });
 }
+
+export async function alterarTipoArea(req, res) {
+  const { id } = req.params;
+  if (!id) {
+    throw ApiError.badRequest("Id do chamado é obrigatório");
+  }
+  const { tipo, area_id } = req.body;
+  if (!tipo || !area_id) {
+    throw ApiError.badRequest("Tipo e área são obrigatórios");
+  }
+
+  const chamado = await Chamado.findByPk(id);
+
+  chamado.chamado_tipo = tipo;
+  chamado.chamado_area_id = area_id;
+
+  await chamado.save();
+  return res.status(200).json({ message: "Tipo e área alterados com sucesso" });
+}
