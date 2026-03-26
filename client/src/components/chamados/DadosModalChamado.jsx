@@ -13,7 +13,12 @@ export default function DadosModalChamado({
   setAbreChamado,
   alteraResponsavel,
   setConcluindo,
-  setNotificacao,
+  tipo,
+  setTipo,
+  areaId,
+  setAreaId,
+  areas,
+  alteraTipoArea,
 }) {
   const [baixando, setBaixando] = useState(null);
   const [concluido, setConcluido] = useState(null);
@@ -113,17 +118,37 @@ export default function DadosModalChamado({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="text-gray-400 text-xs uppercase">Tipo</p>
-          <div className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm">
-            {chamado.chamado_tipo == "solicitacao"
-              ? "Solicitação"
-              : formatToCapitalized(chamado.chamado_tipo)}
-          </div>
+          <select
+            value={tipo}
+            disabled={!podeEditar}
+            onChange={(e) => {
+              setTipo(e.target.value);
+              setAreaId("");
+            }}
+            className="w-full bg-[#1c1f4a] border border-white/20 rounded-lg px-3 py-2 text-sm"
+          >
+            <option value="erro">Erro</option>
+            <option value="solicitacao">Solicitação</option>
+            <option value="melhoria">Melhoria</option>
+          </select>
         </div>
         <div>
           <p className="text-gray-400 text-xs uppercase">Área</p>
-          <div className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm">
-            {chamado.area?.area_nome || "-"}
-          </div>
+          <select
+            value={areaId}
+            disabled={!podeEditar}
+            onChange={(e) => setAreaId(e.target.value)}
+            className="w-full bg-[#1c1f4a] border border-white/20 rounded-lg px-3 py-2 text-sm"
+          >
+            <option value="">Selecione</option>
+            {areas
+              .filter((a) => a.area_tipo === tipo)
+              .map((a) => (
+                <option key={a.area_id} value={a.area_id}>
+                  {a.area_nome}
+                </option>
+              ))}
+          </select>
         </div>
       </div>
 
@@ -267,6 +292,7 @@ export default function DadosModalChamado({
           <button
             onClick={() => {
               alteraPrioridade(prioridade);
+              if (areaId) alteraTipoArea(tipo, areaId);
               setAbreChamado(false);
             }}
             className="cursor-pointer w-full bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition-colors"
