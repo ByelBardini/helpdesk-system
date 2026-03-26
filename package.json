@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"node --watch server/server.js\" \"npm run dev --prefix client\"",
     "start": "node --watch server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,6 +21,7 @@
   "homepage": "https://github.com/ByelBardini/helpdesk-system#readme",
   "dependencies": {
     "bcrypt": "6.0.0",
+    "concurrently": "9.2.1",
     "cors": "2.8.5",
     "dotenv": "17.2.0",
     "exceljs": "4.4.0",
