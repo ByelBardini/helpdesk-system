@@ -10,7 +10,6 @@ import {
   HelpCircle,
   CalendarPlus,
   LayoutDashboard,
-  ShoppingCart,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { tratarErro } from "../components/default/funcoes.js";
@@ -129,16 +128,6 @@ export default function Home() {
             label="Novo Chamado"
             cor="text-green-300"
           />
-
-          {localStorage.getItem("usuario_role") != "liderado" &&
-            localStorage.getItem("usuario_role") != "suporte" && (
-              <BotaoMenu
-                onClick={() => navigate("/compras", { replace: true })}
-                icon={ShoppingCart}
-                label="Solicitações de Compras"
-                cor="text-blue-300"
-              />
-            )}
 
           <div className="relative inline-block">
             <BotaoMenu

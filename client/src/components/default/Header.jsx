@@ -11,7 +11,6 @@ import {
   Menu,
   UsersRound,
   Settings,
-  WalletCards,
   MessageSquareWarning,
   X,
 } from "lucide-react";
@@ -34,11 +33,6 @@ export default function Header() {
     { to: "/suporte/chamados", label: "Chamados", icon: Ticket },
   ];
   const navAdm = [
-    {
-      to: "/suporte/compras",
-      label: "Solicitações de Compra",
-      icon: WalletCards,
-    },
     { to: "/suporte/relatorios", label: "Relatórios", icon: BarChart2 },
     { to: "/suporte/avisos", label: "Avisos", icon: MessageSquareWarning },
     { to: "/suporte/usuarios", label: "Usuários", icon: UsersRound },
