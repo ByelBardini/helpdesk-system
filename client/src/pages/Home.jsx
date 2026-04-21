@@ -10,6 +10,7 @@ import {
   HelpCircle,
   CalendarPlus,
   LayoutDashboard,
+  Bell,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { tratarErro } from "../components/default/funcoes.js";
