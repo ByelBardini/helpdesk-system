@@ -26,15 +26,19 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = process.env.CORS_ORIGIN?.split(",").map((o) => o.trim()) ?? true;
+
 app.use(express.json());
 app.use(
   cors({
-    origin: true,
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
 
 app.use("/", authRoutes);
 app.use("/", downloadRoutes);
