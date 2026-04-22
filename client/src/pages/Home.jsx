@@ -11,7 +11,6 @@ import {
   HelpCircle,
   CalendarPlus,
   LayoutDashboard,
-  ShoppingCart,
   Bell,
 } from "lucide-react";
 import { logout } from "../services/auth/authService.js";
@@ -194,16 +193,6 @@ export default function Home() {
             label="Novo Chamado"
             cor="text-green-300"
           />
-
-          {localStorage.getItem("usuario_role") != "liderado" &&
-            localStorage.getItem("usuario_role") != "suporte" && (
-              <BotaoMenu
-                onClick={() => navigate("/compras", { replace: true })}
-                icon={ShoppingCart}
-                label="Solicitações de Compras"
-                cor="text-blue-300"
-              />
-            )}
 
           <div className="relative inline-block">
             <BotaoMenu

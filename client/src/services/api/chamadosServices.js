@@ -76,3 +76,13 @@ export async function alterarResponsavel(id) {
     throw err;
   }
 }
+
+export async function alterarTipoArea(id, tipo, area_id) {
+  try {
+    const response = await api.put(`/chamado/tipo-area/${id}`, { tipo, area_id });
+    return response.data;
+  } catch (err) {
+    console.error("Erro em alterarTipoArea:", err);
+    throw err;
+  }
+}

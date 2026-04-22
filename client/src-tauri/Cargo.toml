@@ -1,6 +1,6 @@
 [package]
 name = "SubmIT"
-version = "1.0.0"
+version = "1.1.0"
 description = "Aplicativo para gerenciamento de chamados"
 authors = ["Gabryel B. Bardini"]
 license = "Proprietary"

@@ -7,6 +7,7 @@ import {
   alterarPrioridade,
   alterarStatus,
   alterarResponsavel,
+  alterarTipoArea,
 } from "../controllers/chamadosController.js";
 import { autenticar, autorizarRoles } from "../middlewares/autenticaToken.js";
 
@@ -14,10 +15,11 @@ const router = express.Router();
 router.use(autenticar);
 
 router.get("/usuario/:role/:id", getChamados);
-router.get("/suporte", autorizarRoles("suporte"), getChamadosSuporte);
-router.put("/prioridade/:id", autorizarRoles("suporte"), alterarPrioridade);
-router.put("/status/:id", autorizarRoles("suporte"), alterarStatus);
-router.put("/responsavel/:id", autorizarRoles("suporte"), alterarResponsavel);
+router.get("/suporte", getChamadosSuporte);
+router.put("/prioridade/:id", alterarPrioridade);
+router.put("/status/:id", alterarStatus);
+router.put("/responsavel/:id", alterarResponsavel);
+router.put("/tipo-area/:id", alterarTipoArea);
 router.post("/", anexosUpload, postChamado);
 
 export default router;
