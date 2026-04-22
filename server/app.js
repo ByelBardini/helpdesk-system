@@ -26,7 +26,9 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = process.env.CORS_ORIGIN?.split(",").map((o) => o.trim()) ?? true;
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : true;
 
 app.use(express.json());
 app.use(

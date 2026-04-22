@@ -6,7 +6,7 @@ let ioRef = null;
 export function initSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: process.env.CORS_ORIGIN?.split(",") ?? true,
+      origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : true,
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
