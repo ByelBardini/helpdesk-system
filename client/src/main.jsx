@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useEffect } from "react";
 import { conectarSocket, getUserInfo } from "./services/auth/authService";
+import { initLogger } from "./services/logger";
 
 import { SocketListener } from "./SocketListener.jsx";
 
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
 function AppWrapper() {
   useEffect(() => {
     async function init() {
+      await initLogger();
       await conectarSocket();
       await getUserInfo();
     }
