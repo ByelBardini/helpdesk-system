@@ -1,5 +1,20 @@
 node_modules
-npm-debug.log
-Dockerfile
+npm-debug.log*
+
+# Variáveis de ambiente locais — nunca vão para a imagem
 .env
+.env.*
+!.env.example
+
+# Uploads gerados em runtime — montados como volume no Coolify
 uploads/
+
+# Arquivos de desenvolvimento e CI
+.git
+.gitignore
+*.md
+docs/
+migration/
+
+# Seed — não deve rodar em produção automaticamente
+seed.js
