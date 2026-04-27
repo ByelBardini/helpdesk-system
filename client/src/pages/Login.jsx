@@ -54,11 +54,14 @@ export default function Login() {
         }
       }, 1200);
     } catch (err) {
-      const apiMessage = err.response?.data?.message || "";
+      const apiMessage = err.message || "";
       let titulo = "Erro";
       let mensagem = "Falha ao realizar login";
 
-      if (apiMessage.includes("obrigatórios")) {
+      if (err.code === "ERR_NO_RESPONSE") {
+        titulo = "Sem conexão";
+        mensagem = "Não foi possível conectar ao servidor";
+      } else if (apiMessage.includes("obrigatórios")) {
         titulo = "Dados incompletos";
         mensagem = "Login e senha são necessários para logar no sistema";
       } else if (apiMessage.includes("Login incorreto")) {
