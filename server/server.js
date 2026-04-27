@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 initSocket(server);
 
-const PORT = Number(process.env.PORT) || 3034;
+const PORT = Number(process.env.PORT) || 80;
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server aberto na porta ${PORT}`);
